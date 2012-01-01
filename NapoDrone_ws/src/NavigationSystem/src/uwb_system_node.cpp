@@ -60,11 +60,15 @@ int main(int argc, char **argv)
 
     
     //sottoscrizione al topic dei range
-    rangeUWB_sub = nh.subscribe<uwb_manager::RangeUwb>("/uwb/range", 1, rangeUWB_cb);
+    //rangeUWB_sub = nh.subscribe<uwb_manager::RangeUwb>("/uwb/range", 1, rangeUWB_cb);
+    rangePOZ_sub = nh.subscribe<sensor_msgs::Imu>("/pozyx_range", 1, rangePOZ_cb);
     
     //service client
     get_time_sec0 = nh.serviceClient<autopilot_manager::init_time>("/get_time_t0");
     
+    //pUBLISHER
+    pos_estimated_ekf = nh.advertise<geometry_msgs::PoseStamped>("/ekf_pose", 1000);
+
     //init variabili globali
     init_global_var();
     
@@ -120,62 +124,97 @@ int main(int argc, char **argv)
         
     }
     
-   
+    log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
+    FILE * fd = fopen(log_uwb_path.c_str(), "w");
+    fclose(fd);
     //frequenza a cui far girare il nodo
     ros::Rate loop_rate(100);
     //gettimeofday(&filter_time, NULL);
     filter_time = ros::Time::now();
-    
-    while(ros::ok())
+    begin_time = ros::Time::now();
+    while(ros::ok() )
     {
         //loop rate
-        //loop_rate.sleep();
-
-        //calolo tempo attuale
-        //gettimeofday(&current_time, NULL);
-        //current_time = ros::Time::now();
+        loop_rate.sleep();
 
         //calcolo tempo di controllo
-        //elapsed_time_filter = (current_time.tv_sec - filter_time.tv_sec) * 1000;
-        //elapsed_time_filter += (current_time.tv_usec - filter_time.tv_usec) / 1000;
         ros::Duration elapsed_time = ros::Time::now() - filter_time;
         elapsed_time_filter  = elapsed_time.toSec();
-        //cout << elapsed_time_filter << endl;
-        //elapsed_time_filter = 500 ---> 0.5 s
-        //cout << (current_time.tv_sec-time_0.tv_sec) << endl;//;+ ((current_time.tv_usec-time_0.tv_usec) /1000) << endl;
-
+       
         
         
 
         
 
         //A)leggo i topic
-        //ros::spinOnce();
+        ros::spinOnce();
 
         //EKF_solo_range
-       /* if(elapsed_time_filter >= time_ms)
+        if(elapsed_time_filter >= time_ms)
         {
-            
-            //cout << "***************************************************************************" << endl;
-            //cout << ros::Time::now() -  begin << endl<< endl;
-            //if(elapsed_time_filter > time_ms)
-            //    ROS_WARN("FREQUENZA FILTRO %f ", 1/(elapsed_time_filter/1000));
-         
-
-            //sottocampiono il segnale dei range
-            VectorXd range(4);
-            range(0) = sum_range_dt.anchor0/new_range_packet;
-            range(1) = sum_range_dt.anchor1/new_range_packet;
-            range(2) = sum_range_dt.anchor2/new_range_packet;
-            range(3) = sum_range_dt.anchor3/new_range_packet;
-
-            //update filtro
-            VectorXd position_estimated(3);
-            EKF_solo_range(range,  dt_filter, position_estimated);
-
-            //resetto elapsed_time_filter
-            //gettimeofday(&filter_time, NULL);
+            //resetto il tempo
             filter_time = ros::Time::now();
+            
+            //if(elapsed_time_filter > time_ms)
+            //   ROS_WARN("FREQUENZA FILTRO %f ", 1/(elapsed_time_filter));
+         
+            
+            
+            //sottocampiono il segnale dei range
+            if (new_range_packet > 0)
+            {
+                range_rs(0) = double(sum_range_dt.anchor0/((double)new_range_packet));
+                range_rs(1) = double(sum_range_dt.anchor1/((double)new_range_packet));
+                range_rs(2) = double(sum_range_dt.anchor2/((double)new_range_packet));
+                range_rs(3) = double(sum_range_dt.anchor3/((double)new_range_packet));
+                
+                
+
+            }
+            else
+            {
+             // in range_rs ho sempre il valore di prima   
+            }
+
+            if (start_range_recv)
+            {
+                 //per debug
+                /*ros::Duration elapsed_time_curr = ros::Time::now() - begin_time;
+                log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/range_rs.txt";
+                FILE * fd = fopen(log_uwb_path.c_str(), "a");
+                fprintf(fd, "%f", elapsed_time_curr.toSec());
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f", range_rs(0));
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f", range_rs(1));
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f", range_rs(2));
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f\n", range_rs(3));
+                fclose(fd);*/
+                //update filtro
+                VectorXd position_estimated(3);
+                EKF_solo_range(range_rs,  dt_filter, position_estimated);
+                cout << position_estimated(0) << " " << position_estimated(1) << " " << position_estimated(2) << endl;
+                log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
+                FILE * fd = fopen(log_uwb_path.c_str(), "a");
+                fprintf(fd, "%f", position_estimated(0));
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f", position_estimated(1));
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f\n", position_estimated(2));
+                fclose(fd);
+               /* geometry_msgs::PoseStamped msg;
+                msg.pose.position.x = position_estimated(0);
+                msg.pose.position.y = position_estimated(1);
+                msg.pose.position.z = position_estimated(2);*/
+
+              //  pos_estimated_ekf.publish(msg);
+
+            }
+           
+
+           
             //resetto variabili globali
             new_range_packet = 0;
             sum_range_dt.anchor0 = 0;
@@ -183,7 +222,7 @@ int main(int argc, char **argv)
             sum_range_dt.anchor2 = 0;
             sum_range_dt.anchor3 = 0;
         }
-*/
+
         
         
 

@@ -92,7 +92,7 @@ void range_cb(const sensor_msgs::Imu::ConstPtr& imu)
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f", imu->angular_velocity.z); //anchor 3 -9
     fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%f", imu->linear_acceleration.x);
+    fprintf(fd1, "%f", imu->linear_acceleration.x); //anchor 4 -10
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f", imu->linear_acceleration.y);
     fprintf(fd1, "%s", "  ");
@@ -287,6 +287,13 @@ int main(int argc, char **argv)
 
 
     time_0 = -1;
+
+    FILE* fd1;
+    fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_position.txt","w");
+    fclose(fd1);
+        
+    fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt","w");
+    fclose(fd1);
     while(ros::ok())
    {
 

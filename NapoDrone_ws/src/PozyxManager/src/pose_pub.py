@@ -25,15 +25,16 @@ from pythonosc.udp_client import SimpleUDPClient
 remote_id = None
 
 anchors_ids = [0xA000,0xA001,0xA002,0xA003];
-height_anchor = [500,500,500,500]; #mm
+height_anchor = [1500,2000,2500,3000]; #mm
 import time
+import math
 
-enable_auto_calibration = True;
-num_campioni_auto_ranging = 10;
+enable_auto_calibration= False;
+num_campioni_auto_ranging = 100;
 y2_positive = True; #Assumiamo y2 positiva o no
 
 imu_log = False;
-pos_log =False;
+pos_log =True;
 range_log = False;
 
 anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
@@ -78,7 +79,7 @@ def Anchor_calibration(self):
         self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,destination_id )
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
 
-        print(device_range.distance)
+        #print(device_range.distance)
         if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_0_1[i] = device_range.distance;
             sum = sum + device_range.distance
@@ -101,7 +102,7 @@ def Anchor_calibration(self):
         #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
             
-        print(device_range.distance)
+        #print(device_range.distance)
         if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_0_2[i] = device_range.distance;
             sum = sum + device_range.distance
@@ -202,6 +203,75 @@ def Anchor_calibration(self):
     print("dist A1 A3: ", d13);
     print("dist A2 A3: ", d23);
 
+
+    #calcolo distanza sul piano X-Y
+    r01 = math.sqrt(d01*d01 - ((height_anchor[1]-height_anchor[0])*(height_anchor[1]-height_anchor[0])));
+    r02 = math. sqrt(d02*d02 - ((height_anchor[2]-height_anchor[0])*(height_anchor[2]-height_anchor[0])));
+    r12 = math.sqrt(d12*d12 - ((height_anchor[2]-height_anchor[1])*(height_anchor[2]-height_anchor[1])));
+    r03 = math.sqrt(d03*d03 - ((height_anchor[3]-height_anchor[0])*(height_anchor[3]-height_anchor[0])));
+    r13 = math.sqrt(d13*d13 - ((height_anchor[3]-height_anchor[1])*(height_anchor[3]-height_anchor[1])));
+    r23 = math.sqrt(d23*d23 - ((height_anchor[3]-height_anchor[2])*(height_anchor[3]-height_anchor[2])));
+
+    print("dist A0 A1: ", r01);
+    print("dist A0 A2: ", r02);
+    print("dist A1 A2: ", r12);
+    print("dist A0 A3: ", r03);
+    print("dist A1 A3: ", r13);
+    print("dist A2 A3: ", r23);
+
+    CARNOT = (r01*r01 + r02*r02 - r12*r12)/(2*r01*r02);
+    if CARNOT > 1 :
+        print("CALIBRATION ERROR");
+        return
+
+    alpha = math.acos(((r01*r01 + r02*r02 - r12*r12)/(2*r01*r02)))
+    print("angolo " , alpha *180 /3.14);
+
+    x0_anchor = 0;
+    y0_anchor = 0;
+    z0_anchor = height_anchor[0];
+    
+    x1_anchor = 0;
+    y1_anchor = r01;
+    z1_anchor = height_anchor[1];
+
+    x2_anchor = r02 * math.sin(alpha);
+    y2_anchor = r02 * math.cos(alpha);
+    z2_anchor = height_anchor[2];
+
+    a11 = y1_anchor;
+    a20 = x2_anchor;
+    a21 = y2_anchor;
+
+    y3 = (a11*a11 + r03*r03 - r13*r13)/(2*a11);
+    x3 = (a20*a20 - r23*r23 + (y3 - a21)*(y3 - a21) + r03*r03 - y3*y3)/(2*a20);
+    #z3 = sqrt((r03*r03 - x3*x3 - y3*y3));
+
+    print("x1 ", x1_anchor);
+    print("y1 ", y1_anchor);
+    print("z1 ", z1_anchor);
+
+
+    print("x2 ", x2_anchor);
+    print("y2 ", y2_anchor);
+    print("z2 ", z2_anchor);
+
+
+    print("x3 ", x3);
+    print("y3 ", y3);
+    print("z3 ", height_anchor[3]);
+
+    
+    self.anchors[0] = DeviceCoordinates(0xA000, 1, Coordinates(int(0), int(0), height_anchor[0]))
+    self.anchors[1] = DeviceCoordinates(0xA001, 1, Coordinates(int(y1_anchor), int(x1_anchor), height_anchor[1]))
+    self.anchors[2] = DeviceCoordinates(0xA002, 1, Coordinates(int(y2_anchor), int(x2_anchor), height_anchor[2]))
+    self.anchors[3] = DeviceCoordinates(0xA003, 1, Coordinates(int(y3), int(x3), height_anchor[3]))
+                
+
+
+    #adesso in self.anchors dovrei avere le coordinate delle antenne calcolate in automatico tranne l altezza imposta
+    #richiamo quindi la funzione seTAnchorManual
+    self.setAnchorsManual()
     #####################################################################################################
     #calolo della componente x  dell'antenna 1
     #####################################################################################################
@@ -432,8 +502,8 @@ class ReadyToLocalize(object):
             destination_id = 0xA003 
             status = self.pozyx.doRanging(destination_id, device_range_4, self.remote_id)
             time_range =time.time()
-            print("tempo tra range 1 e 4")
-            print(time_range - time_range_0)
+            #print("tempo tra range 1 e 4")
+            #print(time_range - time_range_0)
 
             range_msg = Imu()
             range_msg.header.stamp = rospy.Time.now()

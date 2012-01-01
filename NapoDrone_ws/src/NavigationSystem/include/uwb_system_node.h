@@ -5,10 +5,12 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include "uwb_manager/RangeUwb.h"
+#include "sensor_msgs/Imu.h"
 #include "autopilot_manager/init_time.h"
 #include <Eigen/Dense>
 #include <fstream>
 #include <malloc.h>
+#include <geometry_msgs/PoseStamped.h>
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -18,17 +20,20 @@ using Eigen::ArrayXd;
 
 //subscriber ros
 ros::Subscriber rangeUWB_sub;
+ros::Subscriber rangePOZ_sub;
+//publisher
+ros::Publisher pos_estimated_ekf;
 //client
 ros::ServiceClient get_time_sec0;
 
 uwb_manager::RangeUwb range_uwb;
-char new_range_packet;
+int new_range_packet;
 
-
+char start_range_recv;
 //timeval
 //timeval  current_time, filter_time, range_time;
 double elapsed_time_filter, elapsed_time_range;
-ros::Time current_time, filter_time, range_time;
+ros::Time current_time, filter_time, range_time, begin_time;
 
 //per lettura file log
 int Num_measure;
@@ -40,6 +45,9 @@ Vector3d anchor0;
 Vector3d anchor1;
 Vector3d anchor2;
 Vector3d anchor3;
+
+//vettore range resample
+VectorXd range_rs(4);
 
 //somma nell'intervallo dei range
 uwb_manager::RangeUwb sum_range_dt;
@@ -80,5 +88,6 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated);
 void triangolazione_range(VectorXd range,  Vector3d& pos_triangolata);
 void leggi_file_debug();
 void resample_data_range();
+void rangePOZ_cb(const sensor_msgs::Imu::ConstPtr& imu);
 
 //#endif

@@ -9,6 +9,7 @@
 void init_global_var()
 {
 
+  start_range_recv = 0;
   //EKF
   first_cycle_EKF = true;
   //time_ms = (1000.0/freq_filter);
@@ -36,6 +37,11 @@ void init_global_var()
   sum_range_dt.anchor1 = 0.0;
   sum_range_dt.anchor2 = 0.0;
   sum_range_dt.anchor3 = 0.0;
+
+  range_rs(0) = 0.0;
+  range_rs(1) = 0.0;
+  range_rs(2) = 0.0;
+  range_rs(3) = 0.0;
 
   //per debug
   index_range = 0;
@@ -92,6 +98,37 @@ void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg)
 
   //cout << "***********************************"<< endl;
   
+}
+/********************************************************************************************/
+/*                                                                                         */
+/*    CALBACK STIMA DI PIMU                                                            */
+/*                                                                                         */
+/*******************************************************************************************/
+void rangePOZ_cb(const sensor_msgs::Imu::ConstPtr& imu)
+{
+  
+  
+    double r0 = imu->angular_velocity.x/1000.0;  //anchor 1 -7 
+    double r1 = imu->angular_velocity.y/1000.0; //anchor 2 -8
+    double r2 = imu->angular_velocity.z/1000.0; //anchor 3 -9
+    double r3 = imu->linear_acceleration.x/1000.0; //anchor 4 -10
+    
+
+    if(abs(r0) > 0.05 && abs(r1) > 0.05 && abs(r2) > 0.05 && abs(r3) > 0.05  )
+    { 
+      sum_range_dt.anchor0 = sum_range_dt.anchor0 + r0;
+      sum_range_dt.anchor1 = sum_range_dt.anchor1 + r1;
+      sum_range_dt.anchor2 = sum_range_dt.anchor2 + r2;
+      sum_range_dt.anchor3 = sum_range_dt.anchor3 + r3;
+      //incremento il numero di pacchetti arrivati nell'intervlo di tempo
+      new_range_packet ++;
+      start_range_recv = 1;
+    }
+    //else
+      //ROS_WARN("ALMENO UN RANGE UGUALE a 0");
+
+
+
 }
 /******************************************************************************************/
 /*                                                                                        */
@@ -181,6 +218,9 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
   position_estimated(0) = x_k(0);
   position_estimated(1) = x_k(1);
   position_estimated(2) = x_k(2);
+
+
+ 
   return;
 }
 
