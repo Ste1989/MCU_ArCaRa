@@ -1,0 +1,10 @@
+Launch sequence
+
+Generally you should use the standard launch sequence described in Taking Off:
+
+    Poll on Vehicle.is_armable until the vehicle is ready to arm.
+    Set the Vehicle.mode to GUIDED
+    Set Vehicle.armed to True and poll on the same attribute until the vehicle is armed.
+    Call Vehicle.simple_takeoff with a target altitude.
+    Poll on the altitude and allow the code to continue only when it is reached.
+
