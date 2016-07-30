@@ -14,15 +14,68 @@ int main(int argc, char** argv)
   image_transport::ImageTransport it(nh);
   image_transport::Publisher pub = it.advertise("/camera/image_raw", 1);
   ros::Publisher info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",1);
+  /*Camera 	parameters*/
+  double frame_width, frame_height, fps, brigthness, contrast, saturation, exposure, gain, hue, fourcc;
+  char read_param = 1; 
+  char set_param = 1;
   /*Open the webcam*/
   cv::VideoCapture cap;
-
-  //cap.open("http://131.114.220.254:8080/video?x.mjpeg");
-  //cap.open("http://131.114.237.193");
   cap.open(0);		//Open system default camera
-  cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280); // valueX = your wanted width 
-  cap.set(CV_CAP_PROP_FRAME_HEIGHT, 800);
-  cap.set(CV_CAP_PROP_FPS, 30);
+  
+  if(set_param)
+  {
+	/*SET CAMERA PARAMETER*/
+	frame_width = 1200; //1200
+	frame_height = 800; //800
+	fps = 20;
+	brigthness = 0; //0.5
+	contrast = 0; //0
+	saturation = 1; //0.45
+	hue = 0.5; //0.5
+	cap.set(CV_CAP_PROP_FRAME_WIDTH, frame_width); 
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT, frame_height);
+	cap.set(CV_CAP_PROP_FPS, fps);
+	cap.set(CV_CAP_PROP_BRIGHTNESS,brigthness);
+	cap.set(CV_CAP_PROP_CONTRAST,contrast);
+	cap.set(CV_CAP_PROP_SATURATION,saturation);
+  	//cap.set(CV_CAP_PROP_EXPOSURE,0.1); //not supported
+	//cap.set(CV_CAP_PROP_GAIN, gain); //not supported
+	//cap.set(CV_CAP_PROP_FOURCC, ??); //4 character code of the codec
+	//cap.set(CV_CAP_PROP_HUE, hue);//Hue of the image
+  }
+  
+  
+  if(read_param)
+  {
+	frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH); 
+	frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+	fps = cap.get(CV_CAP_PROP_FPS);
+	brigthness = cap.get(CV_CAP_PROP_BRIGHTNESS);  
+	contrast = cap.get(CV_CAP_PROP_CONTRAST);
+	saturation = cap.get(CV_CAP_PROP_SATURATION);
+	//exposure = cap.get(CV_CAP_PROP_EXPOSURE);
+    //gain = cap.get(CV_CAP_PROP_GAIN); // not supported
+    //fourcc = cap.get(CV_CAP_PROP_FOURCC);// 4 character code of the codec
+    //hue = cap.get(CV_CAP_PROP_HUE); //Hue of the image  
+	  
+	  
+	  
+  }
+
+  
+
+  /*STAMPO A VIDEO PARAMETRI CAMERa*/
+  std::cout <<"width: "<< frame_width << std::endl;
+  std::cout <<"height: "<< frame_height << std::endl;
+  std::cout <<"fps: "<< fps << std::endl;
+  std::cout <<"brightness: "<< brigthness << std::endl;
+  std::cout <<"contrast: "<< contrast << std::endl;
+  std::cout <<"saturation: "<< saturation << std::endl;
+  //std::cout <<"exposure: "<< exposure << std::endl;
+  //std::cout <<"fourcc: "<< fourcc << std::endl;
+  //std::cout <<"gain: "<< gain << std::endl;
+  std::cout <<"hue: "<< hue << std::endl;
+  
   // Check if video device can be opened with the given index
   if(!cap.isOpened()) {
 	ROS_ERROR("No camera Found");
@@ -35,17 +88,16 @@ int main(int argc, char** argv)
   while (nh.ok()) 
   {
     cap >> frame;
-    std::cout << frame.size() << std::endl;
+   
     // Check if grabbed frame is actually full with some content
     if(!frame.empty()) 
     {
-
+		
       //cv::Mat src_gray;
       //cvtColor( frame, src_gray, CV_BGR2GRAY );
-
       sensor_msgs::CameraInfo info;
-      info.height = 800;
-      info.width = 1280;
+      info.height = frame_height;
+      info.width = frame_width;
       msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
       pub.publish(msg);
       info_pub.publish(info);
