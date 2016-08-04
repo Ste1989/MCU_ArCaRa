@@ -1,0 +1,8 @@
+prefix=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/devel
+
+Name: my_pkg
+Description: Description of my_pkg
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/devel/lib 
+Requires: 

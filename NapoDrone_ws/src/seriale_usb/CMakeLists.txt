@@ -40,8 +40,8 @@ include_directories(
 
 
 
-add_executable(Serial_Manager src/rs232.cpp)
-target_link_libraries(Serial_Manager ${catkin_LIBRARIES})
+add_executable(SerialManager src/rs232.cpp)
+target_link_libraries(SerialManager ${catkin_LIBRARIES})
 
 
 

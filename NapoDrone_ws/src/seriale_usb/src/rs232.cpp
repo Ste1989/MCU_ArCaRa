@@ -22,12 +22,48 @@
 
 //numero di Header che deve avere il pacchetto che ricevo
 #define HEADER_BYTES  2
-
+#define HEADER_A  (int)0xAB
+#define HEADER_B  (int)0xAC
 //numero di interi (32 bit) che ha il pacchetto che ricevo (2 nel progetto di avizzano)
 #define PAYLOAD_NBYTES   2
 
+typedef enum{
+    HEADER_A_1,
+    HEADER_A_2,
+    PAYLOAD_1_1,
+    PAYLOAD_1_2,
+} waiting_msg;
+
+//variabile per la memorizzazione dello stato della macchina a stati
+waiting_msg state_msg;
+
+
+
+/*************************************************************/
+//
+//modulo che preposto alla ricezione e alla decodifica dei messaggi
+//ricevuti da PC  sulla seriale 2 (Xbee)
+//
+/************************************************************/
+//
+//
+//
+//1-comando contenente il comando di strat e stop
+//     ______________________
+//     | HEADER_A | FF | FE |
+//     ______________________
+//2-comando contenente il comando di strat e stop
+//     ______________________
+//     | HEADER_A | FF | FE |
+//     ______________________
+
+
+
+
+
+
 //header in ricezione
-unsigned char header_recv[HEADER_BYTES+1] = {171, 171,0};
+unsigned char header_recv[HEADER_BYTES+1] = {171, 172,0};
 //header in invio
 unsigned char header_send[HEADER_BYTES+1] = {255, 255,0};
 //buffer di ricezione
@@ -120,7 +156,7 @@ int serial_init(int* fd)
         return -1;
     }
     /*imposto baud rate*/
-    set_interface_attribs (*fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+    set_interface_attribs (*fd, B57600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
     set_blocking (*fd, 0);
 
     return 1;
@@ -190,7 +226,52 @@ void write_to_serial(int* serial, unsigned char* index, int payload1, int payloa
     }
 
 }
+/*****************************************************************/
+/*                                                               */
+/*                 PARSING DEL PACKET                            */
+/*****************************************************************/
+//funzione che riceve e decodifica i pacchetti in arrivo da PC
+void parser_mess(unsigned char buffer){
 
+
+    cout << (int)buffer << endl;
+
+    //implementazione della macchina a stati
+    switch(state_msg){
+        case HEADER_A_1:
+
+            if(buffer == HEADER_A)
+            {    cout << "ok" << endl;
+                state_msg=HEADER_A_2;
+            }
+            break;
+
+        case HEADER_A_2:
+            if(buffer == HEADER_B)
+            {
+                state_msg=PAYLOAD_1_1;
+                cout << "ok" << endl;
+                //è stato riconosciuto un header-->è in arrivo un nuovo pacchetto
+                //ma non è ancora stato ricevuto e decodificato tutto
+            }
+            break;
+
+        case PAYLOAD_1_1:
+            cout << "ok" << endl;
+            state_msg=PAYLOAD_1_2;
+            break;
+        case PAYLOAD_1_2:
+              cout << "PACCHETTO ARRIVATO" << endl;
+            state_msg=HEADER_A_1;
+            break;
+
+
+
+
+    }
+
+    return;
+}
 /*****************************************************************/
 /*                                                               */
 /*                 READ SERIALE                                  */
@@ -209,6 +290,24 @@ void read_from_serial(int* serial)
 
     for(int a = 0 ; a < bytes ; a++)
     {
+        parser_mess(buf[a]);
+    }
+
+   // while(!coda_seriale.empty())
+    //{
+     //   unsigned char byte  = coda_seriale.front();
+      //  parser_mess(byte);
+       // coda_seriale.pop()
+   // }
+
+
+
+
+
+if( bytes < 0)
+{
+    for(int a = 0 ; a < bytes ; a++)
+    {
         coda_seriale.push(buf[a]);
     }
 
@@ -218,20 +317,29 @@ void read_from_serial(int* serial)
     unsigned char h2 = 0;
     if(start == 0)
     {
+        //devo trovare il primo header
         h1 = coda_seriale.front();
+        cout << h1<< endl;
+
         while(h1 != header_recv[0] && !coda_seriale.empty())
         {
+
             coda_seriale.pop();
             h1 = coda_seriale.front();
+
         }
+
+
+        cout << " qui2"<< endl;
         h2 = coda_seriale.front();
+        cout << h2<< endl;
         while(h2 != header_recv[1] && !coda_seriale.empty())
-        {
+        {   cout << " qui3"<< endl;
             coda_seriale.pop();
             h2 = coda_seriale.front();
         }
          if(!coda_seriale.empty())
-        {
+        {   cout << " qui4"<< endl;
             //ho trovato l'header
             coda_seriale.pop();
             start = 1;
@@ -242,6 +350,7 @@ void read_from_serial(int* serial)
     //se ho trovato l'header e ho ricevuto un numero di bytes pari alla dimensione del pacchetto, lo decodifico
     if(start == 1 && coda_seriale.size() >= PAYLOAD_NBYTES)
     {
+      cout << " HO RICEVUTO UN HEADER"<< endl;
       //ho trovato l'header e ho tutto il pacchetto
       //stampo il tempo di ogni quanto lo ricevo
       gettimeofday(&stop_, NULL);
@@ -250,7 +359,7 @@ void read_from_serial(int* serial)
       double sec = ros::Time::now().toSec();//*1000000;
 
       //decodifico il pacchetto
-      decode_packet( coda_seriale, &recv1, &recv2);
+      //decode_packet( coda_seriale, &recv1, &recv2);
 
       //resetto start e tempo di ricezione
       start = 0;
@@ -261,14 +370,15 @@ void read_from_serial(int* serial)
 
       cout << "PACCHETTO ARRIVATO" << endl;
       cout << elsapsed_time << "ms.\n";
-      cout << "recv1: " << recv1 << endl;
-      cout << "recv2: " << recv2 << endl;
+      cout << (int)coda_seriale.front()<< endl;
+      coda_seriale.pop();
+      cout << (int)coda_seriale.front()<< endl;
+      coda_seriale.pop();
       cout << endl;
     }
-
-
 }
 
+}
 
 /*****************************************************************/
 /*                                                               */
@@ -298,14 +408,15 @@ ros::NodeHandle n;
 int serial;
 // init della seriale
 int result = serial_init(&serial);
-
+//inizializzazone della macchina a stati con il primo stato
+state_msg = HEADER_A_1;
 if (result == 1)
 {
     while(ros::ok())
    {
        read_from_serial(&serial);
        int dato1, dato2;
-       write_to_serial(&serial, header_send, dato1, dato2);
+       //write_to_serial(&serial, header_send, dato1, dato2);
 
        //loop_rate.sleep()
    }

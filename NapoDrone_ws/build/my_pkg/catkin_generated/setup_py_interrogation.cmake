@@ -1,0 +1,6 @@
+set(my_pkg_SETUP_PY_VERSION "0.0.0")
+set(my_pkg_SETUP_PY_SCRIPTS "")
+set(my_pkg_SETUP_PY_PACKAGES "tutorial_package")
+set(my_pkg_SETUP_PY_PACKAGE_DIRS "src/tutorial_package")
+set(my_pkg_SETUP_PY_MODULES "")
+set(my_pkg_SETUP_PY_MODULE_DIRS "")

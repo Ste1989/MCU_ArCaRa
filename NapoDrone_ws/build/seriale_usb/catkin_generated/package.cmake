@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "seriale_usb")
+set(seriale_usb_MAINTAINER "ste <ste@todo.todo>")
+set(seriale_usb_DEPRECATED "")
+set(seriale_usb_VERSION "0.0.0")
+set(seriale_usb_BUILD_DEPENDS )
+set(seriale_usb_RUN_DEPENDS )
+set(seriale_usb_BUILDTOOL_DEPENDS "catkin")
