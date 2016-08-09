@@ -1,2 +1,2 @@
-my_pkg:seriale_usb
+SerialManager:my_pkg
 -DCATKIN_DEVEL_PREFIX=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/devel -DCMAKE_INSTALL_PREFIX=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/install -G Unix Makefiles

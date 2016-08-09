@@ -1,8 +1,0 @@
-prefix=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/install
-
-Name: seriale_usb
-Description: Description of seriale_usb
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/install/lib 
-Requires: 

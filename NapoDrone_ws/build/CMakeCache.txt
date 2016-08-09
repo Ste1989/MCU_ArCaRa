@@ -255,6 +255,12 @@ RT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.so
 //Enable debian style python package layout
 SETUPTOOLS_DEB_LAYOUT:BOOL=ON
 
+//Value Computed by CMake
+SerialManager_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/SerialManager
+
+//Value Computed by CMake
+SerialManager_SOURCE_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager
+
 //LSB Distrib tag
 UBUNTU:BOOL=TRUE
 
@@ -347,10 +353,10 @@ rospy_DIR:PATH=/opt/ros/indigo/share/rospy/cmake
 rostime_DIR:PATH=/opt/ros/indigo/share/rostime/cmake
 
 //Value Computed by CMake
-seriale_usb_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/seriale_usb
+serial_manager_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/SerialManager
 
 //Value Computed by CMake
-seriale_usb_SOURCE_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/seriale_usb
+serial_manager_SOURCE_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager
 
 //The directory containing a CMake configuration file for std_msgs.
 std_msgs_DIR:PATH=/opt/ros/indigo/share/std_msgs/cmake

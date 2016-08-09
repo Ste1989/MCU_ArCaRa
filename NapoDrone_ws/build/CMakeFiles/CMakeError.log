@@ -1,21 +1,21 @@
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTryCompileExec702434782/fast"
-/usr/bin/make -f CMakeFiles/cmTryCompileExec702434782.dir/build.make CMakeFiles/cmTryCompileExec702434782.dir/build
+Run Build Command:"/usr/bin/make" "cmTryCompileExec1881971332/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1881971332.dir/build.make CMakeFiles/cmTryCompileExec1881971332.dir/build
 make[1]: Entering directory `/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp'
 /usr/bin/cmake -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp/CMakeFiles 1
-Building C object CMakeFiles/cmTryCompileExec702434782.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -o CMakeFiles/cmTryCompileExec702434782.dir/CheckSymbolExists.c.o   -c /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTryCompileExec702434782
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec702434782.dir/link.txt --verbose=1
-/usr/bin/cc       CMakeFiles/cmTryCompileExec702434782.dir/CheckSymbolExists.c.o  -o cmTryCompileExec702434782 -rdynamic 
-CMakeFiles/cmTryCompileExec702434782.dir/CheckSymbolExists.c.o: In function `main':
+Building C object CMakeFiles/cmTryCompileExec1881971332.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec1881971332.dir/CheckSymbolExists.c.o   -c /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTryCompileExec1881971332
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1881971332.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec1881971332.dir/CheckSymbolExists.c.o  -o cmTryCompileExec1881971332 -rdynamic 
+CMakeFiles/cmTryCompileExec1881971332.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
 make[1]: Leaving directory `/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp'
-make[1]: *** [cmTryCompileExec702434782] Error 1
-make: *** [cmTryCompileExec702434782/fast] Error 2
+make[1]: *** [cmTryCompileExec1881971332] Error 1
+make: *** [cmTryCompileExec1881971332/fast] Error 2
 
 File /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
@@ -35,19 +35,19 @@ int main(int argc, char** argv)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTryCompileExec2432982985/fast"
-/usr/bin/make -f CMakeFiles/cmTryCompileExec2432982985.dir/build.make CMakeFiles/cmTryCompileExec2432982985.dir/build
+Run Build Command:"/usr/bin/make" "cmTryCompileExec865414260/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec865414260.dir/build.make CMakeFiles/cmTryCompileExec865414260.dir/build
 make[1]: Entering directory `/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp'
 /usr/bin/cmake -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp/CMakeFiles 1
-Building C object CMakeFiles/cmTryCompileExec2432982985.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec2432982985.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.2/Modules/CheckFunctionExists.c
-Linking C executable cmTryCompileExec2432982985
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2432982985.dir/link.txt --verbose=1
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec2432982985.dir/CheckFunctionExists.c.o  -o cmTryCompileExec2432982985 -rdynamic -lpthreads 
+Building C object CMakeFiles/cmTryCompileExec865414260.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec865414260.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.2/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec865414260
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec865414260.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec865414260.dir/CheckFunctionExists.c.o  -o cmTryCompileExec865414260 -rdynamic -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
 make[1]: Leaving directory `/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles/CMakeTmp'
-make[1]: *** [cmTryCompileExec2432982985] Error 1
-make: *** [cmTryCompileExec2432982985/fast] Error 2
+make[1]: *** [cmTryCompileExec865414260] Error 1
+make: *** [cmTryCompileExec865414260/fast] Error 2
 
 

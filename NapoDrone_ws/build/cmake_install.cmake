@@ -117,7 +117,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/gtest/cmake_install.cmake")
-  include("/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/seriale_usb/cmake_install.cmake")
+  include("/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/SerialManager/cmake_install.cmake")
   include("/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/my_pkg/cmake_install.cmake")
 
 endif()

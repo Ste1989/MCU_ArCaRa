@@ -317,341 +317,341 @@ clean: gtest/CMakeFiles/gtest_main.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Directory level rules for directory seriale_usb
+# Directory level rules for directory SerialManager
 
 # Convenience name for "all" pass in the directory.
-seriale_usb/all: seriale_usb/CMakeFiles/SerialManager.dir/all
-.PHONY : seriale_usb/all
+SerialManager/all: SerialManager/CMakeFiles/SerialManager.dir/all
+.PHONY : SerialManager/all
 
 # Convenience name for "clean" pass in the directory.
-seriale_usb/clean: seriale_usb/CMakeFiles/SerialManager.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
-seriale_usb/clean: seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/clean
-.PHONY : seriale_usb/clean
+SerialManager/clean: SerialManager/CMakeFiles/SerialManager.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
+SerialManager/clean: SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/clean
+.PHONY : SerialManager/clean
 
 # Convenience name for "preinstall" pass in the directory.
-seriale_usb/preinstall:
-.PHONY : seriale_usb/preinstall
+SerialManager/preinstall:
+.PHONY : SerialManager/preinstall
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/SerialManager.dir
+# Target rules for target SerialManager/CMakeFiles/SerialManager.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/SerialManager.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/SerialManager.dir/build.make seriale_usb/CMakeFiles/SerialManager.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/SerialManager.dir/build.make seriale_usb/CMakeFiles/SerialManager.dir/build
+SerialManager/CMakeFiles/SerialManager.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/SerialManager.dir/build.make SerialManager/CMakeFiles/SerialManager.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/SerialManager.dir/build.make SerialManager/CMakeFiles/SerialManager.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles  1
 	@echo "Built target SerialManager"
-.PHONY : seriale_usb/CMakeFiles/SerialManager.dir/all
+.PHONY : SerialManager/CMakeFiles/SerialManager.dir/all
 
 # Include target in all.
-all: seriale_usb/CMakeFiles/SerialManager.dir/all
+all: SerialManager/CMakeFiles/SerialManager.dir/all
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/SerialManager.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/SerialManager.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 1
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/SerialManager.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/SerialManager.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/SerialManager.dir/rule
+.PHONY : SerialManager/CMakeFiles/SerialManager.dir/rule
 
 # Convenience name for target.
-SerialManager: seriale_usb/CMakeFiles/SerialManager.dir/rule
+SerialManager: SerialManager/CMakeFiles/SerialManager.dir/rule
 .PHONY : SerialManager
 
 # clean rule for target.
-seriale_usb/CMakeFiles/SerialManager.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/SerialManager.dir/build.make seriale_usb/CMakeFiles/SerialManager.dir/clean
-.PHONY : seriale_usb/CMakeFiles/SerialManager.dir/clean
+SerialManager/CMakeFiles/SerialManager.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/SerialManager.dir/build.make SerialManager/CMakeFiles/SerialManager.dir/clean
+.PHONY : SerialManager/CMakeFiles/SerialManager.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/SerialManager.dir/clean
+clean: SerialManager/CMakeFiles/SerialManager.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir
+# Target rules for target SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/build
+SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target roscpp_generate_messages_cpp"
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/all
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
-roscpp_generate_messages_cpp: seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
+roscpp_generate_messages_cpp: SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 .PHONY : roscpp_generate_messages_cpp
 
 # clean rule for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
+SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
+clean: SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir
+# Target rules for target SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/build
+SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target roscpp_generate_messages_lisp"
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/all
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
-roscpp_generate_messages_lisp: seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+roscpp_generate_messages_lisp: SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 .PHONY : roscpp_generate_messages_lisp
 
 # clean rule for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
+SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
+clean: SerialManager/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir
+# Target rules for target SerialManager/CMakeFiles/roscpp_generate_messages_py.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/build
+SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target roscpp_generate_messages_py"
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/all
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/rule
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/rule
 
 # Convenience name for target.
-roscpp_generate_messages_py: seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/rule
+roscpp_generate_messages_py: SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/rule
 .PHONY : roscpp_generate_messages_py
 
 # clean rule for target.
-seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/clean
-.PHONY : seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/clean
+SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/build.make SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/clean
+.PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/roscpp_generate_messages_py.dir/clean
+clean: SerialManager/CMakeFiles/roscpp_generate_messages_py.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir
+# Target rules for target SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target rosgraph_msgs_generate_messages_cpp"
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
-rosgraph_msgs_generate_messages_cpp: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+rosgraph_msgs_generate_messages_cpp: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 .PHONY : rosgraph_msgs_generate_messages_cpp
 
 # clean rule for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
+clean: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir
+# Target rules for target SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target rosgraph_msgs_generate_messages_lisp"
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
-rosgraph_msgs_generate_messages_lisp: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+rosgraph_msgs_generate_messages_lisp: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 .PHONY : rosgraph_msgs_generate_messages_lisp
 
 # clean rule for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
+clean: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir
+# Target rules for target SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target rosgraph_msgs_generate_messages_py"
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
-rosgraph_msgs_generate_messages_py: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+rosgraph_msgs_generate_messages_py: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 .PHONY : rosgraph_msgs_generate_messages_py
 
 # clean rule for target.
-seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
-.PHONY : seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
+SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
+.PHONY : SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
+clean: SerialManager/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir
+# Target rules for target SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
+SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target std_msgs_generate_messages_cpp"
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
-std_msgs_generate_messages_cpp: seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
+std_msgs_generate_messages_cpp: SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 .PHONY : std_msgs_generate_messages_cpp
 
 # clean rule for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
+SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
+clean: SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir
+# Target rules for target SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
+SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target std_msgs_generate_messages_lisp"
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
-std_msgs_generate_messages_lisp: seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+std_msgs_generate_messages_lisp: SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 .PHONY : std_msgs_generate_messages_lisp
 
 # clean rule for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
+SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
+clean: SerialManager/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir
+# Target rules for target SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir
 
 # All Build rule for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/all:
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/depend
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/build
+SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/all:
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/depend
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target std_msgs_generate_messages_py"
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/all
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/rule: cmake_check_build_system
+SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/rule
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
-std_msgs_generate_messages_py: seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/rule
+std_msgs_generate_messages_py: SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 .PHONY : std_msgs_generate_messages_py
 
 # clean rule for target.
-seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/clean:
-	$(MAKE) -f seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/build.make seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/clean
-.PHONY : seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/clean
+SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/clean:
+	$(MAKE) -f SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/build.make SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/clean
+.PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/clean
 
 # clean rule for target.
-clean: seriale_usb/CMakeFiles/std_msgs_generate_messages_py.dir/clean
+clean: SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/clean
 .PHONY : clean
 
 #=============================================================================
