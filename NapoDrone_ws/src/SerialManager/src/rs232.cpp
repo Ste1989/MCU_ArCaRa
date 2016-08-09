@@ -30,14 +30,20 @@
 //numero di Header che deve avere il pacchetto che ricevo
 //1-comando contenente il comando di start
 //     _________________________________________________________________
-//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_START    |
+//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_ARM       |
 //     _________________________________________________________________
 //2-comando contenente il comando di strat e stop
 //     _______________________________________________________________
-//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_STOP    |
+//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_TAKEOFF   |
 //     ________________________________________________________________
-
+//     _______________________________________________________________
+//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_DISARM    |
+//     ________________________________________________________________
+//     _______________________________________________________________
+//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_LAND    |
+//     ________________________________________________________________
 #define HEADER_BYTES  2
+#define NBYTES_PAYLOAD_CMD 2
 #define HEADER_CMD_A  (int)0xAB
 #define HEADER_CMD_B (int)0x1B
 #define PAYLOAD_CMD (int)0xF2
@@ -79,7 +85,7 @@ std::queue<unsigned char> coda_send_seriale;
 ros::Publisher req_topic;
 //++++++++++++++++++++
 char new_packet = 0;
-std::string str;
+
 double PI = 3.14159;
 using std::cout;
 using std::endl;
@@ -202,12 +208,12 @@ void set_blocking (int fd, int should_block)
 }
 
 
-int serial_init(int* fd)
+int serial_init(int* fd,const char* seriale_dev)
 {
 
 
     /* apro la porta seriale*/
-    const char * portname = "/dev/ttyUSB0";
+    const char * portname = seriale_dev;
 
      *fd = open(portname, O_RDWR | O_NOCTTY | O_SYNC);
     if (*fd < 0)
@@ -239,7 +245,7 @@ void decode_packet()
 
     while(!coda_recv_seriale.empty())
     {
-        if(coda_recv_seriale.front() == PAYLOAD_CMD)
+        if(coda_recv_seriale.front() == PAYLOAD_CMD && coda_recv_seriale.size() >= NBYTES_PAYLOAD_CMD)
         {
             coda_recv_seriale.pop();
             //è un pacchetto di comando, vedo che tipo di comando
@@ -258,6 +264,9 @@ void decode_packet()
                     break;
 
             }
+
+        }else
+        {
             coda_recv_seriale.pop();
         }
     }
@@ -347,9 +356,9 @@ void check_send_request()
         coda_send_seriale.push('m');
         coda_send_seriale.push('d');
         coda_send_seriale.push(' ');
-        coda_send_seriale.push('r');
-        coda_send_seriale.push('i');
+        coda_send_seriale.push('a');
         coda_send_seriale.push('c');
+        coda_send_seriale.push('k');
 
         cmd_msg_last = cmd_msg;
         //resetto cmd_msg
@@ -385,9 +394,14 @@ int main(int argc, char **argv)
     req_topic = n.advertise<std_msgs::Int32>("NapoDrone/cmd_request", 1);
 
 
+    //leggo i parametri specificati nel launch file
+    std::string seriale_dev;
+    n.param<std::string>("/SerialManager/dev", seriale_dev, "/dev/input/js0");
+
+
     int serial;
     // init della seriale
-    int result = serial_init(&serial);
+    int result = serial_init(&serial, seriale_dev.c_str());
     //inizializzo time_1
     gettimeofday(&time_1, NULL);
     //ros::Rate loop_rate(100); // 100 Hz

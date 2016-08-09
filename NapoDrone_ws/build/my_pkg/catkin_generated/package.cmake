@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "my_pkg")
-set(my_pkg_MAINTAINER "stefano <stefano@todo.todo>")
-set(my_pkg_DEPRECATED "")
-set(my_pkg_VERSION "0.0.0")
-set(my_pkg_BUILD_DEPENDS "message_generation" "rospy")
-set(my_pkg_RUN_DEPENDS "rospy")
-set(my_pkg_BUILDTOOL_DEPENDS "catkin")

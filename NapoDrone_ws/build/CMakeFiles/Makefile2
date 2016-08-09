@@ -655,49 +655,49 @@ clean: SerialManager/CMakeFiles/std_msgs_generate_messages_py.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Directory level rules for directory my_pkg
+# Directory level rules for directory PixhawkManager
 
 # Convenience name for "all" pass in the directory.
-my_pkg/all:
-.PHONY : my_pkg/all
+PixhawkManager/all:
+.PHONY : PixhawkManager/all
 
 # Convenience name for "clean" pass in the directory.
-my_pkg/clean: my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
-.PHONY : my_pkg/clean
+PixhawkManager/clean: PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/clean
+.PHONY : PixhawkManager/clean
 
 # Convenience name for "preinstall" pass in the directory.
-my_pkg/preinstall:
-.PHONY : my_pkg/preinstall
+PixhawkManager/preinstall:
+.PHONY : PixhawkManager/preinstall
 
 #=============================================================================
-# Target rules for target my_pkg/CMakeFiles/_catkin_empty_exported_target.dir
+# Target rules for target PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir
 
 # All Build rule for target.
-my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all:
-	$(MAKE) -f my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/depend
-	$(MAKE) -f my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build
+PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/all:
+	$(MAKE) -f PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/build.make PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/depend
+	$(MAKE) -f PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/build.make PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 
 	@echo "Built target _catkin_empty_exported_target"
-.PHONY : my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all
+.PHONY : PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/all
 
 # Build rule for subdir invocation for target.
-my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule: cmake_check_build_system
+PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/CMakeFiles 0
-.PHONY : my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
+.PHONY : PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/rule
 
 # Convenience name for target.
-_catkin_empty_exported_target: my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
+_catkin_empty_exported_target: PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/rule
 .PHONY : _catkin_empty_exported_target
 
 # clean rule for target.
-my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean:
-	$(MAKE) -f my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
-.PHONY : my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
+PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/clean:
+	$(MAKE) -f PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/build.make PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/clean
+.PHONY : PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/clean
 
 # clean rule for target.
-clean: my_pkg/CMakeFiles/_catkin_empty_exported_target.dir/clean
+clean: PixhawkManager/CMakeFiles/_catkin_empty_exported_target.dir/clean
 .PHONY : clean
 
 #=============================================================================

@@ -1,5 +1,0 @@
-execute_process(COMMAND "/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/my_pkg/catkin_generated/python_distutils_install.sh" RESULT_VARIABLE res)
-
-if(NOT res EQUAL 0)
-  message(FATAL_ERROR "execute_process(/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/my_pkg/catkin_generated/python_distutils_install.sh) returned error code ")
-endif()

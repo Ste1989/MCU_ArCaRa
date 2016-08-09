@@ -244,6 +244,12 @@ PYTHON_EXECUTABLE:FILEPATH=/usr/bin/python
 PYTHON_VERSION:STRING=
 
 //Value Computed by CMake
+PixhawkManager_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/PixhawkManager
+
+//Value Computed by CMake
+PixhawkManager_SOURCE_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/PixhawkManager
+
+//Value Computed by CMake
 Project_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build
 
 //Value Computed by CMake
@@ -254,12 +260,6 @@ RT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.so
 
 //Enable debian style python package layout
 SETUPTOOLS_DEB_LAYOUT:BOOL=ON
-
-//Value Computed by CMake
-SerialManager_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/SerialManager
-
-//Value Computed by CMake
-SerialManager_SOURCE_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager
 
 //LSB Distrib tag
 UBUNTU:BOOL=TRUE
@@ -326,10 +326,10 @@ message_generation_DIR:PATH=/opt/ros/indigo/share/message_generation/cmake
 message_runtime_DIR:PATH=/opt/ros/indigo/share/message_runtime/cmake
 
 //Value Computed by CMake
-my_pkg_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/my_pkg
+pixhawk_manager_BINARY_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build/PixhawkManager
 
 //Value Computed by CMake
-my_pkg_SOURCE_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/my_pkg
+pixhawk_manager_SOURCE_DIR:STATIC=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/PixhawkManager
 
 //The directory containing a CMake configuration file for rosconsole.
 rosconsole_DIR:PATH=/opt/ros/indigo/share/rosconsole/cmake
