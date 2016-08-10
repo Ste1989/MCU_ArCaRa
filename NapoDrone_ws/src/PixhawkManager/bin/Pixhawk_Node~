@@ -86,8 +86,6 @@ def emergency_stop():
    #informo che il veicolo disarmato
    current_status == status_px4.EMERGENCY_STOP
    pub_status.publish(current_status)
-   else:
-   	print " Non posso disarmare"
 	
 #######################################################
 #						     #
@@ -97,7 +95,7 @@ def emergency_stop():
 def disarm_the_vehicle():
    
 
-   # è possibile disarmalo solo se è landed
+   #possibile disarmalo solo se  landed
    if current_status == status_px4.LANDED:
    	vehicle.armed = False
     	# Confirm vehicle not armed 
@@ -246,7 +244,7 @@ if __name__ == '__main__':
     rospy.init_node('Pixhawk_Manager', anonymous=True)
     
     #dichiaro un publisher
-    pub_status = rospy.Publisher('/napodrone/status', Int32, queue_size=10)
+    pub_status = rospy.Publisher('/napodrone/px4_status', Int32, queue_size=10)
     #dichiaro un subscriber
     rospy.Subscriber("/napodrone/cmd_request", Int32, callback_cmd)
 

@@ -405,7 +405,7 @@ void check_send_request()
 void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
 {
     //routine che legge lo stato del drone
-
+    cout << "ricevuto" << endl;
     switch(msg->data){
         case 0:
             current_status_px4 = CONNECTING;
@@ -556,7 +556,7 @@ int main(int argc, char **argv)
    */
     ros::NodeHandle n;
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
-    status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status", 1000, Status_Pixhawk_Callback);
+    status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",1, &Status_Pixhawk_Callback);
 
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
@@ -579,9 +579,9 @@ int main(int argc, char **argv)
             gettimeofday(&time_2, NULL);
             elapsed_time = (time_2.tv_sec - time_1.tv_sec) * 1000;
             elapsed_time += (time_2.tv_usec - time_1.tv_usec) / 1000;
-            cout << elapsed_time << "ms.\n";
+ /*           cout << elapsed_time << "ms.\n";
 
-            if(elapsed_time > 2000)
+           if(elapsed_time > 2000)
             {
                 //comunicazione persa
                 coda_send_seriale.push('c');
@@ -593,11 +593,15 @@ int main(int argc, char **argv)
                 coda_send_seriale.push('o');
                 coda_send_seriale.push('s');
                 coda_send_seriale.push('s');
-            }
+            }*/
 
 
             //controllo se vi è una richiesta di comando
             check_send_request();
+
+
+            //vedi se arrivato qualcosa sulle callback
+            ros::spinOnce();
 
             //funzione per scrivere su seriale
            write_to_serial(&serial);

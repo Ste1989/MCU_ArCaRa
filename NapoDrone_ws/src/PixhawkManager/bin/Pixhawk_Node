@@ -86,8 +86,6 @@ def emergency_stop():
    #informo che il veicolo disarmato
    current_status == status_px4.EMERGENCY_STOP
    pub_status.publish(current_status)
-   else:
-   	print " Non posso disarmare"
 	
 #######################################################
 #						     #
@@ -97,7 +95,7 @@ def emergency_stop():
 def disarm_the_vehicle():
    
 
-   # è possibile disarmalo solo se è landed
+   #possibile disarmalo solo se  landed
    if current_status == status_px4.LANDED:
    	vehicle.armed = False
     	# Confirm vehicle not armed 
@@ -161,7 +159,7 @@ def land_the_vehicle():
    print("Setting LAND mode...")
    vehicle.mode = VehicleMode("LAND")
 
-   time(10)
+   time.sleep(10)
    print("LANDED ...")
    current_status = status_px4.LANDED
    pub_status.publish(current_status)
@@ -179,7 +177,7 @@ def RTL_the_vehicle():
    print("Setting RTL mode...")
    vehicle.mode = VehicleMode("RTL")
 
-   time(10)
+   time.sleep(10)
    print("LANDED ...")
    current_status = status_px4.LANDED
    pub_status.publish(current_status)
