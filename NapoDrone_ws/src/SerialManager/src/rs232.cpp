@@ -51,17 +51,40 @@
 #define PAYLOAD_DISARM (int)0x81
 #define PAYLOAD_TAKEOFF (int)0x82
 #define PAYLOAD_LAND (int)0x83
-
+#define PAYLOAD_RTL (int)0x84
+#define PAYLOAD_EMERGENCYSTOP (int)0x85
 
 int count = 0;
 //numero di interi (32 bit) che ha il pacchetto che ricevo (2 nel progetto di avizzano)
 #define PAYLOAD_NBYTES   2
+
+
+//dichiaro i possibili stati dell'autopilota
+typedef enum{
+    CONNECTING,
+    CONNECTED,
+    ARMABLE,
+    NOT_ARMABLE,
+    ARMED,
+    TAKE_OFF,
+    LANDED,
+    DISCONNECTED,
+    HOVER,
+    LANDING,
+    RTL_STATUS,
+    EMERGENCY_STOP_STATUS,
+}status_px4;
+//dichiaro la variabile globale che mantiene lo stato dell'autopilota
+status_px4 current_status_px4;
+
 typedef enum{
     NO_REQ,
     ARM,
     DISARM,
     TAKEOFF,
     LAND,
+    RTL,
+    EMERGENCY_STOP,
 } cmd_request;
 //variabile per la memorizzazione dello richiesta effettuata
 cmd_request cmd_msg;
@@ -80,6 +103,9 @@ waiting_msg state_msg;
 std::queue<unsigned char> coda_recv_seriale;
 //bufferi di trasmissione
 std::queue<unsigned char> coda_send_seriale;
+
+//ros topic status
+ros::Subscriber status_topic;
 
 //ros topic request
 ros::Publisher req_topic;
@@ -262,6 +288,12 @@ void decode_packet()
                 case PAYLOAD_LAND:
                     cmd_msg = LAND;
                     break;
+                case PAYLOAD_RTL:
+                    cmd_msg = RTL;
+                    break;
+                case PAYLOAD_EMERGENCYSTOP:
+                    cmd_msg = EMERGENCY_STOP;
+                    break;
 
             }
 
@@ -366,7 +398,139 @@ void check_send_request()
 
     }
 }
+/*****************************************************************/
+/*                                                               */
+/*                 CALLBACK PX4 STATUS                           */
+/*****************************************************************/
+void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
+{
+    //routine che legge lo stato del drone
 
+    switch(msg->data){
+        case 0:
+            current_status_px4 = CONNECTING;
+            //preparo il pacchetto di ack da mandare su seriale
+            coda_send_seriale.push('C');
+            coda_send_seriale.push('O');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('C');
+            coda_send_seriale.push('T');
+            coda_send_seriale.push('I');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('G');
+            break;
+        case 1:
+            current_status_px4 = CONNECTED;
+            //preparo il pacchetto di ack da mandare su seriale
+            coda_send_seriale.push('C');
+            coda_send_seriale.push('O');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('C');
+            coda_send_seriale.push('T');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('D');
+            break;
+        case 2:
+            current_status_px4 = ARMABLE;
+            coda_send_seriale.push('A');
+            coda_send_seriale.push('R');
+            coda_send_seriale.push('M');
+            coda_send_seriale.push('A');
+            coda_send_seriale.push('B');
+            coda_send_seriale.push('L');
+            coda_send_seriale.push('E');
+            break;
+        case 3:
+            current_status_px4 = NOT_ARMABLE;
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('O');
+            coda_send_seriale.push('T');
+            coda_send_seriale.push(' ');
+            coda_send_seriale.push('A');
+            coda_send_seriale.push('R');
+            coda_send_seriale.push('M');
+            break;
+        case 4:
+            current_status_px4 = ARMED;
+            coda_send_seriale.push('A');
+            coda_send_seriale.push('R');
+            coda_send_seriale.push('M');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('D');
+            break;
+        case 5:
+            current_status_px4 = TAKE_OFF;
+            coda_send_seriale.push('T');
+            coda_send_seriale.push('A');
+            coda_send_seriale.push('K');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push(' ');
+            coda_send_seriale.push('O');
+            coda_send_seriale.push('F');
+            coda_send_seriale.push('F');
+            break;
+        case 6:
+            current_status_px4 = LANDED;
+            coda_send_seriale.push('L');
+            coda_send_seriale.push('A');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('D');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('D');
+            break;
+        case 7:
+            current_status_px4 = DISCONNECTED;
+            coda_send_seriale.push('D');
+            coda_send_seriale.push('I');
+            coda_send_seriale.push('S');
+            coda_send_seriale.push('C');
+            coda_send_seriale.push('O');
+            coda_send_seriale.push('N');
+            break;
+        case 8:
+            current_status_px4 = HOVER;
+            coda_send_seriale.push('H');
+            coda_send_seriale.push('O');
+            coda_send_seriale.push('V');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('R');
+            break;
+        case 9:
+            current_status_px4 = LANDING;
+            coda_send_seriale.push('L');
+            coda_send_seriale.push('A');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('D');
+            coda_send_seriale.push('I');
+            coda_send_seriale.push('N');
+            coda_send_seriale.push('G');
+            break;
+        case 10:
+            current_status_px4 = RTL_STATUS;
+            coda_send_seriale.push('R');
+            coda_send_seriale.push('T');
+            coda_send_seriale.push('L');
+            break;
+        case 11:
+            current_status_px4 = EMERGENCY_STOP_STATUS;
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('M');
+            coda_send_seriale.push('E');
+            coda_send_seriale.push('R');
+            coda_send_seriale.push(' ');
+            coda_send_seriale.push('S');
+            coda_send_seriale.push('T');
+            coda_send_seriale.push('O');
+            coda_send_seriale.push('P');
+            break;
+
+    }
+
+}
 /*****************************************************************/
 /*                                                               */
 /*                 MAIN                                          */
@@ -392,7 +556,7 @@ int main(int argc, char **argv)
    */
     ros::NodeHandle n;
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
-
+    status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status", 1000, Status_Pixhawk_Callback);
 
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;

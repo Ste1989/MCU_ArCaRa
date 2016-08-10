@@ -11,9 +11,9 @@ def enum(**named_values):
      return type('Enum', (), named_values)
 
 #dichiaro i possibili stati dell'autopilota
-status_px4 = enum(CONNECTING=0,CONNECTED=1, ARMABLE=2, NOT_ARMABLE=3, ARMED=4, TAKEOFF=5, LANDED=6, DISCONNECTED=7, HOVER=8, LANDING=9, RTL=10)
+status_px4 = enum(CONNECTING=0,CONNECTED=1, ARMABLE=2, NOT_ARMABLE=3, ARMED=4, TAKEOFF=5, LANDED=6, DISCONNECTED=7, HOVER=8, LANDING=9, RTL=10, EMERGENCY_STOP=11)
 #possibili richieste
-cmd_request = enum(NO_REQ=0,ARM=1,DISARM=2,TAKEOFF=3,LAND=4,RTL=5)
+cmd_request = enum(NO_REQ=0,ARM=1,DISARM=2,TAKEOFF=3,LAND=4,RTL=5, EMERGENCY_STOP=6)
 #######################################################
 #						     #
 #  callback richieste    			     #
@@ -39,6 +39,9 @@ def callback_cmd(cmd_req):
 
    elif cmd_req.data == cmd_request.RTL:
 	RTL_the_vehicle()
+
+   elif cmd_req.data == cmd_request.EMERGENCY_STOP:
+	emergency_stop()
 #######################################################
 #						     #
 #  arm the vehicle        			     #
@@ -67,10 +70,28 @@ def arm_the_vehicle():
     #informo che il veicolo non  armabile
     pub_status.publish(status_px4.NOT_ARMABLE)
     current_status = status_px4.NOT_ARMABLE
-
 #######################################################
 #						     #
-#  arm the vehicle        			     #
+#  emergency stop        			     #
+#						     #
+#######################################################
+def emergency_stop():
+   
+   vehicle.armed = False
+   # Confirm vehicle not armed 
+   while vehicle.armed:      
+   	print " Waiting for disarming..."
+   	time.sleep(1)
+
+   #informo che il veicolo disarmato
+   current_status == status_px4.EMERGENCY_STOP
+   pub_status.publish(current_status)
+   else:
+   	print " Non posso disarmare"
+	
+#######################################################
+#						     #
+#  disarm the vehicle        			     #
 #						     #
 #######################################################
 def disarm_the_vehicle():
@@ -225,7 +246,7 @@ if __name__ == '__main__':
     rospy.init_node('Pixhawk_Manager', anonymous=True)
     
     #dichiaro un publisher
-    pub_status = rospy.Publisher('/napodrone/status', Int32, queue_size=10)
+    pub_status = rospy.Publisher('/napodrone/px4_status', Int32, queue_size=10)
     #dichiaro un subscriber
     rospy.Subscriber("/napodrone/cmd_request", Int32, callback_cmd)
 
