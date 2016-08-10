@@ -2,7 +2,7 @@
  
 
     <node pkg="serial_manager" type="SerialManager" name="SerialManager" output="screen" >
-	<param name="dev" type="string" value="/dev/input/js1" />
+	<param name="dev" type="string" value="/dev/ttyUSB0" />
     </node>
 
         

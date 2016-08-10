@@ -2,7 +2,7 @@
  
 
     <node pkg="serial_manager" type="SerialManager" name="SerialManager" output="screen" >
-	<param name="dev" type="string" value="ciao" />
+	<param name="dev" type="string" value="/dev/input/js1" />
     </node>
 
         

@@ -391,12 +391,12 @@ int main(int argc, char **argv)
    * NodeHandle destructed will close down the node.
    */
     ros::NodeHandle n;
-    req_topic = n.advertise<std_msgs::Int32>("NapoDrone/cmd_request", 1);
+    req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
 
 
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
-    n.param<std::string>("/SerialManager/dev", seriale_dev, "/dev/input/js0");
+    n.param<std::string>("/SerialManager/dev", seriale_dev, "/dev/ttyUSB0");
 
 
     int serial;
