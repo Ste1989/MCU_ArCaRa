@@ -384,13 +384,14 @@ void check_send_request()
         req_topic.publish(msg);
 
         //preparo il pacchetto di ack da mandare su seriale
-        coda_send_seriale.push('c');
-        coda_send_seriale.push('m');
-        coda_send_seriale.push('d');
+        coda_send_seriale.push('C');
+        coda_send_seriale.push('M');
+        coda_send_seriale.push('D');
         coda_send_seriale.push(' ');
-        coda_send_seriale.push('a');
-        coda_send_seriale.push('c');
-        coda_send_seriale.push('k');
+        coda_send_seriale.push('A');
+        coda_send_seriale.push('C');
+        coda_send_seriale.push('K');
+        coda_send_seriale.push('.');
 
         cmd_msg_last = cmd_msg;
         //resetto cmd_msg
@@ -420,6 +421,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('I');
             coda_send_seriale.push('N');
             coda_send_seriale.push('G');
+            coda_send_seriale.push('.');
             break;
         case 1:
             current_status_px4 = CONNECTED;
@@ -433,6 +435,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('T');
             coda_send_seriale.push('E');
             coda_send_seriale.push('D');
+            coda_send_seriale.push('.');
             break;
         case 2:
             current_status_px4 = ARMABLE;
@@ -443,6 +446,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('B');
             coda_send_seriale.push('L');
             coda_send_seriale.push('E');
+            coda_send_seriale.push('.');
             break;
         case 3:
             current_status_px4 = NOT_ARMABLE;
@@ -472,6 +476,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('O');
             coda_send_seriale.push('F');
             coda_send_seriale.push('F');
+            coda_send_seriale.push('.');
             break;
         case 6:
             current_status_px4 = LANDED;
@@ -481,6 +486,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('D');
             coda_send_seriale.push('E');
             coda_send_seriale.push('D');
+            coda_send_seriale.push('.');
             break;
         case 7:
             current_status_px4 = DISCONNECTED;
@@ -490,6 +496,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('C');
             coda_send_seriale.push('O');
             coda_send_seriale.push('N');
+            coda_send_seriale.push('.');
             break;
         case 8:
             current_status_px4 = HOVER;
@@ -498,6 +505,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('V');
             coda_send_seriale.push('E');
             coda_send_seriale.push('R');
+            coda_send_seriale.push('.');
             break;
         case 9:
             current_status_px4 = LANDING;
@@ -508,12 +516,14 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('I');
             coda_send_seriale.push('N');
             coda_send_seriale.push('G');
+            coda_send_seriale.push('.');
             break;
         case 10:
             current_status_px4 = RTL_STATUS;
             coda_send_seriale.push('R');
             coda_send_seriale.push('T');
             coda_send_seriale.push('L');
+            coda_send_seriale.push('.');
             break;
         case 11:
             current_status_px4 = EMERGENCY_STOP_STATUS;
@@ -526,6 +536,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('T');
             coda_send_seriale.push('O');
             coda_send_seriale.push('P');
+            coda_send_seriale.push('.');
             break;
 
     }
@@ -584,15 +595,15 @@ int main(int argc, char **argv)
            if(elapsed_time > 2000)
             {
                 //comunicazione persa
-                coda_send_seriale.push('c');
-                coda_send_seriale.push('o');
-                coda_send_seriale.push('o');
-                coda_send_seriale.push('m');
+                coda_send_seriale.push('C');
+                coda_send_seriale.push('O');
+                coda_send_seriale.push('M');
                 coda_send_seriale.push(' ');
-                coda_send_seriale.push('l');
-                coda_send_seriale.push('o');
-                coda_send_seriale.push('s');
-                coda_send_seriale.push('s');
+                coda_send_seriale.push('L');
+                coda_send_seriale.push('O');
+                coda_send_seriale.push('S');
+                coda_send_seriale.push('T');
+                coda_send_seriale.push('.');
             }*/
 
 

@@ -159,7 +159,7 @@ def land_the_vehicle():
    print("Setting LAND mode...")
    vehicle.mode = VehicleMode("LAND")
 
-   time(10)
+   time.sleep(10)
    print("LANDED ...")
    current_status = status_px4.LANDED
    pub_status.publish(current_status)
@@ -177,7 +177,7 @@ def RTL_the_vehicle():
    print("Setting RTL mode...")
    vehicle.mode = VehicleMode("RTL")
 
-   time(10)
+   time.sleep(10)
    print("LANDED ...")
    current_status = status_px4.LANDED
    pub_status.publish(current_status)
