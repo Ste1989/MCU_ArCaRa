@@ -163,8 +163,8 @@ void parser_mess(unsigned char buffer){
             coda_recv_seriale.push(buffer);
             //notifico che c'è un nuovo pacchetto da decodificare
             new_packet = 1;
-            count ++;
-            cout << "RICEVUI "<<count << endl;
+            /*count ++;
+            cout << "RICEVUI "<<count << endl;*/
             state_msg=HEADER_1;
             break;
     }
@@ -384,14 +384,14 @@ void check_send_request()
         req_topic.publish(msg);
 
         //preparo il pacchetto di ack da mandare su seriale
-        coda_send_seriale.push('C');
+        /*coda_send_seriale.push('C');
         coda_send_seriale.push('M');
         coda_send_seriale.push('D');
         coda_send_seriale.push(' ');
         coda_send_seriale.push('A');
         coda_send_seriale.push('C');
         coda_send_seriale.push('K');
-        coda_send_seriale.push('.');
+        coda_send_seriale.push('.');*/
 
         cmd_msg_last = cmd_msg;
         //resetto cmd_msg
@@ -421,7 +421,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('I');
             coda_send_seriale.push('N');
             coda_send_seriale.push('G');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 1:
             current_status_px4 = CONNECTED;
@@ -435,7 +435,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('T');
             coda_send_seriale.push('E');
             coda_send_seriale.push('D');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 2:
             current_status_px4 = ARMABLE;
@@ -446,7 +446,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('B');
             coda_send_seriale.push('L');
             coda_send_seriale.push('E');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 3:
             current_status_px4 = NOT_ARMABLE;
@@ -457,6 +457,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('A');
             coda_send_seriale.push('R');
             coda_send_seriale.push('M');
+            coda_send_seriale.push('\n');
             break;
         case 4:
             current_status_px4 = ARMED;
@@ -465,6 +466,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('M');
             coda_send_seriale.push('E');
             coda_send_seriale.push('D');
+            coda_send_seriale.push('.');
             break;
         case 5:
             current_status_px4 = TAKE_OFF;
@@ -476,7 +478,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('O');
             coda_send_seriale.push('F');
             coda_send_seriale.push('F');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 6:
             current_status_px4 = LANDED;
@@ -486,7 +488,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('D');
             coda_send_seriale.push('E');
             coda_send_seriale.push('D');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 7:
             current_status_px4 = DISCONNECTED;
@@ -496,7 +498,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('C');
             coda_send_seriale.push('O');
             coda_send_seriale.push('N');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 8:
             current_status_px4 = HOVER;
@@ -505,7 +507,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('V');
             coda_send_seriale.push('E');
             coda_send_seriale.push('R');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 9:
             current_status_px4 = LANDING;
@@ -516,14 +518,14 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('I');
             coda_send_seriale.push('N');
             coda_send_seriale.push('G');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 10:
             current_status_px4 = RTL_STATUS;
             coda_send_seriale.push('R');
             coda_send_seriale.push('T');
             coda_send_seriale.push('L');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 11:
             current_status_px4 = EMERGENCY_STOP_STATUS;
@@ -536,7 +538,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('T');
             coda_send_seriale.push('O');
             coda_send_seriale.push('P');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
 
     }
@@ -567,7 +569,7 @@ int main(int argc, char **argv)
    */
     ros::NodeHandle n;
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
-    status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",1, &Status_Pixhawk_Callback);
+    status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",10, &Status_Pixhawk_Callback);
 
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;

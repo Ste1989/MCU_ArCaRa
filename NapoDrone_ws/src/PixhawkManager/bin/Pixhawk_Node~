@@ -96,6 +96,7 @@ def disarm_the_vehicle():
    
 
    #possibile disarmalo solo se  landed
+   print current_status
    if current_status == status_px4.LANDED:
    	vehicle.armed = False
     	# Confirm vehicle not armed 
@@ -115,7 +116,7 @@ def disarm_the_vehicle():
 #						     #
 #######################################################
 def arm_and_takeoff():
-   target_altitude = 2
+   target_altitude = 1
    #arma il veciolo
    arm_the_vehicle()
 
