@@ -17,9 +17,6 @@ status_px4 = enum(CONNECTING=0,CONNECTED=1, ARMABLE=2, NOT_ARMABLE=3, ARMED=4, T
 cmd_request = enum(NO_REQ=0,ARM=1,DISARM=2,TAKEOFF=3,LAND=4,RTL=5, EMERGENCY_STOP=6)
 #possibili parametri da cambiare
 param_request = enum(NO_PARAM=0,ALT_TAKEOFF=1)
-#possibili modi di guida
-mode_request = enum(NO_MODE=0,STABILIZE=1,ALT_HOLD=2, LOITER=3,AUTO=4,ACRO=5,SPORT=6,DRIFT=7,GUIDED=8,CIRCLE=9,POS_HOLD=10,BRAKE=11,FOLLOW_ME=12,SIMPLE_SUPER=13)
-
 
 #variabili globali
 takeoff_altitudine = 1
@@ -69,56 +66,6 @@ def callback_cmd(cmd_req):
 	emergency_stop()
 #######################################################
 #						     #
-#  callback mode	    			     #
-#						     #
-#######################################################
-def callback_mode(mode_req):
-   print "ricevuto una richiesta di modo di guida"
-
-   if mode_req.data == mode_request.NO_MODE:
-   	print "No mode request.\n"
-
-   elif mode_req.data == mode_request.STABILIZE:
-        vehicle.mode = VehicleMode("STABILIZE")
-
-   elif mode_req.data == mode_request.ALT_HOLD:
-        vehicle.mode = VehicleMode("ALT_HOLD")
-
-   elif mode_req.data == mode_request.LOITER:
-        vehicle.mode = VehicleMode("LOITER")
-
-   elif mode_req.data == mode_request.AUTO:
-        vehicle.mode = VehicleMode("AUTO")
-
-   elif mode_req.data == mode_request.ACRO:
-        vehicle.mode = VehicleMode("ACRO")
-
-   elif mode_req.data == mode_request.SPORT:
-        vehicle.mode = VehicleMode("SPORT")
-
-   elif mode_req.data == mode_request.DRIFT:
-        vehicle.mode = VehicleMode("DRIFT")
-
-   elif mode_req.data == mode_request.GUIDED:
-        vehicle.mode = VehicleMode("GUIDED")
-
-   elif mode_req.data == mode_request.CIRCLE:
-        vehicle.mode = VehicleMode("CIRLE")
-
-   elif mode_req.data == mode_request.POS_HOLD:
-        vehicle.mode = VehicleMode("POS_HOLD")
-
-   elif mode_req.data == mode_request.BRAKE:
-        vehicle.mode = VehicleMode("BRAKE")
-
-   elif mode_req.data == mode_request.FOLLOW_ME:
-        vehicle.mode = VehicleMode("FOLLOW_ME")
-
-   elif mode_req.data == mode_request.SIMPLE_SUPER:
-        vehicle.mode = VehicleMode("SIMPLE_SUPER")
-
-#######################################################
-#						     #
 #  arm the vehicle        			     #
 #						     #
 #######################################################
@@ -130,7 +77,7 @@ def arm_the_vehicle():
    if  vehicle.is_armable:
     print "Arming motors"
     # Copter should arm in GUIDED mode
-    #vehicle.mode = VehicleMode("GUIDED")
+    vehicle.mode = VehicleMode("GUIDED")
     vehicle.armed = True    
 
     # Confirm vehicle armed before attempting to take off
@@ -323,7 +270,6 @@ if __name__ == '__main__':
 
     #dichiaro un subscriber
     rospy.Subscriber("/napodrone/cmd_request", Int32, callback_cmd)
-    rospy.Subscriber("/napodrone/mode_request", Int32, callback_mode)
     rospy.Subscriber('napodrone/param_request', Param, callback_param)
 
     #leggo i parametri dal launch file

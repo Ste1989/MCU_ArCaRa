@@ -28,28 +28,26 @@
 //ricevuti da PC  sulla seriale 2 (Xbee)
 //
 /************************************************************/
-//numero di Header che deve avere il pacchetto che ricevo
-//1-comando contenente il comando di start
+//1-comandi
 //     _________________________________________________________________
-//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_ARM       |
-//     _________________________________________________________________
-//2-comando contenente il comando di strat e stop
-//     _______________________________________________________________
-//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_TAKEOFF   |
-//     ________________________________________________________________
-//     _______________________________________________________________
-//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_DISARM    |
-//     ________________________________________________________________
-//     _______________________________________________________________
-//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD_LAND    |
-//     ________________________________________________________________
+//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_CMD   | PAYLOAD x1 BYETS  |
+//     __________________________________________________________________
+//1-param
+//     ___________________________________________________________________
+//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_PARAM   | PAYLOAD x4        |
+//     ___________________________________________________________________
+//3-copter guided mode
+//     ___________________________________________________________________
+//     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_MODE   | PAYLOAD x1        |
+//     ___________________________________________________________________
+
 #define HEADER_BYTES  2
-#define NBYTES_PAYLOAD_CMD 2
-#define NBYTES_PAYLOAD_PARAM 5
 #define HEADER_CMD_A  (int)0xAB
 #define HEADER_CMD_B (int)0x1B
+
+#define NBYTES_PAYLOAD_CMD 2
 #define PAYLOAD_CMD (int)0xF2
-#define PAYLOAD_PARAM (int)0xF3
+//lista comandi
 #define PAYLOAD_ARM (int)0x80
 #define PAYLOAD_DISARM (int)0x81
 #define PAYLOAD_TAKEOFF (int)0x82
@@ -57,9 +55,31 @@
 #define PAYLOAD_RTL (int)0x84
 #define PAYLOAD_EMERGENCYSTOP (int)0x85
 
-
+#define NBYTES_PAYLOAD_PARAM 5
+#define PAYLOAD_PARAM (int)0xF3
 //lista parametri che posso inviare
 #define PARAM_ALT_TAKEOFF (int)0x10
+
+
+
+
+#define NBYTES_PAYLOAD_MODE 2
+#define PAYLOAD_MODE (int)0xF1
+//lista parametri che posso inviare
+#define MODE_STABILIZE (int)0x50
+#define MODE_ALT_HOLD (int)0x51
+#define MODE_LOITER (int)0x52
+#define MODE_AUTO (int)0x53
+#define MODE_ACRO (int)0x54
+#define MODE_SPORT (int)0x55
+#define MODE_DRIFT (int)0x56
+#define MODE_GUIDED (int)0x57
+#define MODE_CIRCLE (int)0x58
+#define MODE_POS_HOLD (int)0x59
+#define MODE_BRAKE (int)0x5A
+#define MODE_FOLLOW_ME (int)0x5B
+#define MODE_SIMPLE_SUPER (int)0x5C
+
 
 
 int count = 0;
@@ -96,6 +116,25 @@ typedef enum{
 cmd_request cmd_msg;
 cmd_request cmd_msg_last;
 
+typedef enum{
+    NO_MODE,
+    STABILIZE,
+    ALT_HOLD,
+    LOITER,
+    AUTO,
+    ACRO,
+    SPORT,
+    DRIFT,
+    GUIDED,
+    CIRCLE,
+    POS_HOLD,
+    BRAKE,
+    FOLLOW_ME,
+    SIMPLE_SUPER,
+} mode_request;
+//variabile per la memorizzazione dello richiesta effettuata
+mode_request mode_msg;
+
 
 
 typedef enum{
@@ -109,11 +148,14 @@ typedef enum{
     HEADER_2,
     PAYLOAD_1_1,
     PAYLOAD_1_2,
+
     PAYLOAD_2_2,
     PAYLOAD_2_3,
     PAYLOAD_2_4,
     PAYLOAD_2_5,
     PAYLOAD_2_6,
+
+    PAYLOAD_3_2,
 } waiting_msg;
 
 //variabile per la memorizzazione dello stato della macchina a stati
@@ -130,6 +172,7 @@ ros::Subscriber status_topic;
 //ros topic request
 ros::Publisher req_topic;
 ros::Publisher param_topic;
+ros::Publisher mode_topic;
 //++++++++++++++++++++
 char new_packet = 0;
 
@@ -180,15 +223,17 @@ void parser_mess(unsigned char buffer){
                 state_msg=PAYLOAD_1_2;
             else if(buffer == PAYLOAD_PARAM)
                 state_msg=PAYLOAD_2_2;
+            else if(buffer == PAYLOAD_MODE)
+                state_msg == PAYLOAD_3_2;
             break;
 
 
+            /*********************************************************/
+            //PCCHETTO CONTENTENTE UN COMANDO
         case PAYLOAD_1_2:
             coda_recv_seriale.push(buffer);
             //notifico che c'è un nuovo pacchetto da decodificare
             new_packet = 1;
-            /*count ++;
-            cout << "RICEVUI "<<count << endl;*/
             state_msg=HEADER_1;
             break;
 
@@ -219,7 +264,14 @@ void parser_mess(unsigned char buffer){
             new_packet = 1;
             state_msg=HEADER_1;
             break;
-
+            /*********************************************************/
+            //PCCHETTO CONTENTENTE UN MODO
+        case PAYLOAD_3_2:
+            coda_recv_seriale.push(buffer);
+            //notifico che c'è un nuovo pacchetto da decodificare
+            new_packet = 1;
+            state_msg=HEADER_1;
+            break;
 
 
 
@@ -310,10 +362,63 @@ void decode_packet()
                 }
 
             }else
-            {   if(coda_recv_seriale.size() > 0)
+            {
+                if(coda_recv_seriale.front() == PAYLOAD_MODE && coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
                 {
-                    cout << "PACCHETTO NON RICONOSCIUTO" << endl;
                     coda_recv_seriale.pop();
+                    switch(coda_recv_seriale.front())
+                    {
+                        case MODE_ACRO:
+                            mode_msg = ACRO;
+                            break;
+                        case MODE_ALT_HOLD:
+                            mode_msg = ALT_HOLD;
+                            break;
+                        case MODE_AUTO:
+                            mode_msg = AUTO;
+                            break;
+                        case MODE_BRAKE:
+                            mode_msg = BRAKE;
+                            break;
+                        case MODE_CIRCLE:
+                            mode_msg = CIRCLE;
+                            break;
+                        case MODE_DRIFT:
+                            mode_msg = DRIFT;
+                            break;
+                        case MODE_FOLLOW_ME:
+                            mode_msg = FOLLOW_ME;
+                            break;
+                        case MODE_GUIDED:
+                            mode_msg = GUIDED;
+                            break;
+                        case MODE_LOITER:
+                            mode_msg = LOITER;
+                            break;
+                    case MODE_POS_HOLD:
+                            mode_msg = POS_HOLD;
+                            break;
+                        case MODE_SIMPLE_SUPER:
+                            mode_msg = SIMPLE_SUPER;
+                            break;
+                        case MODE_SPORT:
+                            mode_msg = SPORT;
+                            break;
+                        case MODE_STABILIZE:
+                            mode_msg = STABILIZE;
+                            break;
+
+                    }
+
+
+                }else{
+                    if(coda_recv_seriale.size() > 0)
+                    {
+                        cout << "PACCHETTO NON RICONOSCIUTO" << endl;
+                        coda_recv_seriale.pop();
+                    }
+
+
                 }
 
             }
@@ -429,6 +534,19 @@ void check_send_request()
         param_topic.publish(msg);
 
         param_msg = NO_PARAM;
+
+    }
+     /********MODO GUIDA**********************************************/
+    if(mode_msg != NO_MODE)
+    {
+        //preparo la struttura dati
+        std_msgs::Int32 msg;
+        //riempio la struttura dati
+        msg.data = mode_msg;
+        //pubblico sul topc
+        mode_topic.publish(msg);
+
+        mode_msg = NO_MODE;
 
     }
 }
@@ -697,7 +815,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
     param_topic = n.advertise<serial_manager::Param>("napodrone/param_request", 1);
-
+    mode_topic = n.advertise<std_msgs::Int32>("napodrone/mode_request", 1);
     status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",10, &Status_Pixhawk_Callback);
 
     //leggo i parametri specificati nel launch file
