@@ -96,7 +96,6 @@ def disarm_the_vehicle():
    
 
    #possibile disarmalo solo se  landed
-   print current_status
    if current_status == status_px4.LANDED:
    	vehicle.armed = False
     	# Confirm vehicle not armed 
@@ -287,6 +286,7 @@ if __name__ == '__main__':
     current_status = status_px4.ARMABLE
 
     while not rospy.is_shutdown():
+	print 'current status : %s' % current_status    
 	rate.sleep()
 
 

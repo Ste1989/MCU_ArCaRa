@@ -286,6 +286,7 @@ if __name__ == '__main__':
     current_status = status_px4.ARMABLE
 
     while not rospy.is_shutdown():
+	print 'current status : %s' % current_status    
 	rate.sleep()
 
 

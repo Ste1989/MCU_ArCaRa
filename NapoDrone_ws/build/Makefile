@@ -270,6 +270,19 @@ SerialManager/fast:
 .PHONY : SerialManager/fast
 
 #=============================================================================
+# Target rules for targets named _serial_manager_generate_messages_check_deps_Param
+
+# Build rule for target.
+_serial_manager_generate_messages_check_deps_Param: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _serial_manager_generate_messages_check_deps_Param
+.PHONY : _serial_manager_generate_messages_check_deps_Param
+
+# fast build rule for target.
+_serial_manager_generate_messages_check_deps_Param/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/build.make SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/build
+.PHONY : _serial_manager_generate_messages_check_deps_Param/fast
+
+#=============================================================================
 # Target rules for targets named roscpp_generate_messages_cpp
 
 # Build rule for target.
@@ -348,6 +361,97 @@ rosgraph_msgs_generate_messages_py/fast:
 .PHONY : rosgraph_msgs_generate_messages_py/fast
 
 #=============================================================================
+# Target rules for targets named serial_manager_gencpp
+
+# Build rule for target.
+serial_manager_gencpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial_manager_gencpp
+.PHONY : serial_manager_gencpp
+
+# fast build rule for target.
+serial_manager_gencpp/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/serial_manager_gencpp.dir/build.make SerialManager/CMakeFiles/serial_manager_gencpp.dir/build
+.PHONY : serial_manager_gencpp/fast
+
+#=============================================================================
+# Target rules for targets named serial_manager_generate_messages
+
+# Build rule for target.
+serial_manager_generate_messages: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial_manager_generate_messages
+.PHONY : serial_manager_generate_messages
+
+# fast build rule for target.
+serial_manager_generate_messages/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages.dir/build
+.PHONY : serial_manager_generate_messages/fast
+
+#=============================================================================
+# Target rules for targets named serial_manager_generate_messages_cpp
+
+# Build rule for target.
+serial_manager_generate_messages_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial_manager_generate_messages_cpp
+.PHONY : serial_manager_generate_messages_cpp
+
+# fast build rule for target.
+serial_manager_generate_messages_cpp/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/build
+.PHONY : serial_manager_generate_messages_cpp/fast
+
+#=============================================================================
+# Target rules for targets named serial_manager_generate_messages_lisp
+
+# Build rule for target.
+serial_manager_generate_messages_lisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial_manager_generate_messages_lisp
+.PHONY : serial_manager_generate_messages_lisp
+
+# fast build rule for target.
+serial_manager_generate_messages_lisp/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/build
+.PHONY : serial_manager_generate_messages_lisp/fast
+
+#=============================================================================
+# Target rules for targets named serial_manager_generate_messages_py
+
+# Build rule for target.
+serial_manager_generate_messages_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial_manager_generate_messages_py
+.PHONY : serial_manager_generate_messages_py
+
+# fast build rule for target.
+serial_manager_generate_messages_py/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/build
+.PHONY : serial_manager_generate_messages_py/fast
+
+#=============================================================================
+# Target rules for targets named serial_manager_genlisp
+
+# Build rule for target.
+serial_manager_genlisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial_manager_genlisp
+.PHONY : serial_manager_genlisp
+
+# fast build rule for target.
+serial_manager_genlisp/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/serial_manager_genlisp.dir/build.make SerialManager/CMakeFiles/serial_manager_genlisp.dir/build
+.PHONY : serial_manager_genlisp/fast
+
+#=============================================================================
+# Target rules for targets named serial_manager_genpy
+
+# Build rule for target.
+serial_manager_genpy: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 serial_manager_genpy
+.PHONY : serial_manager_genpy
+
+# fast build rule for target.
+serial_manager_genpy/fast:
+	$(MAKE) -f SerialManager/CMakeFiles/serial_manager_genpy.dir/build.make SerialManager/CMakeFiles/serial_manager_genpy.dir/build
+.PHONY : serial_manager_genpy/fast
+
+#=============================================================================
 # Target rules for targets named std_msgs_generate_messages_cpp
 
 # Build rule for target.
@@ -421,13 +525,21 @@ help:
 	@echo "... gtest"
 	@echo "... gtest_main"
 	@echo "... roscpp_generate_messages_lisp"
+	@echo "... serial_manager_generate_messages_lisp"
+	@echo "... serial_manager_genpy"
 	@echo "... std_msgs_generate_messages_cpp"
 	@echo "... SerialManager"
+	@echo "... serial_manager_generate_messages"
 	@echo "... roscpp_generate_messages_cpp"
 	@echo "... rosgraph_msgs_generate_messages_py"
+	@echo "... serial_manager_genlisp"
+	@echo "... serial_manager_generate_messages_cpp"
 	@echo "... std_msgs_generate_messages_lisp"
+	@echo "... serial_manager_gencpp"
 	@echo "... rosgraph_msgs_generate_messages_cpp"
+	@echo "... serial_manager_generate_messages_py"
 	@echo "... roscpp_generate_messages_py"
+	@echo "... _serial_manager_generate_messages_check_deps_Param"
 	@echo "... std_msgs_generate_messages_py"
 	@echo "... rosgraph_msgs_generate_messages_lisp"
 	@echo "... _catkin_empty_exported_target"

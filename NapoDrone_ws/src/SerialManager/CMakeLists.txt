@@ -4,7 +4,7 @@ project(serial_manager)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp )
+find_package(catkin REQUIRED COMPONENTS roscpp  message_generation)
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -20,8 +20,6 @@ find_package(Boost REQUIRED COMPONENTS thread)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-  DEPENDS system_lib)
 
 ###########
 ## Build ##
@@ -39,10 +37,19 @@ include_directories(
 )
 
 
-
+add_message_files(
+  FILES
+  Param.msg
+)
+generate_messages()
 add_executable(SerialManager src/rs232.cpp)
 target_link_libraries(SerialManager ${catkin_LIBRARIES})
 
 
 
-catkin_package()
+
+catkin_package( 
+	DEPENDS system_lib
+	CATKIN_DEPENDS message_runtime
+	)
+

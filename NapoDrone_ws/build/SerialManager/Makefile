@@ -167,6 +167,20 @@ SerialManager/fast:
 .PHONY : SerialManager/fast
 
 # Convenience name for target.
+SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/rule
+.PHONY : SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/rule
+
+# Convenience name for target.
+_serial_manager_generate_messages_check_deps_Param: SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/rule
+.PHONY : _serial_manager_generate_messages_check_deps_Param
+
+# fast build rule for target.
+_serial_manager_generate_messages_check_deps_Param/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/build.make SerialManager/CMakeFiles/_serial_manager_generate_messages_check_deps_Param.dir/build
+.PHONY : _serial_manager_generate_messages_check_deps_Param/fast
+
+# Convenience name for target.
 SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/rule:
 	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 .PHONY : SerialManager/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
@@ -251,6 +265,104 @@ rosgraph_msgs_generate_messages_py/fast:
 .PHONY : rosgraph_msgs_generate_messages_py/fast
 
 # Convenience name for target.
+SerialManager/CMakeFiles/serial_manager_gencpp.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/serial_manager_gencpp.dir/rule
+.PHONY : SerialManager/CMakeFiles/serial_manager_gencpp.dir/rule
+
+# Convenience name for target.
+serial_manager_gencpp: SerialManager/CMakeFiles/serial_manager_gencpp.dir/rule
+.PHONY : serial_manager_gencpp
+
+# fast build rule for target.
+serial_manager_gencpp/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/serial_manager_gencpp.dir/build.make SerialManager/CMakeFiles/serial_manager_gencpp.dir/build
+.PHONY : serial_manager_gencpp/fast
+
+# Convenience name for target.
+SerialManager/CMakeFiles/serial_manager_generate_messages.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/serial_manager_generate_messages.dir/rule
+.PHONY : SerialManager/CMakeFiles/serial_manager_generate_messages.dir/rule
+
+# Convenience name for target.
+serial_manager_generate_messages: SerialManager/CMakeFiles/serial_manager_generate_messages.dir/rule
+.PHONY : serial_manager_generate_messages
+
+# fast build rule for target.
+serial_manager_generate_messages/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages.dir/build
+.PHONY : serial_manager_generate_messages/fast
+
+# Convenience name for target.
+SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/rule
+.PHONY : SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/rule
+
+# Convenience name for target.
+serial_manager_generate_messages_cpp: SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/rule
+.PHONY : serial_manager_generate_messages_cpp
+
+# fast build rule for target.
+serial_manager_generate_messages_cpp/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages_cpp.dir/build
+.PHONY : serial_manager_generate_messages_cpp/fast
+
+# Convenience name for target.
+SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/rule
+.PHONY : SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/rule
+
+# Convenience name for target.
+serial_manager_generate_messages_lisp: SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/rule
+.PHONY : serial_manager_generate_messages_lisp
+
+# fast build rule for target.
+serial_manager_generate_messages_lisp/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages_lisp.dir/build
+.PHONY : serial_manager_generate_messages_lisp/fast
+
+# Convenience name for target.
+SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/rule
+.PHONY : SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/rule
+
+# Convenience name for target.
+serial_manager_generate_messages_py: SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/rule
+.PHONY : serial_manager_generate_messages_py
+
+# fast build rule for target.
+serial_manager_generate_messages_py/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/build.make SerialManager/CMakeFiles/serial_manager_generate_messages_py.dir/build
+.PHONY : serial_manager_generate_messages_py/fast
+
+# Convenience name for target.
+SerialManager/CMakeFiles/serial_manager_genlisp.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/serial_manager_genlisp.dir/rule
+.PHONY : SerialManager/CMakeFiles/serial_manager_genlisp.dir/rule
+
+# Convenience name for target.
+serial_manager_genlisp: SerialManager/CMakeFiles/serial_manager_genlisp.dir/rule
+.PHONY : serial_manager_genlisp
+
+# fast build rule for target.
+serial_manager_genlisp/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/serial_manager_genlisp.dir/build.make SerialManager/CMakeFiles/serial_manager_genlisp.dir/build
+.PHONY : serial_manager_genlisp/fast
+
+# Convenience name for target.
+SerialManager/CMakeFiles/serial_manager_genpy.dir/rule:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/serial_manager_genpy.dir/rule
+.PHONY : SerialManager/CMakeFiles/serial_manager_genpy.dir/rule
+
+# Convenience name for target.
+serial_manager_genpy: SerialManager/CMakeFiles/serial_manager_genpy.dir/rule
+.PHONY : serial_manager_genpy
+
+# fast build rule for target.
+serial_manager_genpy/fast:
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f SerialManager/CMakeFiles/serial_manager_genpy.dir/build.make SerialManager/CMakeFiles/serial_manager_genpy.dir/build
+.PHONY : serial_manager_genpy/fast
+
+# Convenience name for target.
 SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule:
 	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 .PHONY : SerialManager/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
@@ -324,18 +436,26 @@ help:
 	@echo "... depend"
 	@echo "... roscpp_generate_messages_lisp"
 	@echo "... install/strip"
+	@echo "... serial_manager_generate_messages_lisp"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... install"
+	@echo "... serial_manager_genpy"
 	@echo "... std_msgs_generate_messages_cpp"
 	@echo "... SerialManager"
+	@echo "... serial_manager_generate_messages"
 	@echo "... roscpp_generate_messages_cpp"
 	@echo "... rosgraph_msgs_generate_messages_py"
 	@echo "... list_install_components"
+	@echo "... serial_manager_genlisp"
+	@echo "... serial_manager_generate_messages_cpp"
 	@echo "... std_msgs_generate_messages_lisp"
 	@echo "... test"
+	@echo "... serial_manager_gencpp"
 	@echo "... rosgraph_msgs_generate_messages_cpp"
+	@echo "... serial_manager_generate_messages_py"
 	@echo "... roscpp_generate_messages_py"
+	@echo "... _serial_manager_generate_messages_check_deps_Param"
 	@echo "... std_msgs_generate_messages_py"
 	@echo "... rosgraph_msgs_generate_messages_lisp"
 	@echo "... install/local"

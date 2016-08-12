@@ -21,6 +21,7 @@ set(CMAKE_TARGET_LINKED_INFO_FILES
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
+  "/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/devel/include"
   "/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager/include"
   "/opt/ros/indigo/include"
   )

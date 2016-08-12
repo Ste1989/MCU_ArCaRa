@@ -7,6 +7,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Int32.h"
+#include "serial_manager/Param.h"
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
@@ -44,9 +45,11 @@
 //     ________________________________________________________________
 #define HEADER_BYTES  2
 #define NBYTES_PAYLOAD_CMD 2
+#define NBYTES_PAYLOAD_PARAM 5
 #define HEADER_CMD_A  (int)0xAB
 #define HEADER_CMD_B (int)0x1B
 #define PAYLOAD_CMD (int)0xF2
+#define PAYLOAD_PARAM (int)0xF3
 #define PAYLOAD_ARM (int)0x80
 #define PAYLOAD_DISARM (int)0x81
 #define PAYLOAD_TAKEOFF (int)0x82
@@ -54,10 +57,13 @@
 #define PAYLOAD_RTL (int)0x84
 #define PAYLOAD_EMERGENCYSTOP (int)0x85
 
-int count = 0;
-//numero di interi (32 bit) che ha il pacchetto che ricevo (2 nel progetto di avizzano)
-#define PAYLOAD_NBYTES   2
 
+//lista parametri che posso inviare
+#define PARAM_ALT_TAKEOFF (int)0x10
+
+
+int count = 0;
+double param = 0.0;
 
 //dichiaro i possibili stati dell'autopilota
 typedef enum{
@@ -90,11 +96,24 @@ typedef enum{
 cmd_request cmd_msg;
 cmd_request cmd_msg_last;
 
+
+
+typedef enum{
+    NO_PARAM,
+    ALT_TAKEOFF,
+} param_request;
+param_request param_msg;
+
 typedef enum{
     HEADER_1,
     HEADER_2,
     PAYLOAD_1_1,
     PAYLOAD_1_2,
+    PAYLOAD_2_2,
+    PAYLOAD_2_3,
+    PAYLOAD_2_4,
+    PAYLOAD_2_5,
+    PAYLOAD_2_6,
 } waiting_msg;
 
 //variabile per la memorizzazione dello stato della macchina a stati
@@ -104,11 +123,13 @@ std::queue<unsigned char> coda_recv_seriale;
 //bufferi di trasmissione
 std::queue<unsigned char> coda_send_seriale;
 
-//ros topic status
+//ros Subscriber
 ros::Subscriber status_topic;
+
 
 //ros topic request
 ros::Publisher req_topic;
+ros::Publisher param_topic;
 //++++++++++++++++++++
 char new_packet = 0;
 
@@ -155,7 +176,10 @@ void parser_mess(unsigned char buffer){
 
         case PAYLOAD_1_1:
             coda_recv_seriale.push(buffer);
-            state_msg=PAYLOAD_1_2;
+            if(buffer == PAYLOAD_CMD)
+                state_msg=PAYLOAD_1_2;
+            else if(buffer == PAYLOAD_PARAM)
+                state_msg=PAYLOAD_2_2;
             break;
 
 
@@ -167,101 +191,65 @@ void parser_mess(unsigned char buffer){
             cout << "RICEVUI "<<count << endl;*/
             state_msg=HEADER_1;
             break;
+
+            /*********************************************************/
+            //PCCHETTO CONTENTENTE UN PARAMETRO (INT 32)
+        case PAYLOAD_2_2:
+            coda_recv_seriale.push(buffer);
+            state_msg=PAYLOAD_2_3;
+            break;
+
+        case PAYLOAD_2_3:
+            coda_recv_seriale.push(buffer);
+            state_msg=PAYLOAD_2_4;
+            break;
+
+        case PAYLOAD_2_4:
+            coda_recv_seriale.push(buffer);
+            state_msg=PAYLOAD_2_5;
+            break;
+
+        case PAYLOAD_2_5:
+            coda_recv_seriale.push(buffer);
+            state_msg=PAYLOAD_2_6;
+            break;
+
+        case PAYLOAD_2_6:
+            coda_recv_seriale.push(buffer);
+            new_packet = 1;
+            state_msg=HEADER_1;
+            break;
+
+
+
+
     }
 
     return;
 }
+
 /*****************************************************************/
 /*                                                               */
-/*                 INIT SERIALE                                  */
+/*                 DECODE PAYLOAD                                */
 /*****************************************************************/
-int set_interface_attribs (int fd, int speed, int parity)
+double decode_payload()
 {
-        struct termios tty;
-        memset (&tty, 0, sizeof tty);
-        if (tcgetattr (fd, &tty) != 0)
-        {
-		printf("error %d from tcgetattr", errno) ;              
-		//error_message("error %d from tcgetattr", errno);
-                return -1;
-        }
+    //in coda_recv_seriale ho 4 bytes da decodificare
+    int decode;
+    decode = (long int)coda_recv_seriale.front();
+    coda_recv_seriale.pop();
+    decode = decode | (0x0000FF00 &(((long int)coda_recv_seriale.front())<<8));
+    coda_recv_seriale.pop();
+    decode = decode | (0x00FF0000 &(((long int)coda_recv_seriale.front())<<16));
+    coda_recv_seriale.pop();
+    decode = decode | (0xFF000000 &(((long int)coda_recv_seriale.front())<<24));
+    coda_recv_seriale.pop();
 
-        cfsetospeed (&tty, speed);
-        cfsetispeed (&tty, speed);
-
-        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
-        // disable IGNBRK for mismatched speed tests; otherwise receive break
-        // as \000 chars
-        tty.c_iflag &= ~IGNBRK;         // disable break processing
-        tty.c_lflag = 0;                // no signaling chars, no echo,
-                                        // no canonical processing
-        tty.c_oflag = 0;                // no remapping, no delays
-        tty.c_cc[VMIN]  = 0;            // read doesn't block
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
-
-        tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
-                                        // enable reading
-        tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
-        tty.c_cflag |= parity;
-        tty.c_cflag &= ~CSTOPB;
-        tty.c_cflag &= ~CRTSCTS;
-
-        if (tcsetattr (fd, TCSANOW, &tty) != 0)
-        {
-                printf("error %d from tcsetattr", errno);
-                return -1;
-        }
-        return 0;
+    double param_ = (double)decode / 100;
+    cout << "ricevuto parametro : " << param_ << endl;
+    return param_;
 }
 
-void set_blocking (int fd, int should_block)
-{
-        struct termios tty;
-        memset (&tty, 0, sizeof tty);
-        if (tcgetattr (fd, &tty) != 0)
-        {
-                printf("error %d from tggetattr", errno);
-                return;
-        }
-
-        tty.c_cc[VMIN]  = should_block ? 1 : 0;
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-        if (tcsetattr (fd, TCSANOW, &tty) != 0)
-                printf("error %d setting term attributes", errno);
-}
-
-
-int serial_init(int* fd,const char* seriale_dev)
-{
-
-
-    /* apro la porta seriale*/
-    const char * portname = seriale_dev;
-
-     *fd = open(portname, O_RDWR | O_NOCTTY | O_SYNC);
-    if (*fd < 0)
-    {
-        printf("error %d opening %s: %s", errno, portname, strerror (errno));
-        return -1;
-    }
-    /*imposto baud rate*/
-    set_interface_attribs (*fd, B57600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
-    set_blocking (*fd, 0);
-
-
-    /*inizializzazione macchina a stati*/
-    //inizializzazone della macchina a stati con il primo stato
-    state_msg = HEADER_1;
-    //nessun nuovo pacchetto
-    new_packet = 0;
-    //nessua richiesta di comando
-    cmd_msg = NO_REQ;
-    cmd_msg_last = NO_REQ;
-    return 1;
-}
 /*****************************************************************/
 /*                                                               */
 /*                 DECODE PACKET                                 */
@@ -278,28 +266,57 @@ void decode_packet()
             switch(coda_recv_seriale.front()){
                 case PAYLOAD_ARM:
                     cmd_msg = ARM;
+                    coda_recv_seriale.pop();
                     break;
                 case PAYLOAD_DISARM:
                     cmd_msg = DISARM;
+                    coda_recv_seriale.pop();
                     break;
                 case PAYLOAD_TAKEOFF:
                     cmd_msg = TAKEOFF;
+                    coda_recv_seriale.pop();
                     break;
                 case PAYLOAD_LAND:
                     cmd_msg = LAND;
+                    coda_recv_seriale.pop();
                     break;
                 case PAYLOAD_RTL:
                     cmd_msg = RTL;
+                    coda_recv_seriale.pop();
                     break;
                 case PAYLOAD_EMERGENCYSTOP:
                     cmd_msg = EMERGENCY_STOP;
+                    coda_recv_seriale.pop();
                     break;
 
             }
 
         }else
         {
-            coda_recv_seriale.pop();
+            if(coda_recv_seriale.front() == PAYLOAD_PARAM && coda_recv_seriale.size() >= NBYTES_PAYLOAD_PARAM)
+            {
+                coda_recv_seriale.pop();
+            //in coda_recv_seriale ho 4 bytes che devono essere convertiti in un intero
+                //il primo bytes mi dice che parametro si tratta
+                switch(coda_recv_seriale.front())
+                {
+                    case PARAM_ALT_TAKEOFF:
+
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = ALT_TAKEOFF;
+                        break;
+
+                }
+
+            }else
+            {   if(coda_recv_seriale.size() > 0)
+                {
+                    cout << "PACCHETTO NON RICONOSCIUTO" << endl;
+                    coda_recv_seriale.pop();
+                }
+
+            }
         }
     }
 
@@ -374,6 +391,7 @@ void read_from_serial(int* serial)
 /*****************************************************************/
 void check_send_request()
 {
+    /*COMANDI*********************************************/
     if(cmd_msg != NO_REQ && cmd_msg != cmd_msg_last)
     {
         //preparo la struttura dati
@@ -396,6 +414,21 @@ void check_send_request()
         cmd_msg_last = cmd_msg;
         //resetto cmd_msg
         cmd_msg = NO_REQ;
+
+    }
+
+    /********PARAMETRI**********************************************/
+    if(param_msg != NO_PARAM)
+    {
+        //preparo la struttura dati
+        serial_manager::Param msg;
+        //riempio la struttura dati
+        msg.header = 1;
+        msg.param = param;
+        //pubblico sul topc
+        param_topic.publish(msg);
+
+        param_msg = NO_PARAM;
 
     }
 }
@@ -466,7 +499,7 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
             coda_send_seriale.push('M');
             coda_send_seriale.push('E');
             coda_send_seriale.push('D');
-            coda_send_seriale.push('.');
+            coda_send_seriale.push('\n');
             break;
         case 5:
             current_status_px4 = TAKE_OFF;
@@ -546,6 +579,100 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
 }
 /*****************************************************************/
 /*                                                               */
+/*                 INIT SERIALE                                  */
+/*****************************************************************/
+int set_interface_attribs (int fd, int speed, int parity)
+{
+        struct termios tty;
+        memset (&tty, 0, sizeof tty);
+        if (tcgetattr (fd, &tty) != 0)
+        {
+        printf("error %d from tcgetattr", errno) ;
+        //error_message("error %d from tcgetattr", errno);
+                return -1;
+        }
+
+        cfsetospeed (&tty, speed);
+        cfsetispeed (&tty, speed);
+
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+        // disable IGNBRK for mismatched speed tests; otherwise receive break
+        // as \000 chars
+        tty.c_iflag &= ~IGNBRK;         // disable break processing
+        tty.c_lflag = 0;                // no signaling chars, no echo,
+                                        // no canonical processing
+        tty.c_oflag = 0;                // no remapping, no delays
+        tty.c_cc[VMIN]  = 0;            // read doesn't block
+        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+
+        tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
+                                        // enable reading
+        tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+        tty.c_cflag |= parity;
+        tty.c_cflag &= ~CSTOPB;
+        tty.c_cflag &= ~CRTSCTS;
+
+        if (tcsetattr (fd, TCSANOW, &tty) != 0)
+        {
+                printf("error %d from tcsetattr", errno);
+                return -1;
+        }
+        return 0;
+}
+
+void set_blocking (int fd, int should_block)
+{
+        struct termios tty;
+        memset (&tty, 0, sizeof tty);
+        if (tcgetattr (fd, &tty) != 0)
+        {
+                printf("error %d from tggetattr", errno);
+                return;
+        }
+
+        tty.c_cc[VMIN]  = should_block ? 1 : 0;
+        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+        if (tcsetattr (fd, TCSANOW, &tty) != 0)
+                printf("error %d setting term attributes", errno);
+}
+
+
+int serial_init(int* fd,const char* seriale_dev)
+{
+
+
+    /* apro la porta seriale*/
+    const char * portname = seriale_dev;
+
+     *fd = open(portname, O_RDWR | O_NOCTTY | O_SYNC);
+    if (*fd < 0)
+    {
+        printf("error %d opening %s: %s", errno, portname, strerror (errno));
+        return -1;
+    }
+    /*imposto baud rate*/
+    set_interface_attribs (*fd, B57600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+    set_blocking (*fd, 0);
+
+
+    /*inizializzazione macchina a stati*/
+    //inizializzazone della macchina a stati con il primo stato
+    state_msg = HEADER_1;
+    //nessun nuovo pacchetto
+    new_packet = 0;
+    //nessua richiesta di comando
+    cmd_msg = NO_REQ;
+    cmd_msg_last = NO_REQ;
+    //nessun parametro da inviare
+    param_msg = NO_PARAM;
+
+    return 1;
+}
+/*****************************************************************/
+/*                                                               */
 /*                 MAIN                                          */
 /*****************************************************************/
 int main(int argc, char **argv)
@@ -569,6 +696,8 @@ int main(int argc, char **argv)
    */
     ros::NodeHandle n;
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
+    param_topic = n.advertise<serial_manager::Param>("napodrone/param_request", 1);
+
     status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",10, &Status_Pixhawk_Callback);
 
     //leggo i parametri specificati nel launch file

@@ -6,6 +6,22 @@
 
 #IncludeRegexTransform: 
 
+/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/devel/include/serial_manager/Param.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+
 /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager/src/rs232.cpp
 ros/ros.h
 /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager/src/ros/ros.h
@@ -13,6 +29,8 @@ std_msgs/String.h
 /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager/src/std_msgs/String.h
 std_msgs/Int32.h
 /home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager/src/std_msgs/Int32.h
+serial_manager/Param.h
+/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/src/SerialManager/src/serial_manager/Param.h
 errno.h
 -
 termios.h
