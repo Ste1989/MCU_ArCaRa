@@ -224,7 +224,7 @@ void parser_mess(unsigned char buffer){
             else if(buffer == PAYLOAD_PARAM)
                 state_msg=PAYLOAD_2_2;
             else if(buffer == PAYLOAD_MODE)
-                state_msg == PAYLOAD_3_2;
+                state_msg = PAYLOAD_3_2;
             break;
 
 
@@ -308,9 +308,10 @@ double decode_payload()
 /*****************************************************************/
 void decode_packet()
 {
-
+ label:
     while(!coda_recv_seriale.empty())
     {
+
         if(coda_recv_seriale.front() == PAYLOAD_CMD && coda_recv_seriale.size() >= NBYTES_PAYLOAD_CMD)
         {
             coda_recv_seriale.pop();
@@ -342,87 +343,113 @@ void decode_packet()
                     break;
 
             }
+            goto label;
+        }
 
-        }else
+        if(coda_recv_seriale.front() == PAYLOAD_PARAM && coda_recv_seriale.size() >= NBYTES_PAYLOAD_PARAM)
         {
-            if(coda_recv_seriale.front() == PAYLOAD_PARAM && coda_recv_seriale.size() >= NBYTES_PAYLOAD_PARAM)
-            {
-                coda_recv_seriale.pop();
+            coda_recv_seriale.pop();
             //in coda_recv_seriale ho 4 bytes che devono essere convertiti in un intero
-                //il primo bytes mi dice che parametro si tratta
-                switch(coda_recv_seriale.front())
-                {
-                    case PARAM_ALT_TAKEOFF:
-
-                        coda_recv_seriale.pop();
-                        param = decode_payload();
-                        param_msg = ALT_TAKEOFF;
-                        break;
-
-                }
-
-            }else
+            //il primo bytes mi dice che parametro si tratta
+            switch(coda_recv_seriale.front())
             {
-                if(coda_recv_seriale.front() == PAYLOAD_MODE && coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
-                {
+                case PARAM_ALT_TAKEOFF:
+
                     coda_recv_seriale.pop();
-                    switch(coda_recv_seriale.front())
-                    {
-                        case MODE_ACRO:
-                            mode_msg = ACRO;
-                            break;
-                        case MODE_ALT_HOLD:
-                            mode_msg = ALT_HOLD;
-                            break;
-                        case MODE_AUTO:
-                            mode_msg = AUTO;
-                            break;
-                        case MODE_BRAKE:
-                            mode_msg = BRAKE;
-                            break;
-                        case MODE_CIRCLE:
-                            mode_msg = CIRCLE;
-                            break;
-                        case MODE_DRIFT:
-                            mode_msg = DRIFT;
-                            break;
-                        case MODE_FOLLOW_ME:
-                            mode_msg = FOLLOW_ME;
-                            break;
-                        case MODE_GUIDED:
-                            mode_msg = GUIDED;
-                            break;
-                        case MODE_LOITER:
-                            mode_msg = LOITER;
-                            break;
-                    case MODE_POS_HOLD:
-                            mode_msg = POS_HOLD;
-                            break;
-                        case MODE_SIMPLE_SUPER:
-                            mode_msg = SIMPLE_SUPER;
-                            break;
-                        case MODE_SPORT:
-                            mode_msg = SPORT;
-                            break;
-                        case MODE_STABILIZE:
-                            mode_msg = STABILIZE;
-                            break;
-
-                    }
-
-
-                }else{
-                    if(coda_recv_seriale.size() > 0)
-                    {
-                        cout << "PACCHETTO NON RICONOSCIUTO" << endl;
-                        coda_recv_seriale.pop();
-                    }
-
-
-                }
+                    param = decode_payload();
+                    param_msg = ALT_TAKEOFF;
+                    break;
 
             }
+            goto label;
         }
+
+        if(coda_recv_seriale.front() == PAYLOAD_MODE && coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
+        {
+            coda_recv_seriale.pop();
+            switch(coda_recv_seriale.front())
+            {
+                case MODE_ACRO:
+                    mode_msg = ACRO;
+                    coda_recv_seriale.pop();
+                    cout << "ACRO" << endl;
+                    break;
+                case MODE_ALT_HOLD:
+                    mode_msg = ALT_HOLD;
+                    coda_recv_seriale.pop();
+                    cout << "ALT HOLD" << endl;
+                    break;
+                case MODE_AUTO:
+                    mode_msg = AUTO;
+                    coda_recv_seriale.pop();
+                    cout << "AUTO" << endl;
+                    break;
+                case MODE_BRAKE:
+                    mode_msg = BRAKE;
+                    coda_recv_seriale.pop();
+                    cout << "BRAKE" << endl;
+                    break;
+                case MODE_CIRCLE:
+                    mode_msg = CIRCLE;
+                    coda_recv_seriale.pop();
+                    cout << "CIRCLE" << endl;
+                    break;
+                case MODE_DRIFT:
+                    mode_msg = DRIFT;
+                    coda_recv_seriale.pop();
+                    cout << "DRIFT" << endl;
+                    break;
+                case MODE_FOLLOW_ME:
+                    mode_msg = FOLLOW_ME;
+                    coda_recv_seriale.pop();
+                    cout << "FOLLOW ME" << endl;
+                    break;
+                case MODE_GUIDED:
+                    mode_msg = GUIDED;
+                    coda_recv_seriale.pop();
+                    cout << "GUIDED" << endl;
+                    break;
+                case MODE_LOITER:
+                    mode_msg = LOITER;
+                    coda_recv_seriale.pop();
+                    cout << "LOITER" << endl;
+                    break;
+                case MODE_POS_HOLD:
+                    mode_msg = POS_HOLD;
+                    coda_recv_seriale.pop();
+                    cout << "POS HOLD" << endl;
+                    break;
+                case MODE_SIMPLE_SUPER:
+                    mode_msg = SIMPLE_SUPER;
+                    coda_recv_seriale.pop();
+                    cout << "SIMPLE SUP" << endl;
+                    break;
+                case MODE_SPORT:
+                    mode_msg = SPORT;
+                    coda_recv_seriale.pop();
+                    cout << "SPORT" << endl;
+                    break;
+                case MODE_STABILIZE:
+                    mode_msg = STABILIZE;
+                    coda_recv_seriale.pop();
+                    cout << "STAB" << endl;
+                    break;
+
+            }
+            goto label;
+
+        }
+        if(coda_recv_seriale.size() > 0)
+        {
+            cout << "PACCHETTO NON RICONOSCIUTO" << endl;
+            coda_recv_seriale.pop();
+        }
+
+
+
+
+
+
     }
 
 

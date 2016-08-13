@@ -1,8 +1,9 @@
 <launch>
  
 
+
     <node pkg="pixhawk_manager" type="Pixhawk_Node" name="PixhawkManager" output="screen" >
-	<param name="dev" type="string" value="/dev/input/js1" />
+	<param name="dev" type="string" value="/dev/ttyUSB1" />
         <param name="real_vehicle" type="boolean" value="False" />
         <param name="loop_rate_hz" type="int" value="50" />
     </node>

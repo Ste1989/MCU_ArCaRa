@@ -1,6 +1,7 @@
 <launch>
  
 
+
     <node pkg="serial_manager" type="SerialManager" name="SerialManager" output="screen" >
 	<param name="dev" type="string" value="/dev/ttyUSB0" />
     </node>
