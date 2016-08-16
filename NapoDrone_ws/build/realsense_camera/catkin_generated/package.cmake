@@ -1,8 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "realsense_camera")
-set(realsense_camera_VERSION "1.3.0")
-set(realsense_camera_MAINTAINER "Rajvi Jingar <rajvi.jingar@intel.com>, Reagan Lopez <reagan.lopez@intel.com>, Mark Horn <mark.d.horn@intel.com>")
-set(realsense_camera_BUILD_DEPENDS "librealsense" "roscpp" "rostest" "nodelet" "cv_bridge" "image_transport" "camera_info_manager" "tf" "message_generation" "std_msgs" "sensor_msgs" "pcl_ros" "dynamic_reconfigure")
-set(realsense_camera_BUILD_DEPENDS_librealsense_VERSION_GTE "0.9.2")
-set(realsense_camera_RUN_DEPENDS "rgbd_launch" "librealsense" "roscpp" "rostest" "nodelet" "cv_bridge" "image_transport" "camera_info_manager" "tf" "message_generation" "std_msgs" "sensor_msgs" "pcl_ros" "dynamic_reconfigure" "message_runtime")
-set(realsense_camera_DEPRECATED "")
-set(realsense_camera_BUILDTOOL_DEPENDS "catkin")

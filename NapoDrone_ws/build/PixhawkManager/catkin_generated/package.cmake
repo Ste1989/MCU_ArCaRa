@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "pixhawk_manager")
-set(pixhawk_manager_MAINTAINER "stefano <stefano@todo.todo>")
-set(pixhawk_manager_DEPRECATED "")
-set(pixhawk_manager_VERSION "0.0.0")
-set(pixhawk_manager_BUILD_DEPENDS "message_generation" "rospy")
-set(pixhawk_manager_RUN_DEPENDS "rospy")
-set(pixhawk_manager_BUILDTOOL_DEPENDS "catkin")

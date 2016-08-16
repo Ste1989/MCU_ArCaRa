@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "tracking_object")
-set(tracking_object_MAINTAINER "stefano <stefano@todo.todo>")
-set(tracking_object_DEPRECATED "")
-set(tracking_object_VERSION "0.0.0")
-set(tracking_object_BUILD_DEPENDS )
-set(tracking_object_RUN_DEPENDS )
-set(tracking_object_BUILDTOOL_DEPENDS "catkin")
