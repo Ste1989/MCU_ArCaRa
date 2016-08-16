@@ -1,0 +1,20 @@
+sudo apt-get install libusb-1.0-0-dev
+
+git clone https://github.com/IntelRealSense/librealsense.git
+
+scripts/install_glfw3.sh
+
+make && sudo make install
+
+#Video4Linux backend
+sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && udevadm trigger
+
+#update a 4.4
+./scripts/install_dependencies-4.4.sh
+#rebooot
+./scripts/patch-uvcvideo-4.4.sh v4.4-wily   
+
+./scripts/patch-uvcvideo-ubuntu-mainline.sh
+sudo modprobe uvcvideo
+sudo dmesg | tail -n 50
