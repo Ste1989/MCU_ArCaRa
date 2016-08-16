@@ -14,3 +14,4 @@ Avvio del software
 TODO: 
 - You can only arm or disarm in Stabilize, ACRO, AltHold and Loiter mode.
 - interferenza magnetica sulla bussola mettendo altri componenti, come tenerne conto?
+- modalità emergency stop ? (brake)

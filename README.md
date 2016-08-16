@@ -9,7 +9,7 @@ Avvio del software
 1) avviare roscore
 2) avviare il nodo della seriale (controllare che sia su USB0) roslaunch serial_manager SerialManager
 3) avviare il nodo che parla con l'autopilota (controllare che sia su USB1) roslaunch pixhawk_manager PixhawkManager
-
+4) rosrun image_view image_saver per salvare le immagini dalla camera
 
 TODO: 
 - You can only arm or disarm in Stabilize, ACRO, AltHold and Loiter mode.
