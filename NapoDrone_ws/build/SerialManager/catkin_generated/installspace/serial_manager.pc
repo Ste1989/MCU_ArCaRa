@@ -1,8 +1,0 @@
-prefix=/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/install
-
-Name: serial_manager
-Description: Description of serial_manager
-Version: 0.0.0
-Cflags: -I/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/install/include
-Libs: -L/home/stefano/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/install/lib 
-Requires: message_runtime

@@ -1,2 +1,3 @@
-~/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/devel
-~/Progetto_Drone/Odroid_ArCaRa/NapoDrone_ws/build
+#ROS dir
+devel/
+build/

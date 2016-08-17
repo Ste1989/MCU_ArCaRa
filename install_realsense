@@ -1,3 +1,16 @@
+
+###link internet###################################################################################
+#pkg ROS real sense:
+https://github.com/intel-ros/realsense/blob/indigo-devel/realsense_camera/README.md
+#install real sense
+#libreria:
+https://github.com/IntelRealSense/librealsense
+#guida
+https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md
+######################################################################################################
+
+#comandi efettuati per l'installazione
+
 sudo apt-get install libusb-1.0-0-dev
 
 git clone https://github.com/IntelRealSense/librealsense.git
@@ -12,17 +25,15 @@ sudo udevadm control --reload-rules && udevadm trigger
 
 #update a 4.4
 ./scripts/install_dependencies-4.4.sh
-#rebooot
+#rebooot riavvia il dispositivo
 ./scripts/patch-uvcvideo-4.4.sh v4.4-wily   
 
 ./scripts/patch-uvcvideo-ubuntu-mainline.sh
 sudo modprobe uvcvideo
 sudo dmesg | tail -n 50
 
-
-###########################################################################à
-poi scarica la repository del workspace di ros
-
+#poi scarica la repository del workspace di ros
+#git clone ....
 rosdep install --skip-keys=librealsense --from-paths -i PATH_REP
 
 catkin_make
