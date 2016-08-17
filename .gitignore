@@ -1,3 +1,6 @@
 #ROS dir
 Napodrone_ws/devel/
 Napodrone_ws/build/
+
+# Other temporary files
+*.*~
