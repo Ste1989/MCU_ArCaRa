@@ -8,6 +8,7 @@
 - lib real sense
 - opencv
 - ssh e configurare la connessione ethernet
+- ros hector loclization https://github.com/tu-darmstadt-ros-pkg/hector_localization.git
 ------------ 
 # Collogamenti Hardware:
 

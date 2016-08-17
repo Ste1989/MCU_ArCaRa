@@ -40,7 +40,6 @@ sudo modprobe uvcvideo
 
 #poi scarica la repository del workspace di ros
 git clone https://github.com/intel-ros/realsense.git oppure git pull su odroid
-#infine fare l'istruzione:
 rosdep install --skip-keys=librealsense --from-paths -i PATH_REPOSITORY_ROS_PKG
 
 catkin_make
