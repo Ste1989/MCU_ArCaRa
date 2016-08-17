@@ -150,7 +150,7 @@ def arm_the_vehicle():
    if  vehicle.is_armable:
     print "Arming motors"
     # Copter should arm in GUIDED mode
-    #vehicle.mode = VehicleMode("GUIDED")
+    #vehicle.mode = VehicleMode("STABILIZE")
     vehicle.armed = True    
 
     # Confirm vehicle armed before attempting to take off
@@ -176,11 +176,12 @@ def emergency_stop():
    
    global current_status
    global vehicle
-   vehicle.armed = False
+   vehicle.mode = VehicleMode("BRAKE")
+   #vehicle.armed = False
    # Confirm vehicle not armed 
-   while vehicle.armed:      
-   	print " Waiting for disarming..."
-   	time.sleep(1)
+   #while vehicle.armed:      
+   #	print " Waiting for disarming..."
+   #	time.sleep(1)
 
    #informo che il veicolo disarmato
    current_status == status_px4.EMERGENCY_STOP
@@ -196,6 +197,7 @@ def disarm_the_vehicle():
 
    global current_status
    global vehicle
+   vehicle.mode = VehicleMode("LOITER")
    #possibile disarmalo solo se  ARMED
    if current_status == status_px4.ARMED:
    	vehicle.armed = False
@@ -361,8 +363,8 @@ def init_vehicle():
     pub_status.publish(status_px4.ARMABLE)
     current_status = status_px4.ARMABLE
     
-    #di default scelgo che il Copter sia in GUIDED MODE
-    vehicle.mode = VehicleMode("GUIDED")
+    #di default scelgo che il Copter sia in LOITER MODE
+    vehicle.mode = VehicleMode("LOITER")
 #######################################################
 #						     #
 #  MAIN						     #
