@@ -1,5 +1,8 @@
 #GIT
 sudo apt-get install git
+git config --global user.email "stefano.aringhieri@live.it" 
+git config --global user.name "Ste1989" 
+
 
 #SSH
 sudo apt-get update
