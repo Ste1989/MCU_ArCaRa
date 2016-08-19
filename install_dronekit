@@ -1,0 +1,4 @@
+# http://python.dronekit.io/develop/installation.html
+
+sudo apt-get install python-pip python-dev
+sudo pip install dronekit

@@ -1,0 +1,17 @@
+#GIT
+sudo apt-get install git
+
+#SSH
+sudo apt-get update
+sudo apt-get install openssh-server openssh-client
+sudo service ssh restart
+#infne settare l'ip della scheda di rete ethernet ipv4
+
+#OPENCV INTEL REAL SENSE
+http://docs.opencv.org/3.0-last-rst/doc/user_guide/ug_intelperc.html
+
+#OPENCV-ROS
+sudo apt-get install  ros-indigo-image-transport
+sudo apt-get install ros-indigo-cv-bridge
+sudo apt-get install ros-indigo-camera-info-manager 
+sudo apt-get install ros-indigo-tf
