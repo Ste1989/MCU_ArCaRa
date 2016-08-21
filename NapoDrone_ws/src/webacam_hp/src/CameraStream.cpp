@@ -25,23 +25,33 @@ int main(int argc, char** argv)
   if(set_param)
   {
 	/*SET CAMERA PARAMETER*/
+    /*
+    brightness: 0.219608
+    contrast: 0.333333
+    saturation: 0.501961
+    exposure: -1
+    gain: 0.125
+    hue: 0.5*/
+
 	frame_width = 1920; //1200
 	frame_height = 1080; //800
 	fps = 30;
-	brigthness = 0; //0.5
-	contrast = 0; //0
-	saturation = 1; //0.45
+    brigthness = 0.219608; //0.5
+    contrast = 0.3333; //0
+    saturation = 0.501961; //0.45
 	hue = 0.5; //0.5
+    gain = 0.125;
+
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, frame_width); 
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT, frame_height);
-	cap.set(CV_CAP_PROP_FPS, fps);
-	//cap.set(CV_CAP_PROP_BRIGHTNESS,brigthness);
-	//cap.set(CV_CAP_PROP_CONTRAST,contrast);
-	//cap.set(CV_CAP_PROP_SATURATION,saturation);
+    //cap.set(CV_CAP_PROP_FPS, fps);
+    cap.set(CV_CAP_PROP_BRIGHTNESS,brigthness);
+    cap.set(CV_CAP_PROP_CONTRAST,contrast);
+    cap.set(CV_CAP_PROP_SATURATION,saturation);
   	//cap.set(CV_CAP_PROP_EXPOSURE,0.1); //not supported
-	//cap.set(CV_CAP_PROP_GAIN, gain); //not supported
+    cap.set(CV_CAP_PROP_GAIN, gain); //not supported
 	//cap.set(CV_CAP_PROP_FOURCC, ??); //4 character code of the codec
-	//cap.set(CV_CAP_PROP_HUE, hue);//Hue of the image
+    cap.set(CV_CAP_PROP_HUE, hue);//Hue of the image
   }
   
   
@@ -49,14 +59,14 @@ int main(int argc, char** argv)
   {
 	frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH); 
 	frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
-	fps = cap.get(CV_CAP_PROP_FPS);
+    //fps = cap.get(CV_CAP_PROP_FPS);
 	brigthness = cap.get(CV_CAP_PROP_BRIGHTNESS);  
 	contrast = cap.get(CV_CAP_PROP_CONTRAST);
 	saturation = cap.get(CV_CAP_PROP_SATURATION);
-	//exposure = cap.get(CV_CAP_PROP_EXPOSURE);
-    //gain = cap.get(CV_CAP_PROP_GAIN); // not supported
+    //exposure = cap.get(CV_CAP_PROP_EXPOSURE);
+    gain = cap.get(CV_CAP_PROP_GAIN); // not supported
     //fourcc = cap.get(CV_CAP_PROP_FOURCC);// 4 character code of the codec
-    //hue = cap.get(CV_CAP_PROP_HUE); //Hue of the image  
+    hue = cap.get(CV_CAP_PROP_HUE); //Hue of the image
 	  
 	  
 	  
@@ -71,9 +81,9 @@ int main(int argc, char** argv)
   std::cout <<"brightness: "<< brigthness << std::endl;
   std::cout <<"contrast: "<< contrast << std::endl;
   std::cout <<"saturation: "<< saturation << std::endl;
-  //std::cout <<"exposure: "<< exposure << std::endl;
+  std::cout <<"exposure: "<< exposure << std::endl;
   //std::cout <<"fourcc: "<< fourcc << std::endl;
-  //std::cout <<"gain: "<< gain << std::endl;
+  std::cout <<"gain: "<< gain << std::endl;
   std::cout <<"hue: "<< hue << std::endl;
   
   // Check if video device can be opened with the given index
