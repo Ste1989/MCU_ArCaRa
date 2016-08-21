@@ -20,7 +20,7 @@ int main(int argc, char** argv)
   char set_param = 1;
   /*Open the webcam*/
   cv::VideoCapture cap;
-  cap.open(2);		//Open system default camera
+  cap.open(2);		//Open system default camera INTEl
   
   if(set_param)
   {
