@@ -33,8 +33,8 @@ int main(int argc, char** argv)
     gain: 0.125
     hue: 0.5*/
 
-	frame_width = 1920; //1200
-	frame_height = 1080; //800
+	frame_width= 960; //1920; //1200
+	frame_height = 540;//1080; //800
 	fps = 30;
     brigthness = 0.219608; //0.5
     contrast = 0.3333; //0
