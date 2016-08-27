@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>webcam_hp</name>
+  <name>obj_detection</name>
   <version>0.0.0</version>
   <description>The webcam package</description>
 
