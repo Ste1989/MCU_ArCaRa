@@ -5,10 +5,10 @@
 - Ubuntu 14.04 LTS
 - ROS indigo
 - dronekit
-- lib real sense
-- opencv
+- lib real sense (non istallata)
+- opencv (2.4 e 3.0)
 - ssh e configurare la connessione ethernet
-- ros hector loclization https://github.com/tu-darmstadt-ros-pkg/hector_localization.git
+- ros hector loclization https://github.com/tu-darmstadt-ros-pkg/hector_localization.git (non installata)
 ------------ 
 # Collogamenti Hardware:
 

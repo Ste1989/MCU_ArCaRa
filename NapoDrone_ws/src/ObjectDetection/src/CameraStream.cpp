@@ -18,12 +18,13 @@ V :0-255
 #include <cv_bridge/cv_bridge.h>
 #include <stdio.h>
 #include <iostream>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+//#include <opencv2/imgproc/imgproc.hpp>
+//#include <opencv2/highgui/highgui.hpp>
 #include <sensor_msgs/CameraInfo.h>
-#include "opencv2/opencv.hpp"
 #include <string>
 #include <time.h>
+
 clock_t start,end;
 
 
@@ -37,6 +38,8 @@ using namespace cv;
 using namespace std;
 
 bool debug_mode;
+bool real_time;
+
 cv::VideoCapture cap;
 
 int const max_value = 255;
@@ -149,11 +152,12 @@ void find_and_extract_blob(Mat src_image)
   params.filterByCircularity = false;
 
   //detect blob 
-  SimpleBlobDetector detector(params);
+  //SimpleBlobDetector detector(params);
   std::vector<KeyPoint> keypoints;
-  detector.detect( src_image, keypoints);
-  
-  if (debug_mode)
+  //detector.detect( src_image, keypoints);
+  Ptr<SimpleBlobDetector> sbd = SimpleBlobDetector::create(params);
+  sbd->detect(src_image, keypoints, Mat());
+  if (debug_mode )
   {
     Mat im_with_keypoints;
     for(std::vector<cv::KeyPoint>::iterator blobIterator = keypoints.begin(); blobIterator != keypoints.end(); blobIterator++)
@@ -399,8 +403,8 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "obj_detection");
   ros::NodeHandle nh;
   image_transport::ImageTransport it(nh);
-  image_transport::Publisher pub = it.advertise("/camera/image_raw", 1000);
-  ros::Publisher info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",1000);
+  image_transport::Publisher pub = it.advertise("/camera/image_raw", 100);
+  ros::Publisher info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",100);
   
   /*Camera 	parameters*/
   int device;
@@ -418,6 +422,7 @@ int main(int argc, char** argv)
   nh.param<double>("/CameraStream/gain", gain, 0.125); //di defualt camera intel r200
   nh.param<bool>("/CameraStream/debug_mode", debug_mode, false);
   nh.param<std::string>("/CameraStream/img_path", img_path, "");
+  nh.param<bool>("/CameraStream/real_time", real_time , false);
   
   /*inizializzo variabili globali ***************************************************************/
   init_global_var();
@@ -501,7 +506,7 @@ int main(int argc, char** argv)
   {
     Mat bgr_image;
     sensor_msgs::ImagePtr msg_image;
-    if(!debug_mode)
+    if(real_time)
     {
       //catturo l'immagine
       cap >> bgr_image;
@@ -512,7 +517,7 @@ int main(int argc, char** argv)
       }
 
     }
-    //se sono in debug mode...
+    //se non utilizzo la camera...
     else
     {
       stringstream ss_id;
@@ -533,10 +538,17 @@ int main(int argc, char** argv)
 
       //apro l'immagine a colori
       bgr_image = imread( str, CV_LOAD_IMAGE_COLOR );
+      
+    }
+   
+    if(debug_mode)
+    {
       imshow( "original image", bgr_image );
+      cout << "sono qui" << endl;
       waitKey(30);
     }
-  
+
+   
     double tempo;
     start=clock();
 
@@ -618,22 +630,23 @@ int main(int argc, char** argv)
     }
 
     //2- ottengo l'immagine in bianco e nero e l'iimagine in HSV e filtro per i vari colori//////////////////
-      Mat hsv_image;
+/*      Mat hsv_image;
     cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
+
     //Mat gray_image;
-      //cv::cvtColor(bgr_image, gray_image, cv::COLOR_BGR2GRAY);
+    //cv::cvtColor(bgr_image, gray_image, cv::COLOR_BGR2GRAY);
     Mat imgThresholded;
     //2A- filtro rosso
     Mat img_red = color_filter_image(hsv_image, "red");
     //2B- filtro blu
-    Mat img_blue = color_filter_image(hsv_image, "blue");
+    //Mat img_blue = color_filter_image(hsv_image, "blue");
     //.. altri filtri per colori
 
 
     //...combinazione di piu filtri..
-    addWeighted(img_red, 1.0, img_blue, 1.0, 0.0, imgThresholded);
-    
-    if(debug_mode)
+    //addWeighted(img_red, 1.0, img_blue, 1.0, 0.0, imgThresholded);
+    imgThresholded = img_red;
+    if(debug_mode )
     {
       imshow( "imgThresholded", imgThresholded );
       waitKey(30);
@@ -651,7 +664,7 @@ int main(int argc, char** argv)
 
     //4-Binarizzare l'immagine e eliminare parti non interessanti nell'immagine///////////////////////////////
     Mat bin_image = Binarize_Image(imgThresholded);
-    if(debug_mode)
+    if(debug_mode )
     {
       imshow( "Binarizzata", bin_image );
       waitKey(30);
@@ -662,7 +675,7 @@ int main(int argc, char** argv)
 
     //5-Cerca blob
     find_and_extract_blob(bin_image);
-
+*/
     end=clock();
     tempo=((double)(end-start))/CLOCKS_PER_SEC;
     cout << "FREQ: " << 1/tempo << endl;

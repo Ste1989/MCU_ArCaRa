@@ -5,7 +5,7 @@ sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavform
 sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
 
 cd ~
-git clone https://github.com/opencv/opencv.git
+scaricare le versioni opencv 3.0 e opencv 2.4 e installlare entrambe
 cd ~/opencv
 mkdir release
 cd release
