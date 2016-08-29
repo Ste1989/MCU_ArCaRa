@@ -190,8 +190,8 @@ void find_and_extract_blob(Mat src_image)
     //pub.publish(msg_image);
     //info_pub.publish(info_image);
     // Show blobs
-    imshow("blobs", im_with_keypoints );
-    waitKey(30);
+    //imshow("blobs", im_with_keypoints );
+    //waitKey(30);
 
 
   }
@@ -570,12 +570,12 @@ int main(int argc, char** argv)
 
 
     //pubblico sul topic l'immagine che ho appena acquisito//////////////////////////////////////////////////
-    //sensor_msgs::CameraInfo info_image;
-    //info_image.height = bgr_image.size().height;
-    //info_image.width = bgr_image.size().width;
-    //msg_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_image).toImageMsg();
-    //pub.publish(msg_image);
-    //info_pub.publish(info_image);
+    sensor_msgs::CameraInfo info_image;
+    info_image.height = bgr_image.size().height;
+    info_image.width = bgr_image.size().width;
+    msg_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_image).toImageMsg();
+    pub.publish(msg_image);
+    info_pub.publish(info_image);
 
 
     start_cv=clock();
