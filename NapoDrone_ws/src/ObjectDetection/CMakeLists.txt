@@ -1,6 +1,21 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(obj_detection)
 
+
+# set a default build type if none was specified
+#IF(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  #MESSAGE(STATUS "Setting build type to 'Release' as none was specified.")
+ # SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  #SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+  #  "MinSizeRel" "RelWithDebInfo")
+#ENDIF()
+
+# default build is in Release mode
+#IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE "Release")
+#ENDIF()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages

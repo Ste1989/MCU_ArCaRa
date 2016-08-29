@@ -26,16 +26,16 @@ V :0-255
 #include <time.h>
 
 clock_t start,end;
+clock_t start_cv;
 
 
-
-
-
-using namespace cv;
-using namespace std;
+ros::Publisher info_pub;
+image_transport::Publisher pub;
 
 using namespace cv;
 using namespace std;
+
+
 
 bool debug_mode;
 bool real_time;
@@ -126,6 +126,7 @@ void make_control_window(  )
 **************************************************************************************/
 void find_and_extract_blob(Mat src_image)
 {
+
   // Set up the detector with parameters.
   // Setup SimpleBlobDetector parameters.
   SimpleBlobDetector::Params params;
@@ -142,7 +143,7 @@ void find_and_extract_blob(Mat src_image)
   params.minArea = min_area_blob+1;
   params.maxArea = max_area_blob + 1;
   
-  //Color
+  //Colorros::Publisher info_pub
   params.filterByColor = false;
   params.blobColor = blob_color;
 
@@ -157,7 +158,8 @@ void find_and_extract_blob(Mat src_image)
   //detector.detect( src_image, keypoints);
   Ptr<SimpleBlobDetector> sbd = SimpleBlobDetector::create(params);
   sbd->detect(src_image, keypoints, Mat());
-  if (debug_mode )
+
+  if (debug_mode || true )
   {
     Mat im_with_keypoints;
     for(std::vector<cv::KeyPoint>::iterator blobIterator = keypoints.begin(); blobIterator != keypoints.end(); blobIterator++)
@@ -165,26 +167,32 @@ void find_and_extract_blob(Mat src_image)
       std::cout << "size of blob is: " << blobIterator->size << std::endl;
       std::cout << "point is at: " << blobIterator->pt.x << " " << blobIterator->pt.y << std::endl;
       
-      stringstream ssx;
-      stringstream ssy;
-      ssx << blobIterator->pt.x;
-      ssy << blobIterator->pt.y;
+      //stringstream ssx;
+      ///stringstream ssy;
+      //ssx << blobIterator->pt.x;
+      //ssy << blobIterator->pt.y;
 
-      string text = "(" + ssx.str() + "," + ssy.str() + ")";
+      //string text = "(" + ssx.str() + "," + ssy.str() + ")";
       // center the text
-      Point textOrg(blobIterator->pt.x,blobIterator->pt.y);
+      //Point textOrg(blobIterator->pt.x,blobIterator->pt.y);
       // then put the text itself
-      putText(src_image, text, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, 0.6, Scalar(120,0,255), 1, 8);
+      //putText(src_image, text, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, 0.1, Scalar(120,0,255), 1, 8);
     }  
 
   
     // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
     
     drawKeypoints( src_image, keypoints, im_with_keypoints, Scalar(0,0,255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-    
+    //sensor_msgs::CameraInfo info_image;
+    //info_image.height = im_with_keypoints.size().height;
+    //info_image.width = im_with_keypoints.size().width;
+    //sensor_msgs::ImagePtr msg_image = cv_bridge::CvImage(std_msgs::Header(), "mono8", im_with_keypoints).toImageMsg();
+    //pub.publish(msg_image);
+    //info_pub.publish(info_image);
     // Show blobs
     imshow("blobs", im_with_keypoints );
     waitKey(30);
+
 
   }
 
@@ -403,9 +411,9 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "obj_detection");
   ros::NodeHandle nh;
   image_transport::ImageTransport it(nh);
-  image_transport::Publisher pub = it.advertise("/camera/image_raw", 100);
-  ros::Publisher info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",100);
-  
+  pub = it.advertise("/camera/image_raw", 100);
+  info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",100);
+  //ros::Rate loop_rate(100);
   /*Camera 	parameters*/
   int device;
   double frame_width, frame_height, fps, brigthness, contrast, saturation, exposure, gain, hue, fourcc;
@@ -450,27 +458,27 @@ int main(int argc, char** argv)
     if(set_param)
     {
   	
-    	cap.set(CV_CAP_PROP_FRAME_WIDTH, frame_width); 
-    	cap.set(CV_CAP_PROP_FRAME_HEIGHT, frame_height);
+      cap.set(CV_CAP_PROP_FRAME_WIDTH, frame_width); 
+      cap.set(CV_CAP_PROP_FRAME_HEIGHT, frame_height);
       //cap.set(CV_CAP_PROP_FPS, fps);
       cap.set(CV_CAP_PROP_BRIGHTNESS,brigthness);
       cap.set(CV_CAP_PROP_CONTRAST,contrast);
       cap.set(CV_CAP_PROP_SATURATION,saturation);
       //cap.set(CV_CAP_PROP_EXPOSURE,0.1); //not supported
       cap.set(CV_CAP_PROP_GAIN, gain); //not supported
-    	//cap.set(CV_CAP_PROP_FOURCC, ??); //4 character code of the codec
+      //cap.set(CV_CAP_PROP_FOURCC, ??); //4 character code of the codec
       cap.set(CV_CAP_PROP_HUE, hue);//Hue of the image
     }
     
     
     if(read_param)
     {
-    	frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH); 
-    	frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+      frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH); 
+      frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
       //fps = cap.get(CV_CAP_PROP_FPS);
-    	brigthness = cap.get(CV_CAP_PROP_BRIGHTNESS);  
-    	contrast = cap.get(CV_CAP_PROP_CONTRAST);
-    	saturation = cap.get(CV_CAP_PROP_SATURATION);
+      brigthness = cap.get(CV_CAP_PROP_BRIGHTNESS);  
+      contrast = cap.get(CV_CAP_PROP_CONTRAST);
+      saturation = cap.get(CV_CAP_PROP_SATURATION);
       //exposure = cap.get(CV_CAP_PROP_EXPOSURE);
       gain = cap.get(CV_CAP_PROP_GAIN); // not supported
       //fourcc = cap.get(CV_CAP_PROP_FOURCC);// 4 character code of the codec
@@ -502,10 +510,20 @@ int main(int argc, char** argv)
   
 
   /*******************************cilco principale***************************************************/
+  //prealloco tutte le immagini
+  Mat bgr_image;
+  Mat bgr_image_rs;
+  Mat hsv_image;
+  Mat imgThresholded;
+  Mat img_red; 
+  Mat bin_image;
+  sensor_msgs::ImagePtr msg_image;
   while (nh.ok()) 
   {
-    Mat bgr_image;
-    sensor_msgs::ImagePtr msg_image;
+    double tempo;
+    start=clock();
+
+    
     if(real_time)
     {
       //catturo l'immagine
@@ -549,17 +567,19 @@ int main(int argc, char** argv)
     }
 
    
-    double tempo;
-    start=clock();
+
 
     //pubblico sul topic l'immagine che ho appena acquisito//////////////////////////////////////////////////
-    sensor_msgs::CameraInfo info_image;
-    info_image.height = bgr_image.size().height;
-    info_image.width = bgr_image.size().width;
-    msg_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_image).toImageMsg();
-    pub.publish(msg_image);
-    info_pub.publish(info_image);
-    
+    //sensor_msgs::CameraInfo info_image;
+    //info_image.height = bgr_image.size().height;
+    //info_image.width = bgr_image.size().width;
+    //msg_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_image).toImageMsg();
+    //pub.publish(msg_image);
+    //info_pub.publish(info_image);
+
+
+    start_cv=clock();
+
     //1B-COPRO  LA PART CHE NON MI INTERESSA///////////////////////////////////////////////////////////////////
     //questo serve per eliminare la pinza dall'immagine
     //cout <<bin_image.size().width << endl << bin_image.size().height<< endl;
@@ -571,21 +591,21 @@ int main(int argc, char** argv)
       rec1.y = 0;
       rec1.height = 70;
       rec1.width = bgr_image.size().width - rec1.x;
-      rectangle(bgr_image, rec1, Scalar(255,0,255), CV_FILLED, 8, 0 );
+      rectangle(bgr_image, rec1, Scalar(0,0,0), CV_FILLED, 8, 0 );
       //pinza piu bassa
       Rect rec2;
       rec2.x = 640;
       rec2.y = 410;
       rec2.height = bgr_image.size().height- rec2.y;
       rec2.width = bgr_image.size().width- rec2.x;
-      rectangle(bgr_image, rec2, Scalar(255,0,255), CV_FILLED, 8, 0 );
+      rectangle(bgr_image, rec2, Scalar(0,0,0), CV_FILLED, 8, 0 );
       //cebtro pinza
       Rect rec3;
       rec3.x = 860;
       rec3.y = 65;
       rec3.height = 355;
       rec3.width = bgr_image.size().width- rec3.x;
-      rectangle(bgr_image, rec3, Scalar(255,0,255), CV_FILLED, 8, 0 );
+      rectangle(bgr_image, rec3, Scalar(0,0,0), CV_FILLED, 8, 0 );
     }
     if(bgr_image.size().width == 1920 && bgr_image.size().height == 1080)
     {
@@ -595,21 +615,21 @@ int main(int argc, char** argv)
       rec1.y = 0;
       rec1.height = 150;
       rec1.width = bgr_image.size().width - rec1.x;
-      rectangle(bgr_image, rec1, Scalar(255,0,255), CV_FILLED, 8, 0 );
+      rectangle(bgr_image, rec1, Scalar(0,0,0), CV_FILLED, 8, 0 );
       //pinza piu bassa
       Rect rec2;
       rec2.x = 1280;
       rec2.y = 820;
       rec2.height = bgr_image.size().height- rec2.y;
       rec2.width = bgr_image.size().width- rec2.x;
-      rectangle(bgr_image, rec2, Scalar(255,0,255), CV_FILLED, 8, 0 );
+      rectangle(bgr_image, rec2, Scalar(0,0,0), CV_FILLED, 8, 0 );
       //cebtro pinza
       Rect rec3;
       rec3.x = 1690;
       rec3.y = 650;
       rec3.height = 670;
       rec3.width = bgr_image.size().width- rec3.x;
-      rectangle(bgr_image, rec3, Scalar(255,0,255), CV_FILLED, 8, 0 );
+      rectangle(bgr_image, rec3, Scalar(0,0,0), CV_FILLED, 8, 0 );
     }
 
     if(debug_mode && false)
@@ -629,15 +649,22 @@ int main(int argc, char** argv)
       waitKey(30);
     }
 
+    //1-C RESIZE IMMAGINE
+    Size size(320,180);//the dst image size,e.g.100x100
+    resize(bgr_image,bgr_image_rs,size);//resize image
+    bgr_image = bgr_image_rs;
+    
+
+
     //2- ottengo l'immagine in bianco e nero e l'iimagine in HSV e filtro per i vari colori//////////////////
-/*      Mat hsv_image;
+      
     cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
 
     //Mat gray_image;
     //cv::cvtColor(bgr_image, gray_image, cv::COLOR_BGR2GRAY);
-    Mat imgThresholded;
+    
     //2A- filtro rosso
-    Mat img_red = color_filter_image(hsv_image, "red");
+    img_red = color_filter_image(hsv_image, "red");
     //2B- filtro blu
     //Mat img_blue = color_filter_image(hsv_image, "blue");
     //.. altri filtri per colori
@@ -654,16 +681,16 @@ int main(int argc, char** argv)
 
 
     //3-Remove small object and fill small holes ////////////////////////////////////////////////////////////
-    morphological_filter(imgThresholded);
+    /*morphological_filter(imgThresholded);
     if(debug_mode && false)
     {
       imshow( "imgThresholded_foreground", imgThresholded );
       waitKey(30);
     }
 
-
+    */
     //4-Binarizzare l'immagine e eliminare parti non interessanti nell'immagine///////////////////////////////
-    Mat bin_image = Binarize_Image(imgThresholded);
+    bin_image = Binarize_Image(imgThresholded);
     if(debug_mode )
     {
       imshow( "Binarizzata", bin_image );
@@ -673,13 +700,26 @@ int main(int argc, char** argv)
     //Trova contorni(not used)
     //thresh_callback(bin_image);
 
+    //pubblico sul topic l'immagine che ho appena acquisito//////////////////////////////////////////////////
+    //sensor_msgs::CameraInfo info_image;
+    //info_image.height = imgThresholded.size().height;
+    //info_image.width = imgThresholded.size().width;
+    //msg_image = cv_bridge::CvImage(std_msgs::Header(), "mono8", imgThresholded).toImageMsg();
+    //pub.publish(msg_image);
+    //info_pub.publish(info_image);
+
+    
     //5-Cerca blob
     find_and_extract_blob(bin_image);
-*/
+
     end=clock();
     tempo=((double)(end-start))/CLOCKS_PER_SEC;
     cout << "FREQ: " << 1/tempo << endl;
-    
+
+    tempo=((double)(end-start_cv))/CLOCKS_PER_SEC;
+    cout << "FREQ COMPUTER VISION: " << 1/tempo << endl;
+
+    //loop_rate.sleep();
     //valuta callback
     ros::spinOnce();
   }
