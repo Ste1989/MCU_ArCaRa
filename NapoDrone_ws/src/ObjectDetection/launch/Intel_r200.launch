@@ -14,8 +14,8 @@
 	<param name="gain" type="double" value="0.125" />
 	<param name="real_time" type="bool" value="true"/>
 	<param name="img_path" type="string" value="/home/ste/Immagini/test_drone/"/>
-	<param name="img_path_save" type="string" value="/home/"/>
-	<param name="save_img" type="bool" value="false"/>
+	<param name="img_path_save" type="string" value="/home/odroid/"/>
+	<param name="save_img" type="bool" value="true"/>
     </node>
 
 

@@ -609,15 +609,17 @@ int main(int argc, char** argv)
         stringstream s_idx;
         s_idx << id_img;
         string str_path  = s_idx.str();
-        if(idx < 10)
+
+        if(id_img < 10)
           str_path  = img_path_save + "/left000"+ str_path + ".jpg";
-        if(idx>=10 && idx < 100)
-          str_path  = img_path +  "/left00"+ str_path + ".jpg";
-        if(idx>=100 && idx < 1000)
-          str_path  = img_path + "/left0"+ str_path + ".jpg";
-        if(idx>=1000 && idx < 10000)
-          str_path  = img_path +  "/left"+ str_path + ".jpg";
+        if(id_img>=10 && id_img < 100)
+          str_path  = img_path_save +  "/left00"+ str_path + ".jpg";
+        if(id_img>=100 && id_img < 1000)
+          str_path  = img_path_save + "/left0"+ str_path + ".jpg";
+        if(id_img>=1000 && id_img < 10000)
+          str_path  = img_path_save +  "/left"+ str_path + ".jpg";
       //salvo su disco l'immagine
+
         imwrite( str_path, bgr_image );
 
         id_img++;
