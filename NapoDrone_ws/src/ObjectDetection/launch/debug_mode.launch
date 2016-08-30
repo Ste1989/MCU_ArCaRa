@@ -13,7 +13,9 @@
 	<param name="hue" type="double" value="0.5" />
 	<param name="gain" type="double" value="0.125" />
 	<param name="img_path" type="string" value="/home/ste/Immagini/test_drone/"/>
+	<param name="img_path_save" type="string" value="/home/"/>
 	<param name="real_time" type="bool" value="false"/>
+	<param name="save_img" type="bool" value="false"/>
     </node>
 
 

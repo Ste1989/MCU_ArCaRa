@@ -35,7 +35,7 @@ image_transport::Publisher pub;
 using namespace cv;
 using namespace std;
 
-bool real_time;
+bool real_time, save_img;
 
 cv::VideoCapture cap;
 
@@ -417,13 +417,51 @@ struct str{
 void sort_point(Point2f* rect_points)
 {
 
-  cout<< "prima" << endl;
-  cout<< rect_points[0]<<rect_points[1]<<rect_points[2]<< rect_points[3]<< endl;
+  
   //ordino i puti secondo l'ascissa, da minore a maggiore
   sort(rect_points,rect_points+4,comp);
-  cout<< rect_points[0]<<rect_points[1]<<rect_points[2] <<rect_points[3]<< endl;
-  cout << "dopo" << endl;
 
+  //order coordinates clockwise
+  //now, sort the left-most coordinates according to their
+  //y-coordinates so we can grab the top-left and bottom-left
+  //points, respectively
+  Point2f bottom_left, top_left;
+  if(rect_points[0].y > rect_points[1].y)
+  {
+    Point2f app;
+    app.x = rect_points[0].x;
+    app.y = rect_points[0].y;
+    rect_points[0].x = rect_points[1].x;
+    rect_points[0].y = rect_points[1].y;
+    rect_points[1].x = app.x;
+    rect_points[1].y = app.y;
+
+  }
+  else
+  {
+    //..già ordinati
+  }
+
+  //adesso ho il primo punto bottom_left, il secondo top_left
+  //adesso calcolo la distanza dal bottom left agli altri due punti a destra.
+  //qeullo con distanza maggiore sarà il top_right
+  double dist_1 = (rect_points[0].x * rect_points[2].x ) + (rect_points[0].y * rect_points[2].y ) ;
+  double dist_2 = (rect_points[0].x * rect_points[3].x ) + (rect_points[0].y * rect_points[3].y ) ;
+  if (dist_1 < dist_2)
+  {
+    //scambio di posizione il 3 con il 4
+    Point2f app;
+    app.x = rect_points[2].x;
+    app.y = rect_points[2].y;
+    rect_points[2].x = rect_points[3].x;
+    rect_points[2].y = rect_points[3].y;
+    rect_points[3].x = app.x;
+    rect_points[3].y = app.y;
+  }
+  else
+  {
+    //sono già tutti ordinati
+  }
 
 }
 /********************************************************************************
@@ -444,7 +482,7 @@ int main(int argc, char** argv)
   /*Camera 	parameters*/
   int device;
   double frame_width, frame_height, fps, brigthness, contrast, saturation, exposure, gain, hue, fourcc;
-  string img_path;
+  string img_path, img_path_save;
   //leggo i parametri specificati nel launch file
   nh.param<int>("/CameraStream/device", device, 2); //di defualt camera intel r200
   nh.param<double>("/CameraStream/width", frame_width, 960); //di defualt camera intel r200
@@ -457,6 +495,8 @@ int main(int argc, char** argv)
   nh.param<double>("/CameraStream/gain", gain, 0.125); //di defualt camera intel r200
   nh.param<std::string>("/CameraStream/img_path", img_path, "");
   nh.param<bool>("/CameraStream/real_time", real_time , false);
+  nh.param<bool>("/CameraStream/save_img", save_img , false);
+  nh.param<std::string>("/CameraStream/img_path_save", img_path_save, "");
   
   /*inizializzo variabili globali ***************************************************************/
   init_global_var();
@@ -537,13 +577,17 @@ int main(int argc, char** argv)
 
   /*******************************cilco principale***************************************************/
   //prealloco tutte le immagini
-  Mat bgr_image;
-  Mat bgr_image_rs;
-  Mat hsv_image;
-  Mat imgThresholded;
-  Mat img_red; 
-  Mat bin_image;
-  
+  Mat bgr_image = Mat::zeros( cv::Size(frame_width,frame_height), CV_8UC3 );
+  Mat bgr_image_rs = Mat::zeros( cv::Size(320,180), CV_8UC3 );
+  Mat hsv_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
+  Mat imgThresholded = Mat::zeros( cv::Size(320,180), CV_8UC3 );
+  Mat img_red = Mat::zeros( cv::Size(320,180), CV_8UC3 );
+  Mat bin_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
+  Mat img_edges = Mat::zeros( cv::Size(320,180), CV_8UC3 );
+  Mat drawing = Mat::zeros(cv::Size(320,180), CV_8UC3 );
+
+  int id_img = 0;
+
   while (nh.ok()) 
   {
     double tempo;
@@ -558,6 +602,25 @@ int main(int argc, char** argv)
       if(bgr_image.empty()) 
       {
         ROS_ERROR("No camera Found");
+      }
+      //salvo l'immagine se richiesto
+      if(save_img)
+      {
+        stringstream s_idx;
+        s_idx << id_img;
+        string str_path  = s_idx.str();
+        if(idx < 10)
+          str_path  = img_path_save + "/left000"+ str_path + ".jpg";
+        if(idx>=10 && idx < 100)
+          str_path  = img_path +  "/left00"+ str_path + ".jpg";
+        if(idx>=100 && idx < 1000)
+          str_path  = img_path + "/left0"+ str_path + ".jpg";
+        if(idx>=1000 && idx < 10000)
+          str_path  = img_path +  "/left"+ str_path + ".jpg";
+      //salvo su disco l'immagine
+        imwrite( str_path, bgr_image );
+
+        id_img++;
       }
 
     }
@@ -699,6 +762,7 @@ int main(int argc, char** argv)
     //...combinazione di piu filtri..
     //addWeighted(img_red, 1.0, img_blue, 1.0, 0.0, imgThresholded);
     imgThresholded = img_red;
+
     if(!real_time)
     {
       imshow( "imgThresholded", imgThresholded );
@@ -716,20 +780,23 @@ int main(int argc, char** argv)
     }
 
     //Canny
-    Mat edges;
-    Canny(imgThresholded, edges, 50,100);
-    imshow( "canny", edges );
-    waitKey(30);
-    
+    Canny(imgThresholded, img_edges, 50,100);
+    if(!real_time )
+    {
+      imshow( "canny", img_edges );
+      waitKey(30);
+    }
+
     vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
 
     /// Find contours
-    findContours( edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE, Point(0, 0) );
+    findContours( img_edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE, Point(0, 0) );
 
-    /// Find the rotated rectangles and ellipses for each contour
+    /// Find the rotated rectangles  for each contour
     vector<RotatedRect> minRect( contours.size() );
-    Mat drawing = Mat::zeros( edges.size(), CV_8UC3 );
+
+    
     RNG rng(12345);
     for( int i = 0; i< contours.size(); i++ )
     {
@@ -737,18 +804,24 @@ int main(int argc, char** argv)
       Point2f rect_points[4]; 
       minRect[i] = minAreaRect( Mat(contours[i]) );
       minRect[i].points( rect_points );
+      //ordino i punti dal bottom_left in senso orario
       sort_point(rect_points);
+      
+
       Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-      // contour
+      // ontour
       drawContours( drawing, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
       for( int j = 0; j < 4; j++ )
       {
         line( drawing, rect_points[j], rect_points[(j+1)%4], color, 1, 8 );
       }
-     }
-    imshow( "drawing", drawing );
-    waitKey(30);
-
+    }
+    
+    if(!real_time )
+    {
+      imshow( "drawing", drawing );
+      waitKey(30);
+    }
 
 
     //4-Binarizzare l'immagine e eliminare parti non interessanti nell'immagine///////////////////////////////
