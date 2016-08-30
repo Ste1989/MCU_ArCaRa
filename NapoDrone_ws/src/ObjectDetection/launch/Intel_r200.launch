@@ -12,7 +12,6 @@
 	<param name="saturation" type="double" value="0.501961" />
 	<param name="hue" type="double" value="0.5" />
 	<param name="gain" type="double" value="0.125" />
-	<param name="debug_mode" type="bool" value="false"/>
 	<param name="real_time" type="bool" value="true"/>
 	<param name="img_path" type="string" value="/home/ste/Immagini/test_drone/"/>
     </node>

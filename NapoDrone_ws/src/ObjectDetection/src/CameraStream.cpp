@@ -35,9 +35,6 @@ image_transport::Publisher pub;
 using namespace cv;
 using namespace std;
 
-
-
-bool debug_mode;
 bool real_time;
 
 cv::VideoCapture cap;
@@ -153,48 +150,55 @@ void find_and_extract_blob(Mat src_image)
   params.filterByCircularity = false;
 
   //detect blob 
-  //SimpleBlobDetector detector(params);
   std::vector<KeyPoint> keypoints;
-  //detector.detect( src_image, keypoints);
-  Ptr<SimpleBlobDetector> sbd = SimpleBlobDetector::create(params);
-  sbd->detect(src_image, keypoints, Mat());
+  
+  SimpleBlobDetector detector(params);
+  detector.detect( src_image, keypoints);
 
-  if (debug_mode || true )
-  {
+  //Ptr<SimpleBlobDetector> sbd = SimpleBlobDetector::create(params);
+  //sbd->detect(src_image, keypoints, Mat());
+
+  
+  
     Mat im_with_keypoints;
     for(std::vector<cv::KeyPoint>::iterator blobIterator = keypoints.begin(); blobIterator != keypoints.end(); blobIterator++)
     {
       std::cout << "size of blob is: " << blobIterator->size << std::endl;
       std::cout << "point is at: " << blobIterator->pt.x << " " << blobIterator->pt.y << std::endl;
       
-      //stringstream ssx;
-      ///stringstream ssy;
-      //ssx << blobIterator->pt.x;
-      //ssy << blobIterator->pt.y;
+      if(!real_time)
+      {
+        stringstream ssx;
+        stringstream ssy;
+        ssx << blobIterator->pt.x;
+        ssy << blobIterator->pt.y;
 
-      //string text = "(" + ssx.str() + "," + ssy.str() + ")";
-      // center the text
-      //Point textOrg(blobIterator->pt.x,blobIterator->pt.y);
-      // then put the text itself
-      //putText(src_image, text, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, 0.1, Scalar(120,0,255), 1, 8);
-    }  
-
-  
-    // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
+        string text = "(" + ssx.str() + "," + ssy.str() + ")";
+        //center the text
+        Point textOrg(blobIterator->pt.x,blobIterator->pt.y);
+        // then put the text itself
+        putText(src_image, text, textOrg, FONT_HERSHEY_SCRIPT_SIMPLEX, 0.1, Scalar(120,0,255), 1, 8);
+      }
+     }
     
-    drawKeypoints( src_image, keypoints, im_with_keypoints, Scalar(0,0,255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+    // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
+    if(!real_time)
+    {
+      drawKeypoints( src_image, keypoints, im_with_keypoints, Scalar(0,0,255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+      // Show blobs
+      imshow("blobs", im_with_keypoints );
+      waitKey(30);
+    }
     //sensor_msgs::CameraInfo info_image;
     //info_image.height = im_with_keypoints.size().height;
     //info_image.width = im_with_keypoints.size().width;
     //sensor_msgs::ImagePtr msg_image = cv_bridge::CvImage(std_msgs::Header(), "mono8", im_with_keypoints).toImageMsg();
     //pub.publish(msg_image);
     //info_pub.publish(info_image);
-    // Show blobs
-    //imshow("blobs", im_with_keypoints );
-    //waitKey(30);
 
 
-  }
+
+  
 
   
 }
@@ -377,9 +381,9 @@ void init_global_var(  )
   iLowV = 90;
   iHighV = 255;
   size_erode_clos = 0;
-  size_dil_clos = 0;//20;
-  size_erode_fill = 0;
-  size_dil_fill = 0;//20;
+  size_dil_clos = 1;//20;
+  size_erode_fill = 1;
+  size_dil_fill = 1;//20;
   idx = 0;
   id_test = 0;
 
@@ -398,7 +402,30 @@ void init_global_var(  )
   blob_color = 0;
 
 }
+/********************************************************************************
+*
+*    SORT POINT
+*
+**************************************************************************************/
+struct str{
+    bool operator() ( Point2f a, Point2f b ){
+        if ( a.x != b.x ) 
+            return a.x < b.x;
+        return a.y <= b.y ;
+    }
+} comp;
+void sort_point(Point2f* rect_points)
+{
 
+  cout<< "prima" << endl;
+  cout<< rect_points[0]<<rect_points[1]<<rect_points[2]<< rect_points[3]<< endl;
+  //ordino i puti secondo l'ascissa, da minore a maggiore
+  sort(rect_points,rect_points+4,comp);
+  cout<< rect_points[0]<<rect_points[1]<<rect_points[2] <<rect_points[3]<< endl;
+  cout << "dopo" << endl;
+
+
+}
 /********************************************************************************
 *
 *    MAIN
@@ -428,7 +455,6 @@ int main(int argc, char** argv)
   nh.param<double>("/CameraStream/saturation", saturation, 0.501961); //di defualt camera intel r200
   nh.param<double>("/CameraStream/hue", hue, 0.5); //di defualt camera intel r200
   nh.param<double>("/CameraStream/gain", gain, 0.125); //di defualt camera intel r200
-  nh.param<bool>("/CameraStream/debug_mode", debug_mode, false);
   nh.param<std::string>("/CameraStream/img_path", img_path, "");
   nh.param<bool>("/CameraStream/real_time", real_time , false);
   
@@ -439,7 +465,7 @@ int main(int argc, char** argv)
 
 
   /*Se non sono in modalità debug, apro la webcam************************************************/
-  if(!debug_mode)
+  if(real_time)
   {
     /*Open the webcam*/
     
@@ -517,7 +543,7 @@ int main(int argc, char** argv)
   Mat imgThresholded;
   Mat img_red; 
   Mat bin_image;
-  sensor_msgs::ImagePtr msg_image;
+  
   while (nh.ok()) 
   {
     double tempo;
@@ -556,28 +582,24 @@ int main(int argc, char** argv)
 
       //apro l'immagine a colori
       bgr_image = imread( str, CV_LOAD_IMAGE_COLOR );
+      //la visualizzo a PC
+      imshow( "original image", bgr_image );
+      waitKey(30);
       
     }
    
-    if(debug_mode)
-    {
-      imshow( "original image", bgr_image );
-      cout << "sono qui" << endl;
-      waitKey(30);
-    }
-
-   
 
 
+  
     //pubblico sul topic l'immagine che ho appena acquisito//////////////////////////////////////////////////
     sensor_msgs::CameraInfo info_image;
     info_image.height = bgr_image.size().height;
     info_image.width = bgr_image.size().width;
-    msg_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_image).toImageMsg();
+    sensor_msgs::ImagePtr msg_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_image).toImageMsg();
     pub.publish(msg_image);
     info_pub.publish(info_image);
 
-
+    //calcolo il tempo che ci metto per elaborare l'immagine
     start_cv=clock();
 
     //1B-COPRO  LA PART CHE NON MI INTERESSA///////////////////////////////////////////////////////////////////
@@ -632,7 +654,7 @@ int main(int argc, char** argv)
       rectangle(bgr_image, rec3, Scalar(0,0,0), CV_FILLED, 8, 0 );
     }
 
-    if(debug_mode && false)
+    if(!real_time && false)
     {
       namedWindow("Rect", CV_WINDOW_AUTOSIZE); 
       cvCreateTrackbar("x", "Rect", &x, bgr_image.size().width);
@@ -657,12 +679,16 @@ int main(int argc, char** argv)
 
 
     //2- ottengo l'immagine in bianco e nero e l'iimagine in HSV e filtro per i vari colori//////////////////
-      
+    Mat gray_image, gray_image_b;
     cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
-
+    cv::cvtColor(bgr_image, gray_image, cv::COLOR_BGR2GRAY);
     //Mat gray_image;
     //cv::cvtColor(bgr_image, gray_image, cv::COLOR_BGR2GRAY);
     
+    //gaussian Blur
+    //GaussianBlur(hsv_image, hsv_image,cv::Size(7,7),0 );
+
+
     //2A- filtro rosso
     img_red = color_filter_image(hsv_image, "red");
     //2B- filtro blu
@@ -673,44 +699,68 @@ int main(int argc, char** argv)
     //...combinazione di piu filtri..
     //addWeighted(img_red, 1.0, img_blue, 1.0, 0.0, imgThresholded);
     imgThresholded = img_red;
-    if(debug_mode )
+    if(!real_time)
     {
       imshow( "imgThresholded", imgThresholded );
       waitKey(30);
     }
 
 
+
     //3-Remove small object and fill small holes ////////////////////////////////////////////////////////////
-    /*morphological_filter(imgThresholded);
-    if(debug_mode && false)
+    morphological_filter(imgThresholded);
+    if(!real_time && false)
     {
       imshow( "imgThresholded_foreground", imgThresholded );
       waitKey(30);
     }
 
-    */
+    //Canny
+    Mat edges;
+    Canny(imgThresholded, edges, 50,100);
+    imshow( "canny", edges );
+    waitKey(30);
+    
+    vector<vector<Point> > contours;
+    vector<Vec4i> hierarchy;
+
+    /// Find contours
+    findContours( edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE, Point(0, 0) );
+
+    /// Find the rotated rectangles and ellipses for each contour
+    vector<RotatedRect> minRect( contours.size() );
+    Mat drawing = Mat::zeros( edges.size(), CV_8UC3 );
+    RNG rng(12345);
+    for( int i = 0; i< contours.size(); i++ )
+    {
+
+      Point2f rect_points[4]; 
+      minRect[i] = minAreaRect( Mat(contours[i]) );
+      minRect[i].points( rect_points );
+      sort_point(rect_points);
+      Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+      // contour
+      drawContours( drawing, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
+      for( int j = 0; j < 4; j++ )
+      {
+        line( drawing, rect_points[j], rect_points[(j+1)%4], color, 1, 8 );
+      }
+     }
+    imshow( "drawing", drawing );
+    waitKey(30);
+
+
+
     //4-Binarizzare l'immagine e eliminare parti non interessanti nell'immagine///////////////////////////////
-    bin_image = Binarize_Image(imgThresholded);
-    if(debug_mode )
+    /*bin_image = Binarize_Image(imgThresholded);
+    if(!real_time)
     {
       imshow( "Binarizzata", bin_image );
       waitKey(30);
     }
-  
-    //Trova contorni(not used)
-    //thresh_callback(bin_image);
-
-    //pubblico sul topic l'immagine che ho appena acquisito//////////////////////////////////////////////////
-    //sensor_msgs::CameraInfo info_image;
-    //info_image.height = imgThresholded.size().height;
-    //info_image.width = imgThresholded.size().width;
-    //msg_image = cv_bridge::CvImage(std_msgs::Header(), "mono8", imgThresholded).toImageMsg();
-    //pub.publish(msg_image);
-    //info_pub.publish(info_image);
-
-    
     //5-Cerca blob
     find_and_extract_blob(bin_image);
+     */
 
     end=clock();
     tempo=((double)(end-start))/CLOCKS_PER_SEC;
