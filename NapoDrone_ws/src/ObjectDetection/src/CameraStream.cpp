@@ -618,7 +618,8 @@ int main(int argc, char** argv)
           str_path  = img_path_save + "/left0"+ str_path + ".jpg";
         if(id_img>=1000 && id_img < 10000)
           str_path  = img_path_save +  "/left"+ str_path + ".jpg";
-      //salvo su disco l'immagine
+
+        //salvo su disco l'immagine
 
         imwrite( str_path, bgr_image );
 

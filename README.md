@@ -6,7 +6,7 @@
 - ROS indigo
 - dronekit
 - lib real sense (non istallata)
-- opencv 2.4.9
+- opencv  2.4.9
 - ssh e configurare la connessione ethernet
 - ros hector loclization https://github.com/tu-darmstadt-ros-pkg/hector_localization.git (non installata)
 ------------ 
