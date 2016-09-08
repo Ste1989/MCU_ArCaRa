@@ -392,6 +392,7 @@ void init_global_var(  )
   bin_type = 1;
 
 
+
   //blob
   min_threshold_blob = 0;
   max_threshold_blob = 255;
@@ -497,6 +498,7 @@ int main(int argc, char** argv)
   nh.param<bool>("/CameraStream/real_time", real_time , false);
   nh.param<bool>("/CameraStream/save_img", save_img , false);
   nh.param<std::string>("/CameraStream/img_path_save", img_path_save, "");
+
   
   /*inizializzo variabili globali ***************************************************************/
   init_global_var();
@@ -592,7 +594,6 @@ int main(int argc, char** argv)
   {
     double tempo;
     start=clock();
-
     
     if(real_time)
     {
@@ -667,7 +668,6 @@ int main(int argc, char** argv)
 
     //calcolo il tempo che ci metto per elaborare l'immagine
     start_cv=clock();
-
     //1B-COPRO  LA PART CHE NON MI INTERESSA///////////////////////////////////////////////////////////////////
     //questo serve per eliminare la pinza dall'immagine
     //cout <<bin_image.size().width << endl << bin_image.size().height<< endl;
@@ -675,27 +675,27 @@ int main(int argc, char** argv)
     {
       //levo immagine pinza più in alto
       Rect rec1;
-      rec1.x = 655;
+      rec1.x = 650;
       rec1.y = 0;
-      rec1.height = 70;
+      rec1.height = 100;
       rec1.width = bgr_image.size().width - rec1.x;
       rectangle(bgr_image, rec1, Scalar(0,0,0), CV_FILLED, 8, 0 );
       //pinza piu bassa
       Rect rec2;
       rec2.x = 640;
-      rec2.y = 410;
+      rec2.y = 440;
       rec2.height = bgr_image.size().height- rec2.y;
       rec2.width = bgr_image.size().width- rec2.x;
       rectangle(bgr_image, rec2, Scalar(0,0,0), CV_FILLED, 8, 0 );
       //cebtro pinza
       Rect rec3;
-      rec3.x = 860;
-      rec3.y = 65;
-      rec3.height = 355;
+      rec3.x = 845;
+      rec3.y = rec1.height;
+      rec3.height = 340;
       rec3.width = bgr_image.size().width- rec3.x;
       rectangle(bgr_image, rec3, Scalar(0,0,0), CV_FILLED, 8, 0 );
     }
-    if(bgr_image.size().width == 1920 && bgr_image.size().height == 1080)
+    /*if(bgr_image.size().width == 1920 && bgr_image.size().height == 1080)
     {
       //levo immagine pinza più in alto
       Rect rec1;
@@ -718,7 +718,7 @@ int main(int argc, char** argv)
       rec3.height = 670;
       rec3.width = bgr_image.size().width- rec3.x;
       rectangle(bgr_image, rec3, Scalar(0,0,0), CV_FILLED, 8, 0 );
-    }
+    }*/
 
     if(!real_time && false)
     {
@@ -798,30 +798,134 @@ int main(int argc, char** argv)
 
     /// Find the rotated rectangles  for each contour
     vector<RotatedRect> minRect( contours.size() );
-
-    
+    vector<Point2f>  boxObj;
+    int count_obj = 0;
+    Point2f rect_points[4]; 
     RNG rng(12345);
+    Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+    //resetto immagine drwing
+    drawing = Mat::zeros(cv::Size(320,180), CV_8UC3 );
+    cout << "num contours " << contours.size()<< endl;
     for( int i = 0; i< contours.size(); i++ )
     {
 
-      Point2f rect_points[4]; 
-      minRect[i] = minAreaRect( Mat(contours[i]) );
-      minRect[i].points( rect_points );
+      double area_i = contourArea(contours[i]);
+      Moments M = moments(contours[i]);
+      int cx_i = int(M.m10/M.m00);
+      int cy_i = int(M.m01/M.m00);
+      bool inside = false;
+      for(int j = 0 ; j< contours.size(); j++ )
+      {
+        if(j != i)
+        {
+          //controllo che non ci sia un altro contour che lo contiene più grande
+          
+          RotatedRect minRect_j;
+          minRect_j = minAreaRect( Mat(contours[j]) );
+          minRect_j.points( rect_points );
+          //ordino i punti dal bottom_left in senso orario
+          sort_point(rect_points);
+          //controllo che il centroide non sia interno a questo rettangolo
+          //(Bx-Px)(Ay-Py)-(By-Py)(Ax-Px) 
+          //Segno > 0 significa che P è a destra di A->B
+          //Segno < 0 significa che P è a sinistra di A->B
+          //Segno = 0 significa che P appartiene ad A->B 
+          double l1 = (rect_points[1].x-cx_i)*(rect_points[0].y-cy_i) - (rect_points[1].y-cy_i)*(rect_points[0].x-cx_i);
+          double l2 = (rect_points[2].x-cx_i)*(rect_points[1].y-cy_i) - (rect_points[2].y-cy_i)*(rect_points[1].x-cx_i);
+          double l3 = (rect_points[3].x-cx_i)*(rect_points[2].y-cy_i) - (rect_points[3].y-cy_i)*(rect_points[2].x-cx_i);
+          double l4 = (rect_points[0].x-cx_i)*(rect_points[3].y-cy_i) - (rect_points[0].y-cy_i)*(rect_points[3].x-cx_i);
+          if(l1 < 0 && l2 < 0 && l3 < 0 && l4 < 0)
+          {
+            inside = true;
+            //devo prendere quello con perimetro/area maggiore
+            if(area_i > contourArea(contours[j]))
+            {
+
+              RotatedRect minRect_i = minAreaRect( Mat(contours[i]) );
+              minRect_i.points( rect_points );
+              sort_point(rect_points);
+              boxObj.push_back(rect_points[0]);
+              boxObj.push_back(rect_points[1]);
+              boxObj.push_back(rect_points[2]);
+              boxObj.push_back(rect_points[3]);
+              count_obj ++;
+            }
+            else
+            {
+              boxObj.push_back(rect_points[0]);
+              boxObj.push_back(rect_points[1]);
+              boxObj.push_back(rect_points[2]);
+              boxObj.push_back(rect_points[3]);
+              count_obj ++;
+            }
+            break;
+          }
+        }
+      }
+      if(inside == false)
+      {
+        RotatedRect minRect_i = minAreaRect( Mat(contours[i]) );
+        minRect_i.points( rect_points );
+        sort_point(rect_points);
+        boxObj.push_back(rect_points[0]);
+        boxObj.push_back(rect_points[1]);
+        boxObj.push_back(rect_points[2]);
+        boxObj.push_back(rect_points[3]);
+        count_obj ++;
+
+      } 
+
+
+
+
+      //cout << "AreA " << contourArea(contours[i]) << endl;
+      //cout << "Perim " << arcLength(contours[i], true) << endl;
+      //Moments M = moments(contours[i]);
+      //int cx = int(M.m10/M.m00);
+      //int cy = int(M.m01/M.m00);
+      //cout << "cx " <<cx << endl;
+      //cout << "cy " << cy << endl;
+      
+      //Point2f rect_points[4]; 
+      //minRect[i] = minAreaRect( Mat(contours[i]) );
+      //minRect[i].points( rect_points );
       //ordino i punti dal bottom_left in senso orario
-      sort_point(rect_points);
+      //sort_point(rect_points);
       
 
-      Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-      // ontour
-      drawContours( drawing, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
-      for( int j = 0; j < 4; j++ )
+      cout<< "oggetti num : " << count_obj << endl;
+
+
+      if(!real_time)
       {
-        line( drawing, rect_points[j], rect_points[(j+1)%4], color, 1, 8 );
+        
+        // contour
+        drawContours( bgr_image_rs, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
+        
+
+       // for( int j = 0; j < 4; j++ )
+       // {
+       //   line( bgr_image_rs, rect_points[j], rect_points[(j+1)%4], color, 1, 8 );
+       // }  
       }
+      
     }
     
     if(!real_time )
     {
+
+      for(int i = 0 ; i < count_obj ; i ++)
+      {
+        for( int j = 0; j < 4; j++ )
+        {
+          
+          line( drawing, boxObj[j+i*4], boxObj[(j+1)%4 + i*4], color, 1, 8 );
+        }
+
+      }    
+
+        //IMMAGINE 975
+
       imshow( "drawing", drawing );
       waitKey(30);
     }
