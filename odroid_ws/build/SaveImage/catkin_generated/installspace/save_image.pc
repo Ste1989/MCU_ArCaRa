@@ -1,0 +1,8 @@
+prefix=/home/ste/Odroid_ArCaRa/odroid_ws/install
+
+Name: save_image
+Description: Description of save_image
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/ste/Odroid_ArCaRa/odroid_ws/install/lib 
+Requires: 

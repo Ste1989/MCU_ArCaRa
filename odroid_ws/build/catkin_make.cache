@@ -1,0 +1,2 @@
+SaveImage
+-DCATKIN_DEVEL_PREFIX=/home/ste/Odroid_ArCaRa/odroid_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ste/Odroid_ArCaRa/odroid_ws/install

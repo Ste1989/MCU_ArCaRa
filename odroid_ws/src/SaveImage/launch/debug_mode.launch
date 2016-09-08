@@ -1,0 +1,23 @@
+<launch>
+ 
+
+
+    <node pkg="obj_detection" type="CameraStream" name="CameraStream" output="screen" >
+	<param name="device" type="int" value="2" />
+	<param name="width" type="double" value="1920" />
+	<param name="height" type="double" value="1080" />
+	<param name="fps" type="double" value="30" />
+	<param name="brigthness" type="double" value="0.219608" />
+	<param name="contrast" type="double" value="0.3333333" />
+	<param name="saturation" type="double" value="0.501961" />
+	<param name="hue" type="double" value="0.5" />
+	<param name="gain" type="double" value="0.125" />
+	<param name="img_path" type="string" value="/home/ste/Immagini/test_drone/"/>
+	<param name="img_path_save" type="string" value="/home/"/>
+	<param name="real_time" type="bool" value="false"/>
+	<param name="save_img" type="bool" value="false"/>
+    </node>
+
+
+        
+</launch>

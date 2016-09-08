@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "webcam_hp")
+set(webcam_hp_MAINTAINER "ste <ste@todo.todo>")
+set(webcam_hp_DEPRECATED "")
+set(webcam_hp_VERSION "0.0.0")
+set(webcam_hp_BUILD_DEPENDS )
+set(webcam_hp_RUN_DEPENDS )
+set(webcam_hp_BUILDTOOL_DEPENDS "catkin")
