@@ -68,7 +68,7 @@ int min_dist_blob ;
 int max_area_blob;
 int thresholdStep_blob ;
 
-
+double area_min_contour;
 //debug mode, per clibrazione di "copri pinza"
 int x = 0;
 int y = 0;
@@ -384,7 +384,7 @@ void init_global_var(  )
   size_dil_clos = 1;//20;
   size_erode_fill = 1;
   size_dil_fill = 1;//20;
-  idx = 0;
+  idx = 870;
   id_test = 0;
 
   //binarizzazione
@@ -401,6 +401,9 @@ void init_global_var(  )
   max_area_blob = 100000;
   min_area_blob = 3000;
   blob_color = 0;
+
+  //contour
+  area_min_contour = 50;
 
 }
 /********************************************************************************
@@ -446,8 +449,8 @@ void sort_point(Point2f* rect_points)
   //adesso ho il primo punto bottom_left, il secondo top_left
   //adesso calcolo la distanza dal bottom left agli altri due punti a destra.
   //qeullo con distanza maggiore sarà il top_right
-  double dist_1 = (rect_points[0].x * rect_points[2].x ) + (rect_points[0].y * rect_points[2].y ) ;
-  double dist_2 = (rect_points[0].x * rect_points[3].x ) + (rect_points[0].y * rect_points[3].y ) ;
+  double dist_1 = (rect_points[0].x - rect_points[2].x )*(rect_points[0].x - rect_points[2].x ) + (rect_points[0].y - rect_points[2].y )*(rect_points[0].y - rect_points[2].y ) ;
+  double dist_2 = (rect_points[0].x - rect_points[3].x )*(rect_points[0].x - rect_points[3].x ) + (rect_points[0].y - rect_points[3].y )*(rect_points[0].y - rect_points[3].y ) ;
   if (dist_1 < dist_2)
   {
     //scambio di posizione il 3 con il 4
@@ -675,7 +678,7 @@ int main(int argc, char** argv)
     {
       //levo immagine pinza più in alto
       Rect rec1;
-      rec1.x = 650;
+      rec1.x = 640;
       rec1.y = 0;
       rec1.height = 100;
       rec1.width = bgr_image.size().width - rec1.x;
@@ -795,36 +798,50 @@ int main(int argc, char** argv)
 
     /// Find contours
     findContours( img_edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE, Point(0, 0) );
-
+    
     /// Find the rotated rectangles  for each contour
     vector<RotatedRect> minRect( contours.size() );
     vector<Point2f>  boxObj;
     int count_obj = 0;
-    Point2f rect_points[4]; 
+    Point2f rect_points_i[4]; 
+    Point2f rect_points[4];
     RNG rng(12345);
     Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+    bool inside = false;
     //resetto immagine drwing
     drawing = Mat::zeros(cv::Size(320,180), CV_8UC3 );
-    cout << "num contours " << contours.size()<< endl;
+
     for( int i = 0; i< contours.size(); i++ )
     {
-
-      double area_i = contourArea(contours[i]);
+      cout << i << "-------------------------------------------------------------------------------" << endl;
+      RotatedRect minRect_i = minAreaRect( Mat(contours[i]) );
+      minRect_i.points( rect_points_i );
+      sort_point(rect_points_i);
+      double l = sqrt((rect_points_i[0].x- rect_points_i[1].x)*(rect_points_i[0].x- rect_points_i[1].x)+(rect_points_i[0].y- rect_points_i[1].y)*(rect_points_i[0].y- rect_points_i[1].y));
+      double h = sqrt((rect_points_i[1].x- rect_points_i[2].x)*(rect_points_i[1].x- rect_points_i[2].x)+(rect_points_i[1].y- rect_points_i[2].y)*(rect_points_i[1].y- rect_points_i[2].y));
+      double area_i = l*h;
       Moments M = moments(contours[i]);
       int cx_i = int(M.m10/M.m00);
       int cy_i = int(M.m01/M.m00);
-      bool inside = false;
+
+      inside = false;
       for(int j = 0 ; j< contours.size(); j++ )
       {
+        //primo controllo sull'area che deve essre maggiore di area_min_contour
+        if(area_i < area_min_contour)
+        {
+          inside = true;
+          break;
+        }
         if(j != i)
         {
           //controllo che non ci sia un altro contour che lo contiene più grande
-          
           RotatedRect minRect_j;
           minRect_j = minAreaRect( Mat(contours[j]) );
           minRect_j.points( rect_points );
           //ordino i punti dal bottom_left in senso orario
           sort_point(rect_points);
+        
           //controllo che il centroide non sia interno a questo rettangolo
           //(Bx-Px)(Ay-Py)-(By-Py)(Ax-Px) 
           //Segno > 0 significa che P è a destra di A->B
@@ -834,67 +851,54 @@ int main(int argc, char** argv)
           double l2 = (rect_points[2].x-cx_i)*(rect_points[1].y-cy_i) - (rect_points[2].y-cy_i)*(rect_points[1].x-cx_i);
           double l3 = (rect_points[3].x-cx_i)*(rect_points[2].y-cy_i) - (rect_points[3].y-cy_i)*(rect_points[2].x-cx_i);
           double l4 = (rect_points[0].x-cx_i)*(rect_points[3].y-cy_i) - (rect_points[0].y-cy_i)*(rect_points[3].x-cx_i);
-          if(l1 < 0 && l2 < 0 && l3 < 0 && l4 < 0)
+          cout << l1 << l2 << l3 << l4 << endl;
+          cout <<"j" << rect_points[0] << rect_points[1] << rect_points[2] << rect_points[3] << endl;
+          double l = sqrt((rect_points[0].x- rect_points[1].x)*(rect_points[0].x- rect_points[1].x)+(rect_points[0].y- rect_points[1].y)*(rect_points[0].y- rect_points[1].y));
+          double h = sqrt((rect_points[1].x- rect_points[2].x)*(rect_points[1].x- rect_points[2].x)+(rect_points[1].y- rect_points[2].y)*(rect_points[1].y- rect_points[2].y));
+          double area_j = l*h;
+          cout << "area j " << area_j <<  endl ;
+          if(l1 > 0 && l2 > 0 && l3 > 0 && l4 > 0)
           {
-            inside = true;
             //devo prendere quello con perimetro/area maggiore
-            if(area_i > contourArea(contours[j]))
+            if(area_i >= area_j)
             {
+              //se area_i è maggiore di area_j vado avanti nell'analisi, 
+              //non so se esistono altri j che potrebbero contenere i
+              cout << area_i << endl;
 
-              RotatedRect minRect_i = minAreaRect( Mat(contours[i]) );
-              minRect_i.points( rect_points );
-              sort_point(rect_points);
-              boxObj.push_back(rect_points[0]);
-              boxObj.push_back(rect_points[1]);
-              boxObj.push_back(rect_points[2]);
-              boxObj.push_back(rect_points[3]);
-              count_obj ++;
+              cout << "non contenuto" << endl;
+              inside = false;
             }
             else
             {
-              boxObj.push_back(rect_points[0]);
-              boxObj.push_back(rect_points[1]);
-              boxObj.push_back(rect_points[2]);
-              boxObj.push_back(rect_points[3]);
-              count_obj ++;
+              //se area_i è minore di area_j, sicuramente lo posso scartare
+              cout << "contenuto" << endl;
+              inside = true;
+              break;
             }
-            break;
           }
         }
       }
+      
+      //ho finito l'analisi per i. Se inside = false, allora è il piu grande e lo devo prendere
       if(inside == false)
       {
-        RotatedRect minRect_i = minAreaRect( Mat(contours[i]) );
-        minRect_i.points( rect_points );
-        sort_point(rect_points);
-        boxObj.push_back(rect_points[0]);
-        boxObj.push_back(rect_points[1]);
-        boxObj.push_back(rect_points[2]);
-        boxObj.push_back(rect_points[3]);
+       
+        boxObj.push_back(rect_points_i[0]);
+        boxObj.push_back(rect_points_i[1]);
+        boxObj.push_back(rect_points_i[2]);
+        boxObj.push_back(rect_points_i[3]);
+        cout <<"i" << rect_points_i[0] << rect_points_i[1] << rect_points_i[2] << rect_points_i[3] << endl;
         count_obj ++;
+        cout << "AreA " << area_i << endl;
+        //cout << "Perim " << arcLength(contours[i], true) << endl;
+        Moments M = moments(contours[i]);
+        int cx = int(M.m10/M.m00);
+        int cy = int(M.m01/M.m00);
+        cout << "cx " <<cx << endl;
+        cout << "cy " << cy << endl;
 
       } 
-
-
-
-
-      //cout << "AreA " << contourArea(contours[i]) << endl;
-      //cout << "Perim " << arcLength(contours[i], true) << endl;
-      //Moments M = moments(contours[i]);
-      //int cx = int(M.m10/M.m00);
-      //int cy = int(M.m01/M.m00);
-      //cout << "cx " <<cx << endl;
-      //cout << "cy " << cy << endl;
-      
-      //Point2f rect_points[4]; 
-      //minRect[i] = minAreaRect( Mat(contours[i]) );
-      //minRect[i].points( rect_points );
-      //ordino i punti dal bottom_left in senso orario
-      //sort_point(rect_points);
-      
-
-      cout<< "oggetti num : " << count_obj << endl;
-
 
       if(!real_time)
       {
@@ -910,7 +914,7 @@ int main(int argc, char** argv)
       }
       
     }
-    
+    cout<< "oggetti num : " << count_obj << endl;
     if(!real_time )
     {
 
@@ -923,8 +927,6 @@ int main(int argc, char** argv)
         }
 
       }    
-
-        //IMMAGINE 975
 
       imshow( "drawing", drawing );
       waitKey(30);
