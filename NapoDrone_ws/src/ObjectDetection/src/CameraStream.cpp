@@ -384,7 +384,7 @@ void init_global_var(  )
   size_dil_clos = 1;//20;
   size_erode_fill = 1;
   size_dil_fill = 1;//20;
-  idx = 870;
+  idx = 695;
   id_test = 0;
 
   //binarizzazione
@@ -404,6 +404,29 @@ void init_global_var(  )
 
   //contour
   area_min_contour = 50;
+
+}
+/********************************************************************************
+*
+*    CALCOLA BARICENTRO
+*
+**************************************************************************************/
+void calcola_baricentro(Point2f* rect_points, double* cx, double* cy)
+{
+  //calcolo baricentgro dall'intersezione delle diagonali
+  //double m1 = (rect_points[0].y - rect_points[2].y)/(rect_points[0].x - rect_points[2].x);
+  //double m2 = (rect_points[1].y - rect_points[3].y)/(rect_points[1].x - rect_points[3].x);
+  //double A1 = m1-m2;
+  //double A2 = rect_points[1].y-rect_points[0].y + m1 * rect_points[0].x - m2 * rect_points[1].x;
+  //coordinata del baricentro
+  //*cx = A2/A1;
+  //*cy = m1 * (*cx - rect_points[0].x) + rect_points[0].y;
+
+  *cx = (rect_points[0].x+rect_points[1].x+rect_points[2].x+rect_points[3].x)/4;
+  *cy = (rect_points[0].y+rect_points[1].y+rect_points[2].y+rect_points[3].y)/4;
+
+  return;
+
 
 }
 /********************************************************************************
@@ -797,14 +820,14 @@ int main(int argc, char** argv)
     vector<Vec4i> hierarchy;
 
     /// Find contours
-    findContours( img_edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE, Point(0, 0) );
+    findContours( img_edges, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, Point(0, 0) );
     
     /// Find the rotated rectangles  for each contour
     vector<RotatedRect> minRect( contours.size() );
     vector<Point2f>  boxObj;
     int count_obj = 0;
     Point2f rect_points_i[4]; 
-    Point2f rect_points[4];
+    Point2f rect_points_j[4];
     RNG rng(12345);
     Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
     bool inside = false;
@@ -813,17 +836,25 @@ int main(int argc, char** argv)
 
     for( int i = 0; i< contours.size(); i++ )
     {
-      cout << i << "-------------------------------------------------------------------------------" << endl;
+      //considero il contorno i-esimo e ne calcolo il rettangolo minimo che lo contiene
       RotatedRect minRect_i = minAreaRect( Mat(contours[i]) );
+      //prendo i 4 punti
       minRect_i.points( rect_points_i );
+      //li ordino in senso orario
       sort_point(rect_points_i);
+      
+      //calcolo l'area
       double l = sqrt((rect_points_i[0].x- rect_points_i[1].x)*(rect_points_i[0].x- rect_points_i[1].x)+(rect_points_i[0].y- rect_points_i[1].y)*(rect_points_i[0].y- rect_points_i[1].y));
       double h = sqrt((rect_points_i[1].x- rect_points_i[2].x)*(rect_points_i[1].x- rect_points_i[2].x)+(rect_points_i[1].y- rect_points_i[2].y)*(rect_points_i[1].y- rect_points_i[2].y));
       double area_i = l*h;
-      Moments M = moments(contours[i]);
-      int cx_i = int(M.m10/M.m00);
-      int cy_i = int(M.m01/M.m00);
+      
+      //calcolo intersezione delle diagonali per calcolare il baricentro
+      double cx_i;
+      double cy_i;
+      calcola_baricentro(rect_points_i, &cx_i, &cy_i);
 
+
+      //devo vedere se questo rettangolo è contenuto in altri rettangoli
       inside = false;
       for(int j = 0 ; j< contours.size(); j++ )
       {
@@ -833,39 +864,40 @@ int main(int argc, char** argv)
           inside = true;
           break;
         }
+
         if(j != i)
         {
-          //controllo che non ci sia un altro contour che lo contiene più grande
+          //prendo il contorno j-esimo
           RotatedRect minRect_j;
+          //calcolo il rettangolo di area minimia che lo contiene
           minRect_j = minAreaRect( Mat(contours[j]) );
-          minRect_j.points( rect_points );
+          minRect_j.points( rect_points_j );
           //ordino i punti dal bottom_left in senso orario
-          sort_point(rect_points);
+          sort_point(rect_points_j);
         
           //controllo che il centroide non sia interno a questo rettangolo
           //(Bx-Px)(Ay-Py)-(By-Py)(Ax-Px) 
           //Segno > 0 significa che P è a destra di A->B
           //Segno < 0 significa che P è a sinistra di A->B
-          //Segno = 0 significa che P appartiene ad A->B 
-          double l1 = (rect_points[1].x-cx_i)*(rect_points[0].y-cy_i) - (rect_points[1].y-cy_i)*(rect_points[0].x-cx_i);
-          double l2 = (rect_points[2].x-cx_i)*(rect_points[1].y-cy_i) - (rect_points[2].y-cy_i)*(rect_points[1].x-cx_i);
-          double l3 = (rect_points[3].x-cx_i)*(rect_points[2].y-cy_i) - (rect_points[3].y-cy_i)*(rect_points[2].x-cx_i);
-          double l4 = (rect_points[0].x-cx_i)*(rect_points[3].y-cy_i) - (rect_points[0].y-cy_i)*(rect_points[3].x-cx_i);
-          cout << l1 << l2 << l3 << l4 << endl;
-          cout <<"j" << rect_points[0] << rect_points[1] << rect_points[2] << rect_points[3] << endl;
-          double l = sqrt((rect_points[0].x- rect_points[1].x)*(rect_points[0].x- rect_points[1].x)+(rect_points[0].y- rect_points[1].y)*(rect_points[0].y- rect_points[1].y));
-          double h = sqrt((rect_points[1].x- rect_points[2].x)*(rect_points[1].x- rect_points[2].x)+(rect_points[1].y- rect_points[2].y)*(rect_points[1].y- rect_points[2].y));
-          double area_j = l*h;
-          cout << "area j " << area_j <<  endl ;
+          //Segno = 0 significa che P appartiene ad A->B
+          double l1 = (rect_points_j[1].x-cx_i)*(rect_points_j[0].y-cy_i) - (rect_points_j[1].y-cy_i)*(rect_points_j[0].x-cx_i);
+          double l2 = (rect_points_j[2].x-cx_i)*(rect_points_j[1].y-cy_i) - (rect_points_j[2].y-cy_i)*(rect_points_j[1].x-cx_i);
+          double l3 = (rect_points_j[3].x-cx_i)*(rect_points_j[2].y-cy_i) - (rect_points_j[3].y-cy_i)*(rect_points_j[2].x-cx_i);
+          double l4 = (rect_points_j[0].x-cx_i)*(rect_points_j[3].y-cy_i) - (rect_points_j[0].y-cy_i)*(rect_points_j[3].x-cx_i);
+          
+          
           if(l1 > 0 && l2 > 0 && l3 > 0 && l4 > 0)
           {
-            //devo prendere quello con perimetro/area maggiore
+
+            //calolo l'area del rettangolo j-esimo
+            double l = sqrt((rect_points_j[0].x- rect_points_j[1].x)*(rect_points_j[0].x- rect_points_j[1].x)+(rect_points_j[0].y- rect_points_j[1].y)*(rect_points_j[0].y- rect_points_j[1].y));
+            double h = sqrt((rect_points_j[1].x- rect_points_j[2].x)*(rect_points_j[1].x- rect_points_j[2].x)+(rect_points_j[1].y- rect_points_j[2].y)*(rect_points_j[1].y- rect_points_j[2].y));
+            double area_j = l*h;
+            
             if(area_i >= area_j)
             {
               //se area_i è maggiore di area_j vado avanti nell'analisi, 
               //non so se esistono altri j che potrebbero contenere i
-              cout << area_i << endl;
-
               cout << "non contenuto" << endl;
               inside = false;
             }
@@ -888,30 +920,19 @@ int main(int argc, char** argv)
         boxObj.push_back(rect_points_i[1]);
         boxObj.push_back(rect_points_i[2]);
         boxObj.push_back(rect_points_i[3]);
-        cout <<"i" << rect_points_i[0] << rect_points_i[1] << rect_points_i[2] << rect_points_i[3] << endl;
+        //increemento count obj
         count_obj ++;
-        cout << "AreA " << area_i << endl;
-        //cout << "Perim " << arcLength(contours[i], true) << endl;
-        Moments M = moments(contours[i]);
-        int cx = int(M.m10/M.m00);
-        int cy = int(M.m01/M.m00);
-        cout << "cx " <<cx << endl;
-        cout << "cy " << cy << endl;
-
       } 
 
-      if(!real_time)
-      {
-        
+      //if(!real_time)
+      //{  
         // contour
-        drawContours( bgr_image_rs, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
-        
-
+       // drawContours( bgr_image_rs, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
        // for( int j = 0; j < 4; j++ )
        // {
        //   line( bgr_image_rs, rect_points[j], rect_points[(j+1)%4], color, 1, 8 );
        // }  
-      }
+      //}
       
     }
     cout<< "oggetti num : " << count_obj << endl;
@@ -923,12 +944,12 @@ int main(int argc, char** argv)
         for( int j = 0; j < 4; j++ )
         {
           
-          line( drawing, boxObj[j+i*4], boxObj[(j+1)%4 + i*4], color, 1, 8 );
+          line( bgr_image_rs, boxObj[j+i*4], boxObj[(j+1)%4 + i*4], color, 2, 8 );
         }
 
       }    
 
-      imshow( "drawing", drawing );
+      imshow( "drawing", bgr_image_rs );
       waitKey(30);
     }
 
