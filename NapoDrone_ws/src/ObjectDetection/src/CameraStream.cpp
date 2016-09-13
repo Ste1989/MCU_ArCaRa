@@ -627,11 +627,12 @@ int main(int argc, char** argv)
   string str_file = img_path_save + "/time_acquisizione.txt";
   //fd1=fopen(str_file, "w");
   //fclose(fd1);
-
+  
   while (nh.ok()) 
   {
     double tempo;
     start=clock();
+
     
     if(real_time)
     {
