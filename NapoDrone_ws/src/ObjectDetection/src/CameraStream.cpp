@@ -261,111 +261,7 @@ Mat Binarize_Image( Mat src_gray)
   threshold( src_gray, dst, bin_threshold, max_BINARY_value,bin_type);
   return dst;
 }
-/********************************************************************************
-*
-*    FIND CONTOURS
-*
-**************************************************************************************/
-/** @function thresh_callback */
-void thresh_callback(Mat src_gray)
-{
-   
-  int thresh ;
-  int max_thresh;
-  thresh = 100;
-  max_thresh = 255;
-  RNG rng(12345);
 
-  Mat canny_output;
-  vector<vector<Point> > contours;
-  vector<Vec4i> hierarchy;
-
-  /// Detect edges using canny
-  Canny( src_gray, canny_output, thresh, thresh*2, 3 );
-  /// Find contours
-  findContours( canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE, Point(0, 0) );
-  //CV_CHAIN_APPROX_SIMPLE
-  /// Draw contours
-  Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
-  for( int i = 0; i< contours.size(); i++ )
-      {
-         Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-         drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
-      }
-  /// Show in a window
-  namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-  imshow( "Contours", drawing );
-  waitKey(30);
-  
-  int idx = -1;
-  double area_max = 0;
-  vector<Point> contours_max;
-
-  for(int i = 0; i < contours.size(); i++)
-  { cout << contourArea(contours[i]) << endl;
-    if(contourArea(contours[i]) > area_max)
-    {
-      area_max = contourArea(contours[i]);
-      idx = i;
-    }
-  }
-  cout << "area max" << area_max << endl;
-  //copio i valori dentro il vettore
-  for(int i = 0; i < contours[idx].size(); i++)
-  {
-    contours_max.push_back(contours[idx][i]);
-  }
-
-
-  /// Approximate contours to polygons + get bounding rects and circles
-    vector<vector<Point> > contours_poly( 1);
-    vector<Rect> boundRect( 1);
-
-    //epsilon – Parameter specifying the approximation accuracy. This is the maximum distance between the original curve and its approximation.
-    int epsilon = 3;
-    bool closed = true;
-    for( int i = 0; i < 1; i++ )
-    { 
-      approxPolyDP( Mat(contours_max), contours_poly[i], epsilon, closed );
-        boundRect[i] = boundingRect( Mat(contours_poly[i]) );
-        
-    }
-
-
-
-     vector<Moments> mu(1);
-    for( size_t i = 0; i < 1; i++ )
-      {
-        mu[i] = moments( contours_max, false ); }
-
-    vector<Point2f> mc( 1 );
-    for( size_t i = 0; i < 1; i++ )
-     { 
-      mc[i] = Point2f( static_cast<float>(mu[i].m10/mu[i].m00) , static_cast<float>(mu[i].m01/mu[i].m00) ); 
-     }
-    
-
-
-    /// Draw polygonal contour + bonding rects + circles
-    Mat drawing_box = Mat::zeros( canny_output.size(), CV_8UC3 );
-    for( int i = 0; i< 1; i++ )
-    {
-       Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-       drawContours( drawing_box, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
-       //rectangle( drawing_box, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
-        circle( drawing_box, mc[i], 4, color, -1, 8, 0 );
-
-     }
-   
-
-  /// Show in a window
-  namedWindow( "Contours box", CV_WINDOW_AUTOSIZE );
-  imshow( "Contours box", drawing_box );
-  
-  waitKey(30);
-
-
-}
 /********************************************************************************
 *
 *    INIT VARIABILI GLOBALI
@@ -507,8 +403,6 @@ void find_object(vector<vector<Point> > contours, vector<Point2f>*  boxObj)
   
   
   bool inside = false;
-
-
   for( int i = 0; i< contours.size(); i++ )
   {
       //considero il contorno i-esimo e ne calcolo il rettangolo minimo che lo contiene
@@ -528,82 +422,78 @@ void find_object(vector<vector<Point> > contours, vector<Point2f>*  boxObj)
       double cy_i;
       calcola_baricentro(rect_points_i, &cx_i, &cy_i);
 
-
-      //devo vedere se questo rettangolo è contenuto in altri rettangoli
-      inside = false;
-      for(int j = 0 ; j< contours.size(); j++ )
+      //primo controllo sull'area che deve essre maggiore di area_min_contour
+      if(area_i >= area_min_contour)
       {
-        //primo controllo sull'area che deve essre maggiore di area_min_contour
-        if(area_i < area_min_contour)
+        //devo vedere se questo rettangolo è contenuto in altri rettangoli
+        inside = false;
+        for(int j = 0 ; j< contours.size(); j++ )
         {
-          inside = true;
-          break;
-        }
-
-        if(j != i)
-        {
-          //prendo il contorno j-esimo
-          RotatedRect minRect_j;
-          //calcolo il rettangolo di area minimia che lo contiene
-          minRect_j = minAreaRect( Mat(contours[j]) );
-          minRect_j.points( rect_points_j );
-          //ordino i punti dal bottom_left in senso orario
-          sort_point(rect_points_j);
-        
-          //controllo che il centroide non sia interno a questo rettangolo
-          //(Bx-Px)(Ay-Py)-(By-Py)(Ax-Px) 
-          //Segno > 0 significa che P è a destra di A->B
-          //Segno < 0 significa che P è a sinistra di A->B
-          //Segno = 0 significa che P appartiene ad A->B
-          double l1 = (rect_points_j[1].x-cx_i)*(rect_points_j[0].y-cy_i) - (rect_points_j[1].y-cy_i)*(rect_points_j[0].x-cx_i);
-          double l2 = (rect_points_j[2].x-cx_i)*(rect_points_j[1].y-cy_i) - (rect_points_j[2].y-cy_i)*(rect_points_j[1].x-cx_i);
-          double l3 = (rect_points_j[3].x-cx_i)*(rect_points_j[2].y-cy_i) - (rect_points_j[3].y-cy_i)*(rect_points_j[2].x-cx_i);
-          double l4 = (rect_points_j[0].x-cx_i)*(rect_points_j[3].y-cy_i) - (rect_points_j[0].y-cy_i)*(rect_points_j[3].x-cx_i);
           
-          
-          if(l1 > 0 && l2 > 0 && l3 > 0 && l4 > 0)
+          if(j != i)
           {
-
-            //calolo l'area del rettangolo j-esimo
-            double l = sqrt((rect_points_j[0].x- rect_points_j[1].x)*(rect_points_j[0].x- rect_points_j[1].x)+(rect_points_j[0].y- rect_points_j[1].y)*(rect_points_j[0].y- rect_points_j[1].y));
-            double h = sqrt((rect_points_j[1].x- rect_points_j[2].x)*(rect_points_j[1].x- rect_points_j[2].x)+(rect_points_j[1].y- rect_points_j[2].y)*(rect_points_j[1].y- rect_points_j[2].y));
-            double area_j = l*h;
+            //prendo il contorno j-esimo
+            RotatedRect minRect_j;
+            //calcolo il rettangolo di area minimia che lo contiene
+            minRect_j = minAreaRect( Mat(contours[j]) );
+            minRect_j.points( rect_points_j );
+            //ordino i punti dal bottom_left in senso orario
+            sort_point(rect_points_j);
+          
+            //controllo che il centroide non sia interno a questo rettangolo
+            //(Bx-Px)(Ay-Py)-(By-Py)(Ax-Px) 
+            //Segno > 0 significa che P è a destra di A->B
+            //Segno < 0 significa che P è a sinistra di A->B
+            //Segno = 0 significa che P appartiene ad A->B
+            double l1 = (rect_points_j[1].x-cx_i)*(rect_points_j[0].y-cy_i) - (rect_points_j[1].y-cy_i)*(rect_points_j[0].x-cx_i);
+            double l2 = (rect_points_j[2].x-cx_i)*(rect_points_j[1].y-cy_i) - (rect_points_j[2].y-cy_i)*(rect_points_j[1].x-cx_i);
+            double l3 = (rect_points_j[3].x-cx_i)*(rect_points_j[2].y-cy_i) - (rect_points_j[3].y-cy_i)*(rect_points_j[2].x-cx_i);
+            double l4 = (rect_points_j[0].x-cx_i)*(rect_points_j[3].y-cy_i) - (rect_points_j[0].y-cy_i)*(rect_points_j[3].x-cx_i);
             
-            if(area_i >= area_j)
+            
+            if(l1 > 0 && l2 > 0 && l3 > 0 && l4 > 0)
             {
-              //se area_i è maggiore di area_j vado avanti nell'analisi, 
-              //non so se esistono altri j che potrebbero contenere i
-              cout << "non contenuto" << endl;
-              inside = false;
-            }
-            else
-            {
-              //se area_i è minore di area_j, sicuramente lo posso scartare
-              cout << "contenuto" << endl;
-              inside = true;
-              break;
+
+              //calolo l'area del rettangolo j-esimo
+              double l = sqrt((rect_points_j[0].x- rect_points_j[1].x)*(rect_points_j[0].x- rect_points_j[1].x)+(rect_points_j[0].y- rect_points_j[1].y)*(rect_points_j[0].y- rect_points_j[1].y));
+              double h = sqrt((rect_points_j[1].x- rect_points_j[2].x)*(rect_points_j[1].x- rect_points_j[2].x)+(rect_points_j[1].y- rect_points_j[2].y)*(rect_points_j[1].y- rect_points_j[2].y));
+              double area_j = l*h;
+              
+              if(area_i >= area_j)
+              {
+                //se area_i è maggiore di area_j vado avanti nell'analisi, 
+                //non so se esistono altri j che potrebbero contenere i
+                cout << "non contenuto" << endl;
+                inside = false;
+              }
+              else
+              {
+                //se area_i è minore di area_j, sicuramente lo posso scartare
+                cout << "contenuto" << endl;
+                inside = true;
+                break;
+              }
             }
           }
         }
+        
+        //ho finito l'analisi per i. Se inside = false, allora è il piu grande e lo devo prendere
+        if(inside == false)
+        {
+         
+          (*boxObj).push_back(rect_points_i[0]);
+          (*boxObj).push_back(rect_points_i[1]);
+          (*boxObj).push_back(rect_points_i[2]);
+          (*boxObj).push_back(rect_points_i[3]);
+          
+          
+        }
       }
-      
-      //ho finito l'analisi per i. Se inside = false, allora è il piu grande e lo devo prendere
-      if(inside == false)
+      else
       {
-       
-        (*boxObj).push_back(rect_points_i[0]);
-        (*boxObj).push_back(rect_points_i[1]);
-        (*boxObj).push_back(rect_points_i[2]);
-        (*boxObj).push_back(rect_points_i[3]);
-        
-        
+        //..area troppo piccola
       } 
-
-      
     }
-
-
-
 
 }
 
@@ -960,10 +850,7 @@ int main(int argc, char** argv)
     vector<Point2f>  boxObj;
     find_object(contours, &boxObj);
 
-
-    
     cout<< "oggetti num : " <<  boxObj.size() / 4 << endl;
-    
     if(!real_time )
     {
       RNG rng(12345);
@@ -982,7 +869,7 @@ int main(int argc, char** argv)
       waitKey(30);
     }
 
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     end=clock();
