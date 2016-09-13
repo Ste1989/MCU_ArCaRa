@@ -27,8 +27,8 @@ V :0-255
 
 clock_t start,end;
 clock_t start_cv;
-
-
+clock_t currentTime;
+FILE *fd1 ;
 ros::Publisher info_pub;
 image_transport::Publisher pub;
 
@@ -100,14 +100,14 @@ void make_control_window(  )
   cvCreateTrackbar("Fill Dil", "Test Color", &size_dil_fill , 255);
 
   /**********************Creo Una Finestra  DI Controllo***********************/
-  namedWindow("Blob", CV_WINDOW_AUTOSIZE); //create a window called "Blob"
+  /*namedWindow("Blob", CV_WINDOW_AUTOSIZE); //create a window called "Blob"
   cvCreateTrackbar("Min Tresh", "Blob", &min_threshold_blob , 255);
   cvCreateTrackbar("Max Tresh", "Blob", &max_threshold_blob , 255);
   cvCreateTrackbar("Blob Threshold Step", "Blob", &thresholdStep_blob , 50);
   cvCreateTrackbar("Blob min Area", "Blob", &min_area_blob  ,10000);
   cvCreateTrackbar("Blob max Area", "Blob", &max_area_blob  ,1000000);
   //cvCreateTrackbar("Blob Color", "Blob", &blob_color  , 255);
-  cvCreateTrackbar("Min Dist", "Blob", &min_dist_blob , 500);
+  cvCreateTrackbar("Min Dist", "Blob", &min_dist_blob , 500);*/
   /**********************Creo Una Finestra  DI Controllo***********************/
   //namedWindow("Bin e Contour", CV_WINDOW_AUTOSIZE); //create a window called "Bin e Contour"
   //cvCreateTrackbar("Canny Tresh", "Bin e Contour", &thresh  , max_thresh);
@@ -615,6 +615,9 @@ int main(int argc, char** argv)
   Mat drawing = Mat::zeros(cv::Size(320,180), CV_8UC3 );
 
   int id_img = 0;
+  
+  fd1=fopen(img_path_save + "/time_acquisizione.txt", "w");
+  fclose(fd1);
 
   while (nh.ok()) 
   {
@@ -649,6 +652,16 @@ int main(int argc, char** argv)
         //salvo su disco l'immagine
 
         imwrite( str_path, bgr_image );
+        
+        currentTime = clock();
+        //cout << double(currentTime)/CLOCKS_PER_SEC << endl;
+
+        //salvo i tempi a cui ho acquisito la nuova immagine
+        fd1=fopen( img_path_save + "/time_acquisizione.txt", "a");
+        fprintf(fd1, "%i", id_img);
+        fprintf(fd1, "%s", "  ");
+        fprintf(fd1, "%f\n",double(currentTime)/CLOCKS_PER_SEC) ;
+        fclose(fd1);
 
         id_img++;
       }
@@ -681,6 +694,9 @@ int main(int argc, char** argv)
       
     }
    
+
+
+
 
 
   
