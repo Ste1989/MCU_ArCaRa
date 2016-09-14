@@ -624,9 +624,9 @@ int main(int argc, char** argv)
   
 
   int id_img = 0;
-  string str_file = img_path_save + "/time_acquisizione.txt";
-  //fd1=fopen(str_file, "w");
-  //fclose(fd1);
+ 
+  fd1=fopen("/home/odroid/time.txt", "w");
+  fclose(fd1);
   
   while (nh.ok()) 
   {
@@ -667,11 +667,11 @@ int main(int argc, char** argv)
         //cout << double(currentTime)/CLOCKS_PER_SEC << endl;
 
         //salvo i tempi a cui ho acquisito la nuova immagine
-        //fd1=fopen( str_file, "a");
-        //fprintf(fd1, "%i", id_img);
-        //fprintf(fd1, "%s", "  ");
-        //fprintf(fd1, "%f\n",double(currentTime)/CLOCKS_PER_SEC) ;
-        //fclose(fd1);
+        fd1=fopen("/home/odroid/time.txt", "a");
+        fprintf(fd1, "%i", id_img);
+        fprintf(fd1, "%s", "  ");
+        fprintf(fd1, "%f\n",double(currentTime)/CLOCKS_PER_SEC) ;
+        fclose(fd1);
 
         id_img++;
       }
@@ -698,6 +698,7 @@ int main(int argc, char** argv)
 
       //apro l'immagine a colori
       bgr_image = imread( str, CV_LOAD_IMAGE_COLOR );
+    
       //la visualizzo a PC
       imshow( "original image", bgr_image );
       waitKey(30);
@@ -707,7 +708,8 @@ int main(int argc, char** argv)
 
 
 
-
+    //calcolo il tempo che ci metto per elaborare l'immagine
+    start_cv=clock();
 
   
     //pubblico sul topic l'immagine che ho appena acquisito//////////////////////////////////////////////////
@@ -718,8 +720,7 @@ int main(int argc, char** argv)
     pub.publish(msg_image);
     info_pub.publish(info_image);
 
-    //calcolo il tempo che ci metto per elaborare l'immagine
-    start_cv=clock();
+
     //1B-COPRO  LA PART CHE NON MI INTERESSA///////////////////////////////////////////////////////////////////
     //questo serve per eliminare la pinza dall'immagine
     //cout <<bin_image.size().width << endl << bin_image.size().height<< endl;
@@ -878,7 +879,7 @@ int main(int argc, char** argv)
     cout << "FREQ: " << 1/tempo << endl;
 
     tempo=((double)(end-start_cv))/CLOCKS_PER_SEC;
-    cout << "FREQ COMPUTER VISION: " << 1/tempo << endl;
+    cout << "FREQ COMPUTER VISION: " << tempo << "meno di: " << 0.05 << endl;
 
     
     //valuta callback
