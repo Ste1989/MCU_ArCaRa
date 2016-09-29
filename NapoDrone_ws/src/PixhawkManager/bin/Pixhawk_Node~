@@ -3,6 +3,7 @@ import rospy
 import time
 from std_msgs.msg import String
 from std_msgs.msg import Int32
+from geometry_msgs.msg import Point
 from serial_manager.msg import Param
 import dronekit_sitl
 # Import DroneKit-Python
@@ -293,7 +294,22 @@ def RTL_the_vehicle():
    current_status = status_px4.LANDED
    pub_status.publish(current_status)
 
+#######################################################
+#						     #
+#  leggi assetto veicolo			     #
+#						     #
+#######################################################
+def vehicle_read_attitude(vehicle):
+    print ' Attitude: %s' % vehicle.attitude
+    print ' Rool: %s' % (vehicle.attitude.roll*180/3.14)
+    print ' Pitch: %s' % (vehicle.attitude.pitch*180/3.14)
+    print ' Yaw: %s' % (vehicle.attitude.yaw*180/3.14)
 
+    attitude = Point()
+    attitude.x = vehicle.attitude.roll
+    attitude.y = vehicle.attitude.pitch
+    attitude.z = vehicle.attitude.yaw
+    pub_attitude.publish(attitude)
 #######################################################
 #						     #
 #  leggi lo stato del veciolo			     #
@@ -363,8 +379,8 @@ def init_vehicle():
     pub_status.publish(status_px4.ARMABLE)
     current_status = status_px4.ARMABLE
     
-    #di default scelgo che il Copter sia in STABILIZE MODE
-    vehicle.mode = VehicleMode("STABILIZE")
+    #di default scelgo che il Copter sia in LOITER MODE
+    vehicle.mode = VehicleMode("LOITER")
 #######################################################
 #						     #
 #  MAIN						     #
@@ -379,7 +395,7 @@ if __name__ == '__main__':
     
     #dichiaro un publisher
     pub_status = rospy.Publisher('/napodrone/px4_status', Int32, queue_size=10)
-    
+    pub_attitude = rospy.Publisher('/napodrone/attitude', Point, queue_size=100)
 
     #dichiaro un subscriber
     rospy.Subscriber("/napodrone/cmd_request", Int32, callback_cmd)
@@ -415,7 +431,8 @@ if __name__ == '__main__':
 
    
     while not rospy.is_shutdown():
-	#print 'current status : %s' % current_status    
+	#print 'current status : %s' % current_status   
+	vehicle_read_attitude(vehicle) 
 	rate.sleep()
 
 
