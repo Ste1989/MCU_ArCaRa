@@ -2,7 +2,7 @@
  
 
 
-    <node pkg="obj_detection" type="CameraStream" name="CameraStream" output="screen" >
+    <node pkg="obj_detection" type="VisionNode" name="VisionNode" output="screen" >
 	<param name="device" type="int" value="2" />
 	<param name="width" type="double" value="960" />
 	<param name="height" type="double" value="540" />

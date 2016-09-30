@@ -59,11 +59,12 @@ include_directories(
 )
 
 
+add_library(VisionFunction  src/vision_function.cpp)
+target_link_libraries(VisionFunction  ${OpenCV_LIBS})
 
-
-add_executable(CameraStream src/CameraStream.cpp)
+add_executable(VisionNode src/vision_node.cpp)
 #add_dependencies(CameraStream CameraStream_gencpp ${PROJECT_NAME})
-target_link_libraries(CameraStream ${OpenCV_LIBS} ${catkin_LIBRARIES} )
+target_link_libraries(VisionNode VisionFunction ${OpenCV_LIBS} ${catkin_LIBRARIES} )
 
 
 catkin_package()
