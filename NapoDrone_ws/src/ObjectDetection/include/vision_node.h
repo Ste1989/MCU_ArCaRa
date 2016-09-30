@@ -8,6 +8,7 @@
 #include <string>
 #include <time.h>
 #include <opencv2/opencv.hpp>
+#include <math.h>
 //#include <opencv2/imgproc/imgproc.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 
@@ -106,3 +107,5 @@ Mat Binarize_Image( Mat src_gray);
 void calcola_baricentro(Point2f* rect_points, double* cx, double* cy);
 void sort_point(Point2f* rect_points);
 void find_object(vector<vector<Point> > contours, vector<Point2f>*  boxObj);
+void virtual_image_plane_roll(double phi, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v);
+void virtual_image_plane_pitch(double theta, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v);

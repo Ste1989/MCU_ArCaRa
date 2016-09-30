@@ -267,7 +267,7 @@ void sort_point(Point2f* rect_points)
   }
 
 }
-/********************************************************************************
+/************************************************************************************
 *
 *    CALCOLA RETTANGOLI ESTERNI
 *
@@ -375,5 +375,61 @@ void find_object(vector<vector<Point> > contours, vector<Point2f>*  boxObj)
       } 
     }
 
+}
+
+/************************************************************************************
+*
+*   PIANO IMMAGINE VIRTUALE: ROLL
+*
+**************************************************************************************/
+void virtual_image_plane_roll(double phi, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v)
+{
+  //dato un angolo di rollio (phi)
+  //coordinate sul piano immagine [u1,v1]
+  //resituisce coordinate [u,v] sul piano immagine virtuale
+
+  //coordinata u
+  double num = fv*(u1-u0);
+  double den = fu*fv*cos(phi) + fu*(v1-v0)*sin(phi);
+ 
+  *u = num/den;
+  //coordinata v
+
+  num = -fv*sin(phi) + (v1-v0)*cos(phi);
+  den = fv*cos(phi) + (v1-v0)*sin(phi);
+ 
+  *v = num/den;
+
+  return;
+}
+  
+
+
+
+
+/************************************************************************************
+*
+*   PIANO IMMAGINE VIRTUALE: PITCH
+*
+**************************************************************************************/
+void virtual_image_plane_pitch(double theta, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v)
+{
+  //dato un angolo di pitch (theta)
+  //coordinate sul piano immagine [u1,v1]
+  //resituisce coordinate [u,v] sul piano immagine virtuale
+
+  //coordinata u
+  double num = fu*sin(theta) + (u1-u0)*cos(theta);
+  double den = (u1-u0)*sin(theta) + fu*cos(theta);
+ 
+  *u = num/den;
+  //coordinata v
+
+  num = fu*(v1-v0);
+  den = fu*fv*cos(theta) + fv*(u1-u0)*sin(theta);
+ 
+  *v = num/den;
+
+  return;
 }
 
