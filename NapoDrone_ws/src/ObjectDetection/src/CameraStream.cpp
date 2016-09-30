@@ -22,6 +22,7 @@ V :0-255
 //#include <opencv2/imgproc/imgproc.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 #include <sensor_msgs/CameraInfo.h>
+#include <geometry_msgs/Point.h>
 #include <string>
 #include <time.h>
 
@@ -29,8 +30,12 @@ clock_t start,end;
 clock_t start_cv;
 clock_t currentTime;
 FILE *fd1 ;
+
+//Topic Publisher
 ros::Publisher info_pub;
-image_transport::Publisher pub;
+image_transport::Publisher image_pub;
+//Topic Subscriber
+ros::Subscriber attitude_sub;
 
 using namespace cv;
 using namespace std;
@@ -44,7 +49,7 @@ int const max_type = 4;
 int const max_BINARY_value = 255;
 
 int bin_threshold ;
-int bin_type; ;
+int bin_type;
 
 
 int iLowH ;
@@ -74,6 +79,12 @@ int x = 0;
 int y = 0;
 int h = 20;
 int w = 20;
+struct attitude
+{
+    double roll;
+    double pitch;
+    double yaw;
+}attitude_UAV;
 /********************************************************************************
 *
 *    FINESTRE DI CONTROLLO
@@ -121,7 +132,7 @@ void make_control_window(  )
 *    BLOB
 *
 **************************************************************************************/
-void find_and_extract_blob(Mat src_image)
+/*void find_and_extract_blob(Mat src_image)
 {
 
   // Set up the detector with parameters.
@@ -202,6 +213,7 @@ void find_and_extract_blob(Mat src_image)
 
   
 }
+*/
 /********************************************************************************
 *
 *    MORPHOLOGICAL FILTER
@@ -497,9 +509,19 @@ void find_object(vector<vector<Point> > contours, vector<Point2f>*  boxObj)
 
 }
 
+/********************************************************************************
+*
+*    READ ATTITUDE
+*
+**************************************************************************************/
 
-
-
+void AttitudeCallback(const geometry_msgs::Point::ConstPtr& msg)
+{
+  //read the curret attitude of the drone
+  attitude_UAV.roll = msg->x;
+  attitude_UAV.pitch = msg->y;
+  attitude_UAV.yaw = msg->z;
+}
 /********************************************************************************
 *
 *    MAIN
@@ -511,9 +533,14 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "obj_detection");
   ros::NodeHandle nh;
+
+  //Publisher
   image_transport::ImageTransport it(nh);
-  pub = it.advertise("/camera/image_raw", 100);
+  image_pub = it.advertise("/camera/image_raw", 100);
   info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",100);
+  //Subscriber
+  attitude_sub = nh.subscribe("/napodrone/attitude", 1, AttitudeCallback);
+
   //ros::Rate loop_rate(100);
   /*Camera 	parameters*/
   int device;
@@ -619,7 +646,6 @@ int main(int argc, char** argv)
   Mat hsv_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
   Mat imgThresholded = Mat::zeros( cv::Size(320,180), CV_8UC3 );
   Mat img_red = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat bin_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
   Mat img_edges = Mat::zeros( cv::Size(320,180), CV_8UC3 );
   
 
@@ -717,7 +743,7 @@ int main(int argc, char** argv)
     info_image.height = bgr_image.size().height;
     info_image.width = bgr_image.size().width;
     sensor_msgs::ImagePtr msg_image = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_image).toImageMsg();
-    pub.publish(msg_image);
+    image_pub.publish(msg_image);
     info_pub.publish(info_image);
 
 
