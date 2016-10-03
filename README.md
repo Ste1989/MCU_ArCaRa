@@ -27,6 +27,7 @@
 - modalità emergency stop ? (brake)
 
 # Calibrazione
+http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration
 roslaunch camera_calibrarion calibration.lauch se apro la camera con gscam (già nel launch file)
 
 roslaunch camera_calibration calibration2.launch se ho aperto la camera con usb_cam (non nel launch file)
