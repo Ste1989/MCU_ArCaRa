@@ -2,7 +2,7 @@
 	
 
   
-  <node name="calibrator" pkg="camera_calibration" type="cameracalibrator.py"  args=" --size 11x7 --square 0.190" clear_params="true" output="screen" >
+  <node name="calibrator" pkg="camera_calibration" type="cameracalibrator.py"  args=" --size 8x6 --square 0.108" clear_params="true" output="screen" >
 	<remap from="image" to="camera/image_raw"/>
  </node>
 	
