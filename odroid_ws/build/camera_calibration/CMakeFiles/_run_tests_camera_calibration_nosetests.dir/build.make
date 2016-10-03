@@ -26,22 +26,16 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/bin/cmake
+CMAKE_COMMAND = /usr/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/bin/cmake -E remove -f
-
-# Escaping for special characters.
-EQUALS = =
-
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
+RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src
+CMAKE_SOURCE_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
+CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
 
 # Utility rule file for _run_tests_camera_calibration_nosetests.
 
@@ -59,10 +53,10 @@ camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build:
 .PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build
 
 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/clean:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration && $(CMAKE_COMMAND) -P CMakeFiles/_run_tests_camera_calibration_nosetests.dir/cmake_clean.cmake
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration && $(CMAKE_COMMAND) -P CMakeFiles/_run_tests_camera_calibration_nosetests.dir/cmake_clean.cmake
 .PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/clean
 
 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/depend:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/camera_calibration /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ste/Odroid_ArCaRa/odroid_ws/src /home/ste/Odroid_ArCaRa/odroid_ws/src/camera_calibration /home/ste/Odroid_ArCaRa/odroid_ws/build /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/depend
 

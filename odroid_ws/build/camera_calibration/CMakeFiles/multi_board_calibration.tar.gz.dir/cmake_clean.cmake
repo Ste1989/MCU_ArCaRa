@@ -1,5 +1,6 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/multi_board_calibration.tar.gz"
+  "/home/ste/Odroid_ArCaRa/odroid_ws/devel/share/camera_calibration/tests/multi_board_calibration.tar.gz"
 )
 
 # Per-language clean rules from dependency scanning.

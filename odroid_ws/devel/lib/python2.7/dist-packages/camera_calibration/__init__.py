@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # generated from catkin/cmake/template/__init__.py.in
 # keep symbol table as clean as possible by deleting all unnecessary symbols
 
@@ -7,7 +6,7 @@ from sys import path as sys_path
 
 from pkgutil import extend_path
 
-__extended_path = "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/camera_calibration/src".split(";")
+__extended_path = "/home/ste/Odroid_ArCaRa/odroid_ws/src/camera_calibration/src".split(";")
 for p in reversed(__extended_path):
     sys_path.insert(0, p)
     del p

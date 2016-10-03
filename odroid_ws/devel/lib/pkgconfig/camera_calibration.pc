@@ -1,8 +1,8 @@
-prefix=/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/devel
+prefix=/home/ste/Odroid_ArCaRa/odroid_ws/devel
 
 Name: camera_calibration
 Description: Description of camera_calibration
 Version: 1.12.19
 Cflags: 
-Libs: -L/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/devel/lib 
+Libs: -L/home/ste/Odroid_ArCaRa/odroid_ws/devel/lib 
 Requires: 

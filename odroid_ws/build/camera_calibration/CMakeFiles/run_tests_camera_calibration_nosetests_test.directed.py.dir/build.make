@@ -26,22 +26,16 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/bin/cmake
+CMAKE_COMMAND = /usr/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/bin/cmake -E remove -f
-
-# Escaping for special characters.
-EQUALS = =
-
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
+RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src
+CMAKE_SOURCE_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
+CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
 
 # Utility rule file for run_tests_camera_calibration_nosetests_test.directed.py.
 
@@ -49,7 +43,7 @@ CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
 include camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/progress.make
 
 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/catkin/cmake/test/run_tests.py /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/test_results/camera_calibration/nosetests-test.directed.py.xml /usr/local/bin/cmake\ -E\ make_directory\ /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/test_results/camera_calibration /usr/bin/nosetests-2.7\ -P\ --process-timeout=60\ /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/camera_calibration/test/directed.py\ --with-xunit\ --xunit-file=/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/test_results/camera_calibration/nosetests-test.directed.py.xml
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/hydro/share/catkin/cmake/test/run_tests.py /home/ste/Odroid_ArCaRa/odroid_ws/build/test_results/camera_calibration/nosetests-test.directed.py.xml /usr/bin/cmake\ -E\ make_directory\ /home/ste/Odroid_ArCaRa/odroid_ws/build/test_results/camera_calibration /usr/bin/nosetests\ -P\ --process-timeout=60\ /home/ste/Odroid_ArCaRa/odroid_ws/src/camera_calibration/test/directed.py\ --with-xunit\ --xunit-file=/home/ste/Odroid_ArCaRa/odroid_ws/build/test_results/camera_calibration/nosetests-test.directed.py.xml
 
 run_tests_camera_calibration_nosetests_test.directed.py: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py
 run_tests_camera_calibration_nosetests_test.directed.py: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make
@@ -60,10 +54,10 @@ camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.direct
 .PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build
 
 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/clean:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration && $(CMAKE_COMMAND) -P CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/cmake_clean.cmake
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration && $(CMAKE_COMMAND) -P CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/cmake_clean.cmake
 .PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
 
 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/depend:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/camera_calibration /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ste/Odroid_ArCaRa/odroid_ws/src /home/ste/Odroid_ArCaRa/odroid_ws/src/camera_calibration /home/ste/Odroid_ArCaRa/odroid_ws/build /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/depend
 

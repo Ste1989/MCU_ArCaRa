@@ -4,9 +4,16 @@
 
     <node pkg="save_image" type="CameraStream" name="CameraStream" output="screen" >
 	<param name="device" type="int" value="0" />
-	<param name="width" type="double" value="480" />
-	<param name="height" type="double" value="640" />
+	<param name="width" type="double" value="960" />
+	<param name="height" type="double" value="544" />
 	<param name="fps" type="double" value="30" />
+
+	<param name="brigthness" type="double" value="0.501961" />
+	<param name="contrast" type="double" value="0.12549" />
+	<param name="saturation" type="double" value="0.12549" />
+	<param name="hue" type="double" value="0" />
+	<param name="gain" type="double" value="0" />
+
 	<param name="real_time" type="bool" value="true"/>
 	<param name="img_path" type="string" value="/home/ste/Immagini/test_drone/"/>
 	<param name="img_path_save" type="string" value="/home/ste/"/>

@@ -30,30 +30,24 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/bin/cmake
+CMAKE_COMMAND = /usr/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/bin/cmake -E remove -f
-
-# Escaping for special characters.
-EQUALS = =
-
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
+RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src
+CMAKE_SOURCE_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
+CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/local/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
+	/usr/bin/cmake -i .
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -63,19 +57,19 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/local/bin/cmake -P cmake_install.cmake
+	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/local/bin/cmake -P cmake_install.cmake
+	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
 
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local
 
 # Special rule for the target install/local
@@ -85,7 +79,7 @@ install/local/fast: install/local
 # Special rule for the target install/strip
 install/strip: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip
 
 # Special rule for the target install/strip
@@ -104,7 +98,7 @@ list_install_components/fast: list_install_components
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -114,7 +108,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/local/bin/ctest --force-new-ctest-process $(ARGS)
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
 .PHONY : test
 
 # Special rule for the target test
@@ -123,9 +117,9 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -164,19 +158,6 @@ clean_test_results: cmake_check_build_system
 clean_test_results/fast:
 	$(MAKE) -f CMakeFiles/clean_test_results.dir/build.make CMakeFiles/clean_test_results.dir/build
 .PHONY : clean_test_results/fast
-
-#=============================================================================
-# Target rules for targets named download_extra_data
-
-# Build rule for target.
-download_extra_data: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 download_extra_data
-.PHONY : download_extra_data
-
-# fast build rule for target.
-download_extra_data/fast:
-	$(MAKE) -f CMakeFiles/download_extra_data.dir/build.make CMakeFiles/download_extra_data.dir/build
-.PHONY : download_extra_data/fast
 
 #=============================================================================
 # Target rules for targets named doxygen
@@ -530,19 +511,6 @@ camera_calibration.tar.gz/fast:
 .PHONY : camera_calibration.tar.gz/fast
 
 #=============================================================================
-# Target rules for targets named clean_test_results_camera_calibration
-
-# Build rule for target.
-clean_test_results_camera_calibration: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 clean_test_results_camera_calibration
-.PHONY : clean_test_results_camera_calibration
-
-# fast build rule for target.
-clean_test_results_camera_calibration/fast:
-	$(MAKE) -f camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build.make camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build
-.PHONY : clean_test_results_camera_calibration/fast
-
-#=============================================================================
 # Target rules for targets named multi_board_calibration.tar.gz
 
 # Build rule for target.
@@ -614,7 +582,6 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... clean_test_results"
-	@echo "... download_extra_data"
 	@echo "... doxygen"
 	@echo "... edit_cache"
 	@echo "... install"
@@ -649,7 +616,6 @@ help:
 	@echo "... _run_tests_camera_calibration_nosetests_test.directed.py"
 	@echo "... _run_tests_camera_calibration_nosetests_test.multiple_boards.py"
 	@echo "... camera_calibration.tar.gz"
-	@echo "... clean_test_results_camera_calibration"
 	@echo "... multi_board_calibration.tar.gz"
 	@echo "... run_tests_camera_calibration"
 	@echo "... run_tests_camera_calibration_nosetests"

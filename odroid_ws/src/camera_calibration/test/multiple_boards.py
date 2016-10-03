@@ -35,6 +35,7 @@
 import roslib
 import rostest
 import rospy
+import cv
 import unittest
 import tarfile
 import copy

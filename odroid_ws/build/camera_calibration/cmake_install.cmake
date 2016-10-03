@@ -1,8 +1,8 @@
-# Install script for directory: /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/camera_calibration
+# Install script for directory: /home/ste/Odroid_ArCaRa/odroid_ws/src/camera_calibration
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/install")
+  SET(CMAKE_INSTALL_PREFIX "/home/ste/Odroid_ArCaRa/odroid_ws/install")
 ENDIF(NOT DEFINED CMAKE_INSTALL_PREFIX)
 STRING(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,33 +33,33 @@ IF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/camera_calibration.pc")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/camera_calibration.pc")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/camera_calibration/cmake" TYPE FILE FILES
-    "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/camera_calibrationConfig.cmake"
-    "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/camera_calibrationConfig-version.cmake"
+    "/home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/camera_calibrationConfig.cmake"
+    "/home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/camera_calibrationConfig-version.cmake"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/camera_calibration" TYPE FILE FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/camera_calibration/package.xml")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/camera_calibration" TYPE FILE FILES "/home/ste/Odroid_ArCaRa/odroid_ws/src/camera_calibration/package.xml")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  INCLUDE("/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/safe_execute_install.cmake")
+  INCLUDE("/home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/safe_execute_install.cmake")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/camera_calibration" TYPE PROGRAM FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/cameracalibrator.py")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/camera_calibration" TYPE PROGRAM FILES "/home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/cameracalibrator.py")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/camera_calibration" TYPE PROGRAM FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/cameracheck.py")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/camera_calibration" TYPE PROGRAM FILES "/home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/cameracheck.py")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/camera_calibration" TYPE PROGRAM FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/tarfile_calibration.py")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/camera_calibration" TYPE PROGRAM FILES "/home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/catkin_generated/installspace/tarfile_calibration.py")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 

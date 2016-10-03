@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_FLAGS = -fPIC -I/usr/src/gtest/include -I/usr/src/gtest   
 
-CXX_DEFINES = -DGTEST_CREATE_SHARED_LIBRARY=1 -Dgtest_EXPORTS
+CXX_DEFINES = -Dgtest_EXPORTS -DGTEST_CREATE_SHARED_LIBRARY=1
 
 # TARGET_FLAGS =  -Wall -Wshadow -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra
 

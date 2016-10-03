@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 {
 
 
-  ros::init(argc, argv, "obj_detection");
+  ros::init(argc, argv, "camera_pub");
   ros::NodeHandle nh;
   image_transport::ImageTransport it(nh);
   pub = it.advertise("/camera/image_raw", 100);
@@ -96,8 +96,8 @@ int main(int argc, char** argv)
   string img_path, img_path_save;
   //leggo i parametri specificati nel launch file
   nh.param<int>("/CameraStream/device", device, 2); //di defualt camera intel r200
-  nh.param<double>("/CameraStream/width", frame_width, 960); //di defualt camera intel r200
-  nh.param<double>("/CameraStream/height", frame_height, 540); //di defualt camera intel r200
+  nh.param<double>("/CameraStream/width", frame_width, 960); 
+  nh.param<double>("/CameraStream/height", frame_height, 540); 
   nh.param<double>("/CameraStream/fps", fps, 15); //di defualt camera intel r200
   nh.param<double>("/CameraStream/brigthness", brigthness, 0.219608); //di defualt camera intel r200
   nh.param<double>("/CameraStream/contrast", contrast, 0.3333333); //di defualt camera intel r200
@@ -129,7 +129,7 @@ int main(int argc, char** argv)
 
     /*Set Camera Parameters*/
     char read_param = 1; 
-    char set_param = 0;
+    char set_param = 1;
     if(set_param)
     {
   	
@@ -180,13 +180,7 @@ int main(int argc, char** argv)
   /*******************************cilco principale***************************************************/
   //prealloco tutte le immagini
   Mat bgr_image = Mat::zeros( cv::Size(frame_width,frame_height), CV_8UC3 );
-  Mat bgr_image_rs = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat hsv_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat imgThresholded = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat img_red = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat bin_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat img_edges = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat drawing = Mat::zeros(cv::Size(320,180), CV_8UC3 );
+
 
   int id_img = 0;
 

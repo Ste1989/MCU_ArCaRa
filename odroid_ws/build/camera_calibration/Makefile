@@ -30,30 +30,24 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/bin/cmake
+CMAKE_COMMAND = /usr/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/bin/cmake -E remove -f
-
-# Escaping for special characters.
-EQUALS = =
-
-# The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
+RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src
+CMAKE_SOURCE_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
+CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/local/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
+	/usr/bin/cmake -i .
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -63,19 +57,19 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/local/bin/cmake -P cmake_install.cmake
+	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/local/bin/cmake -P cmake_install.cmake
+	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
 
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local
 
 # Special rule for the target install/local
@@ -85,7 +79,7 @@ install/local/fast: install/local
 # Special rule for the target install/strip
 install/strip: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip
 
 # Special rule for the target install/strip
@@ -104,7 +98,7 @@ list_install_components/fast: list_install_components
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -114,7 +108,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/local/bin/ctest --force-new-ctest-process $(ARGS)
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
 .PHONY : test
 
 # Special rule for the target test
@@ -123,14 +117,14 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/camera_calibration/CMakeFiles/progress.marks
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles /home/ste/Odroid_ArCaRa/odroid_ws/build/camera_calibration/CMakeFiles/progress.marks
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/clean
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/clean
 .PHONY : clean
 
 # The main clean target
@@ -139,22 +133,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/preinstall
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/preinstall
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/rule
 .PHONY : camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/rule
 
 # Convenience name for target.
@@ -163,12 +157,12 @@ _catkin_empty_exported_target: camera_calibration/CMakeFiles/_catkin_empty_expor
 
 # fast build rule for target.
 _catkin_empty_exported_target/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build.make camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build.make camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build
 .PHONY : _catkin_empty_exported_target/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/rule
 .PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/rule
 
 # Convenience name for target.
@@ -177,12 +171,12 @@ _run_tests_camera_calibration: camera_calibration/CMakeFiles/_run_tests_camera_c
 
 # fast build rule for target.
 _run_tests_camera_calibration/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build
 .PHONY : _run_tests_camera_calibration/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/rule
 .PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/rule
 
 # Convenience name for target.
@@ -191,12 +185,12 @@ _run_tests_camera_calibration_nosetests: camera_calibration/CMakeFiles/_run_test
 
 # fast build rule for target.
 _run_tests_camera_calibration_nosetests/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build
 .PHONY : _run_tests_camera_calibration_nosetests/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
 .PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
 
 # Convenience name for target.
@@ -205,12 +199,12 @@ _run_tests_camera_calibration_nosetests_test.directed.py: camera_calibration/CMa
 
 # fast build rule for target.
 _run_tests_camera_calibration_nosetests_test.directed.py/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build
 .PHONY : _run_tests_camera_calibration_nosetests_test.directed.py/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
 .PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
 
 # Convenience name for target.
@@ -219,12 +213,12 @@ _run_tests_camera_calibration_nosetests_test.multiple_boards.py: camera_calibrat
 
 # fast build rule for target.
 _run_tests_camera_calibration_nosetests_test.multiple_boards.py/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build
 .PHONY : _run_tests_camera_calibration_nosetests_test.multiple_boards.py/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/rule
 .PHONY : camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/rule
 
 # Convenience name for target.
@@ -233,26 +227,12 @@ camera_calibration.tar.gz: camera_calibration/CMakeFiles/camera_calibration.tar.
 
 # fast build rule for target.
 camera_calibration.tar.gz/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build
 .PHONY : camera_calibration.tar.gz/fast
 
 # Convenience name for target.
-camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/rule
-.PHONY : camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/rule
-
-# Convenience name for target.
-clean_test_results_camera_calibration: camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/rule
-.PHONY : clean_test_results_camera_calibration
-
-# fast build rule for target.
-clean_test_results_camera_calibration/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build.make camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build
-.PHONY : clean_test_results_camera_calibration/fast
-
-# Convenience name for target.
 camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/rule
 .PHONY : camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/rule
 
 # Convenience name for target.
@@ -261,12 +241,12 @@ multi_board_calibration.tar.gz: camera_calibration/CMakeFiles/multi_board_calibr
 
 # fast build rule for target.
 multi_board_calibration.tar.gz/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build
 .PHONY : multi_board_calibration.tar.gz/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/rule
 .PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/rule
 
 # Convenience name for target.
@@ -275,12 +255,12 @@ run_tests_camera_calibration: camera_calibration/CMakeFiles/run_tests_camera_cal
 
 # fast build rule for target.
 run_tests_camera_calibration/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build
 .PHONY : run_tests_camera_calibration/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/rule
 .PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/rule
 
 # Convenience name for target.
@@ -289,12 +269,12 @@ run_tests_camera_calibration_nosetests: camera_calibration/CMakeFiles/run_tests_
 
 # fast build rule for target.
 run_tests_camera_calibration_nosetests/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build
 .PHONY : run_tests_camera_calibration_nosetests/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
 .PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
 
 # Convenience name for target.
@@ -303,12 +283,12 @@ run_tests_camera_calibration_nosetests_test.directed.py: camera_calibration/CMak
 
 # fast build rule for target.
 run_tests_camera_calibration_nosetests_test.directed.py/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build
 .PHONY : run_tests_camera_calibration_nosetests_test.directed.py/fast
 
 # Convenience name for target.
 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
 .PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
 
 # Convenience name for target.
@@ -317,7 +297,7 @@ run_tests_camera_calibration_nosetests_test.multiple_boards.py: camera_calibrati
 
 # fast build rule for target.
 run_tests_camera_calibration_nosetests_test.multiple_boards.py/fast:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build
 .PHONY : run_tests_camera_calibration_nosetests_test.multiple_boards.py/fast
 
 # Help Target
@@ -332,7 +312,6 @@ help:
 	@echo "... _run_tests_camera_calibration_nosetests_test.directed.py"
 	@echo "... _run_tests_camera_calibration_nosetests_test.multiple_boards.py"
 	@echo "... camera_calibration.tar.gz"
-	@echo "... clean_test_results_camera_calibration"
 	@echo "... edit_cache"
 	@echo "... install"
 	@echo "... install/local"
@@ -356,6 +335,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
