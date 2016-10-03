@@ -94,26 +94,38 @@ int main(int argc, char** argv)
   
   //ros::Rate loop_rate(100);
   /*Camera 	parameters*/
-  int device;
-  double frame_width, frame_height, fps, brigthness, contrast, saturation, exposure, gain, hue, fourcc;
-  string img_path, img_path_save;
+  camera cam;
+  string img_path, img_path_save, camera_param_file;
   //leggo i parametri specificati nel launch file
-  nh.param<int>("/VisionNode/device", device, 2); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/width", frame_width, 960); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/height", frame_height, 540); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/fps", fps, 15); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/brigthness", brigthness, 0.219608); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/contrast", contrast, 0.3333333); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/saturation", saturation, 0.501961); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/hue", hue, 0.5); //di defualt camera intel r200
-  nh.param<double>("/VisionNode/gain", gain, 0.125); //di defualt camera intel r200
+  nh.param<int>("/VisionNode/device", cam.device, 2); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/width", cam.frame_width, 960); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/height", cam.frame_height, 540); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/fps", cam.fps, 15); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/brigthness", cam.brigthness, 0.219608); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/contrast", cam.contrast, 0.3333333); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/saturation", cam.saturation, 0.501961); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/hue", cam.hue, 0.5); //di defualt camera intel r200trtr
+  nh.param<double>("/VisionNode/gain", cam.gain, 0.125); //di defualt camera intel r200
+  nh.param<double>("/VisionNode/u0", cam.u0, 0);
+  nh.param<double>("/VisionNode/v0", cam.v0, 0);
+  nh.param<double>("/VisionNode/fu", cam.fu, 0);
+  nh.param<double>("/VisionNode/fv", cam.fv, 0);
+  nh.param<double>("/VisionNode/k1", cam.k1, 0);
+  nh.param<double>("/VisionNode/k2", cam.k2, 0);
+  nh.param<double>("/VisionNode/p1", cam.p1, 0);
+  nh.param<double>("/VisionNode/p2", cam.p2, 0);
   nh.param<std::string>("/VisionNode/img_path", img_path, "");
   nh.param<bool>("/VisionNode/real_time", real_time , false);
   nh.param<bool>("/VisionNode/save_img", save_img , false);
   nh.param<std::string>("/VisionNode/img_path_save", img_path_save, "");
 
+
+
+
+
   
-  /*inizializzo variabili globali ***************************************************************/
+  /*inizializzo
+ variabili globali ***************************************************************/
   init_global_var();
 
 
@@ -124,7 +136,7 @@ int main(int argc, char** argv)
   {
     /*Open the webcam*/
     
-    cap.open(device);		//Open system default camera INTEl
+    cap.open(cam.device);		//Open system default camera INTEl
 
      // Check if video device can be opened with the given index
     if(!cap.isOpened()) 
@@ -139,42 +151,42 @@ int main(int argc, char** argv)
     if(set_param)
     {
   	
-      cap.set(CV_CAP_PROP_FRAME_WIDTH, frame_width); 
-      cap.set(CV_CAP_PROP_FRAME_HEIGHT, frame_height);
+      cap.set(CV_CAP_PROP_FRAME_WIDTH, cam.frame_width); 
+      cap.set(CV_CAP_PROP_FRAME_HEIGHT, cam.frame_height);
       //cap.set(CV_CAP_PROP_FPS, fps);
-      cap.set(CV_CAP_PROP_BRIGHTNESS,brigthness);
-      cap.set(CV_CAP_PROP_CONTRAST,contrast);
-      cap.set(CV_CAP_PROP_SATURATION,saturation);
+      cap.set(CV_CAP_PROP_BRIGHTNESS,cam.brigthness);
+      cap.set(CV_CAP_PROP_CONTRAST,cam.contrast);
+      cap.set(CV_CAP_PROP_SATURATION,cam.saturation);
       //cap.set(CV_CAP_PROP_EXPOSURE,0.1); //not supported
-      cap.set(CV_CAP_PROP_GAIN, gain); //not supported
+      cap.set(CV_CAP_PROP_GAIN, cam.gain); //not supported
       //cap.set(CV_CAP_PROP_FOURCC, ??); //4 character code of the codec
-      cap.set(CV_CAP_PROP_HUE, hue);//Hue of the image
+      cap.set(CV_CAP_PROP_HUE, cam.hue);//Hue of the image
     }
     
     
     if(read_param)
     {
-      frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH); 
-      frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
-      //fps = cap.get(CV_CAP_PROP_FPS);
-      brigthness = cap.get(CV_CAP_PROP_BRIGHTNESS);  
-      contrast = cap.get(CV_CAP_PROP_CONTRAST);
-      saturation = cap.get(CV_CAP_PROP_SATURATION);
+      cam.frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH); 
+      cam.frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+      //cam.fps = cap.get(CV_CAP_PROP_FPS);
+      cam.brigthness = cap.get(CV_CAP_PROP_BRIGHTNESS);  
+      cam.contrast = cap.get(CV_CAP_PROP_CONTRAST);
+      cam.saturation = cap.get(CV_CAP_PROP_SATURATION);
       //exposure = cap.get(CV_CAP_PROP_EXPOSURE);
-      gain = cap.get(CV_CAP_PROP_GAIN); // not supported
+      cam.gain = cap.get(CV_CAP_PROP_GAIN); // not supported
       //fourcc = cap.get(CV_CAP_PROP_FOURCC);// 4 character code of the codec
-      hue = cap.get(CV_CAP_PROP_HUE); //Hue of the image
+      cam.hue = cap.get(CV_CAP_PROP_HUE); //Hue of the image
       /*STAMPO A VIDEO PARAMETRI CAMERa*/
-      std::cout <<"width: "<< frame_width << std::endl;
-      std::cout <<"height: "<< frame_height << std::endl;
-      std::cout <<"fps: "<< fps << std::endl;
-      std::cout <<"brightness: "<< brigthness << std::endl;
-      std::cout <<"contrast: "<< contrast << std::endl;
-      std::cout <<"saturation: "<< saturation << std::endl;
-      std::cout <<"exposure: "<< exposure << std::endl;
+      std::cout <<"width: "<< cam.frame_width << std::endl;
+      std::cout <<"height: "<< cam.frame_height << std::endl;
+      std::cout <<"fps: "<< cam.fps << std::endl;
+      std::cout <<"brightness: "<< cam.brigthness << std::endl;
+      std::cout <<"contrast: "<< cam.contrast << std::endl;
+      std::cout <<"saturation: "<< cam.saturation << std::endl;
+      std::cout <<"exposure: "<< cam.exposure << std::endl;
       //std::cout <<"fourcc: "<< fourcc << std::endl;
-      std::cout <<"gain: "<< gain << std::endl;
-      std::cout <<"hue: "<< hue << std::endl;
+      std::cout <<"gain: "<< cam.gain << std::endl;
+      std::cout <<"hue: "<< cam.hue << std::endl;
     }
 
   }else
@@ -193,7 +205,7 @@ int main(int argc, char** argv)
 
   /*******************************cilco principale***************************************************/
   //prealloco tutte le immagini
-  Mat bgr_image = Mat::zeros( cv::Size(frame_width,frame_height), CV_8UC3 );
+  Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
   Mat bgr_image_rs = Mat::zeros( cv::Size(320,180), CV_8UC3 );
   Mat hsv_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
   Mat imgThresholded = Mat::zeros( cv::Size(320,180), CV_8UC3 );

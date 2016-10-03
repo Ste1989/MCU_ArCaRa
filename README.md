@@ -25,3 +25,16 @@
 - You can only arm or disarm in Stabilize, ACRO, AltHold and Loiter mode.
 - interferenza magnetica sulla bussola mettendo altri componenti, come tenerne conto?
 - modalità emergency stop ? (brake)
+
+# Calibrazione
+roslaunch camera_calibrarion calibration.lauch se apro la camera con gscam (già nel launch file)
+
+roslaunch camera_calibration calibration2.launch se ho aperto la camera con usb_cam (non nel launch file)
+
+
+ USB CAM :
+
+rosparam set /usb_cam/video_device "/dev/video1" 
+rosrun usb_cam usb_cam
+!USARE QUESTO!
+ROS_NAMESPACE=v4l/camera rosrun image_proc image_proc

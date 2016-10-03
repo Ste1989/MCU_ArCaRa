@@ -9,6 +9,7 @@
 #include <time.h>
 #include <opencv2/opencv.hpp>
 #include <math.h>
+
 //#include <opencv2/imgproc/imgproc.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 
@@ -78,6 +79,29 @@ int w = 20;
 *   STRUTTURE
 *
 *******************************************************************************************/
+//camera
+struct camera
+{
+  int device;
+  double frame_width;
+  double frame_height;
+  double fps;
+  double brigthness;
+  double contrast;
+  double saturation;
+  double exposure;
+  double hue;
+  double gain;
+  double u0;
+  double v0;
+  double fu;
+  double fv;
+  double k1;
+  double k2;
+  double p1;
+  double p2;
+};
+
 //assetto struttura
 struct attitude
 {
@@ -85,7 +109,7 @@ struct attitude
     double pitch;
     double yaw;
 }attitude_UAV;
-
+//
 struct str{
     bool operator() ( Point2f a, Point2f b ){
         if ( a.x != b.x ) 

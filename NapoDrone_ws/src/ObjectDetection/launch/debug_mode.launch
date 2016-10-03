@@ -16,6 +16,7 @@
 	<param name="img_path_save" type="string" value="/home/ste/"/>
 	<param name="real_time" type="bool" value="false"/>
 	<param name="save_img" type="bool" value="false"/>
+	<param name="camera_param" type="string" value="camera.txt"/>
     </node>
 
 
