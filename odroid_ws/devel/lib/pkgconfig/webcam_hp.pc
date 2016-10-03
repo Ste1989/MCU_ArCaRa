@@ -1,8 +1,0 @@
-prefix=/home/ste/Odroid_ArCaRa/odroid_ws/devel
-
-Name: webcam_hp
-Description: Description of webcam_hp
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/ste/Odroid_ArCaRa/odroid_ws/devel/lib 
-Requires: 

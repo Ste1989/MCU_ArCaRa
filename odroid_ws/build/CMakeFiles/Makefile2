@@ -38,16 +38,22 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /usr/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
+
+# Escaping for special characters.
+EQUALS = =
+
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/src
+CMAKE_SOURCE_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
+CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
 
 #=============================================================================
 # Target rules for target CMakeFiles/clean_test_results.dir
@@ -56,15 +62,15 @@ CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
 CMakeFiles/clean_test_results.dir/all:
 	$(MAKE) -f CMakeFiles/clean_test_results.dir/build.make CMakeFiles/clean_test_results.dir/depend
 	$(MAKE) -f CMakeFiles/clean_test_results.dir/build.make CMakeFiles/clean_test_results.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target clean_test_results"
 .PHONY : CMakeFiles/clean_test_results.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/clean_test_results.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/clean_test_results.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : CMakeFiles/clean_test_results.dir/rule
 
 # Convenience name for target.
@@ -81,21 +87,53 @@ clean: CMakeFiles/clean_test_results.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/download_extra_data.dir
+
+# All Build rule for target.
+CMakeFiles/download_extra_data.dir/all: camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/all
+CMakeFiles/download_extra_data.dir/all: camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/all
+	$(MAKE) -f CMakeFiles/download_extra_data.dir/build.make CMakeFiles/download_extra_data.dir/depend
+	$(MAKE) -f CMakeFiles/download_extra_data.dir/build.make CMakeFiles/download_extra_data.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target download_extra_data"
+.PHONY : CMakeFiles/download_extra_data.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/download_extra_data.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/download_extra_data.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : CMakeFiles/download_extra_data.dir/rule
+
+# Convenience name for target.
+download_extra_data: CMakeFiles/download_extra_data.dir/rule
+.PHONY : download_extra_data
+
+# clean rule for target.
+CMakeFiles/download_extra_data.dir/clean:
+	$(MAKE) -f CMakeFiles/download_extra_data.dir/build.make CMakeFiles/download_extra_data.dir/clean
+.PHONY : CMakeFiles/download_extra_data.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/download_extra_data.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/doxygen.dir
 
 # All Build rule for target.
 CMakeFiles/doxygen.dir/all:
 	$(MAKE) -f CMakeFiles/doxygen.dir/build.make CMakeFiles/doxygen.dir/depend
 	$(MAKE) -f CMakeFiles/doxygen.dir/build.make CMakeFiles/doxygen.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles  2
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target doxygen"
 .PHONY : CMakeFiles/doxygen.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/doxygen.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/doxygen.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : CMakeFiles/doxygen.dir/rule
 
 # Convenience name for target.
@@ -115,18 +153,18 @@ clean: CMakeFiles/doxygen.dir/clean
 # Target rules for target CMakeFiles/run_tests.dir
 
 # All Build rule for target.
-CMakeFiles/run_tests.dir/all:
+CMakeFiles/run_tests.dir/all: camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/all
 	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/depend
 	$(MAKE) -f CMakeFiles/run_tests.dir/build.make CMakeFiles/run_tests.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target run_tests"
 .PHONY : CMakeFiles/run_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/run_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/run_tests.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : CMakeFiles/run_tests.dir/rule
 
 # Convenience name for target.
@@ -146,18 +184,19 @@ clean: CMakeFiles/run_tests.dir/clean
 # Target rules for target CMakeFiles/tests.dir
 
 # All Build rule for target.
-CMakeFiles/tests.dir/all:
+CMakeFiles/tests.dir/all: camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/all
+CMakeFiles/tests.dir/all: camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/all
 	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/depend
 	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target tests"
 .PHONY : CMakeFiles/tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/tests.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : CMakeFiles/tests.dir/rule
 
 # Convenience name for target.
@@ -196,15 +235,15 @@ gtest/preinstall:
 gtest/CMakeFiles/gtest.dir/all:
 	$(MAKE) -f gtest/CMakeFiles/gtest.dir/build.make gtest/CMakeFiles/gtest.dir/depend
 	$(MAKE) -f gtest/CMakeFiles/gtest.dir/build.make gtest/CMakeFiles/gtest.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles  3
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles  2
 	@echo "Built target gtest"
 .PHONY : gtest/CMakeFiles/gtest.dir/all
 
 # Build rule for subdir invocation for target.
 gtest/CMakeFiles/gtest.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 gtest/CMakeFiles/gtest.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : gtest/CMakeFiles/gtest.dir/rule
 
 # Convenience name for target.
@@ -227,15 +266,15 @@ clean: gtest/CMakeFiles/gtest.dir/clean
 gtest/CMakeFiles/gtest_main.dir/all: gtest/CMakeFiles/gtest.dir/all
 	$(MAKE) -f gtest/CMakeFiles/gtest_main.dir/build.make gtest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) -f gtest/CMakeFiles/gtest_main.dir/build.make gtest/CMakeFiles/gtest_main.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles  4
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles  3
 	@echo "Built target gtest_main"
 .PHONY : gtest/CMakeFiles/gtest_main.dir/all
 
 # Build rule for subdir invocation for target.
 gtest/CMakeFiles/gtest_main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 gtest/CMakeFiles/gtest_main.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : gtest/CMakeFiles/gtest_main.dir/rule
 
 # Convenience name for target.
@@ -288,7 +327,7 @@ SaveImage/preinstall:
 SaveImage/CMakeFiles/CameraStream.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles  1
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles  1
 	@echo "Built target CameraStream"
 .PHONY : SaveImage/CMakeFiles/CameraStream.dir/all
 
@@ -298,9 +337,9 @@ all: SaveImage/CMakeFiles/CameraStream.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/CameraStream.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/CameraStream.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/CameraStream.dir/rule
 
 # Convenience name for target.
@@ -323,15 +362,15 @@ clean: SaveImage/CMakeFiles/CameraStream.dir/clean
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target geometry_msgs_generate_messages_cpp"
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -354,15 +393,15 @@ clean: SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/clean
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target geometry_msgs_generate_messages_lisp"
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -385,15 +424,15 @@ clean: SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/clean
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target geometry_msgs_generate_messages_py"
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -416,15 +455,15 @@ clean: SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/clean
 SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target roscpp_generate_messages_cpp"
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -447,15 +486,15 @@ clean: SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/clean
 SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target roscpp_generate_messages_lisp"
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -478,15 +517,15 @@ clean: SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
 SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target roscpp_generate_messages_py"
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -509,15 +548,15 @@ clean: SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/clean
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target rosgraph_msgs_generate_messages_cpp"
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -540,15 +579,15 @@ clean: SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/clean
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target rosgraph_msgs_generate_messages_lisp"
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -571,15 +610,15 @@ clean: SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/clean
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target rosgraph_msgs_generate_messages_py"
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -602,15 +641,15 @@ clean: SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target sensor_msgs_generate_messages_cpp"
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -633,15 +672,15 @@ clean: SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/clean
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target sensor_msgs_generate_messages_lisp"
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -664,15 +703,15 @@ clean: SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/clean
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target sensor_msgs_generate_messages_py"
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -695,15 +734,15 @@ clean: SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/clean
 SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target std_msgs_generate_messages_cpp"
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -726,15 +765,15 @@ clean: SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
 SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target std_msgs_generate_messages_lisp"
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -757,15 +796,15 @@ clean: SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
 SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/all:
 	$(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/depend
 	$(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
 	@echo "Built target std_msgs_generate_messages_py"
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -779,6 +818,408 @@ SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/clean:
 
 # clean rule for target.
 clean: SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory camera_calibration
+
+# Convenience name for "all" pass in the directory.
+camera_calibration/all:
+.PHONY : camera_calibration/all
+
+# Convenience name for "clean" pass in the directory.
+camera_calibration/clean: camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+camera_calibration/clean: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
+.PHONY : camera_calibration/clean
+
+# Convenience name for "preinstall" pass in the directory.
+camera_calibration/preinstall:
+.PHONY : camera_calibration/preinstall
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/all:
+	$(MAKE) -f camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build.make camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build.make camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target _catkin_empty_exported_target"
+.PHONY : camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/rule
+
+# Convenience name for target.
+_catkin_empty_exported_target: camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/rule
+.PHONY : _catkin_empty_exported_target
+
+# clean rule for target.
+camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/build.make camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/clean
+.PHONY : camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/_catkin_empty_exported_target.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/all: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/all
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target _run_tests_camera_calibration"
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/rule
+
+# Convenience name for target.
+_run_tests_camera_calibration: camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/rule
+.PHONY : _run_tests_camera_calibration
+
+# clean rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/clean
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/all: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/all: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/all
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target _run_tests_camera_calibration_nosetests"
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/rule
+
+# Convenience name for target.
+_run_tests_camera_calibration_nosetests: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/rule
+.PHONY : _run_tests_camera_calibration_nosetests
+
+# clean rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/clean
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/all: CMakeFiles/tests.dir/all
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/all: camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/all
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target _run_tests_camera_calibration_nosetests_test.directed.py"
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
+
+# Convenience name for target.
+_run_tests_camera_calibration_nosetests_test.directed.py: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
+.PHONY : _run_tests_camera_calibration_nosetests_test.directed.py
+
+# clean rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all: CMakeFiles/tests.dir/all
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all: camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/all
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target _run_tests_camera_calibration_nosetests_test.multiple_boards.py"
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
+
+# Convenience name for target.
+_run_tests_camera_calibration_nosetests_test.multiple_boards.py: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
+.PHONY : _run_tests_camera_calibration_nosetests_test.multiple_boards.py
+
+# clean rule for target.
+camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
+.PHONY : camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/_run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/all:
+	$(MAKE) -f camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target camera_calibration.tar.gz"
+.PHONY : camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/rule
+
+# Convenience name for target.
+camera_calibration.tar.gz: camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/rule
+.PHONY : camera_calibration.tar.gz
+
+# clean rule for target.
+camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/clean
+.PHONY : camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/camera_calibration.tar.gz.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/all:
+	$(MAKE) -f camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build.make camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build.make camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target clean_test_results_camera_calibration"
+.PHONY : camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/rule
+
+# Convenience name for target.
+clean_test_results_camera_calibration: camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/rule
+.PHONY : clean_test_results_camera_calibration
+
+# clean rule for target.
+camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/build.make camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/clean
+.PHONY : camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/clean_test_results_camera_calibration.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/all:
+	$(MAKE) -f camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target multi_board_calibration.tar.gz"
+.PHONY : camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/rule
+
+# Convenience name for target.
+multi_board_calibration.tar.gz: camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/rule
+.PHONY : multi_board_calibration.tar.gz
+
+# clean rule for target.
+camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/build.make camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/clean
+.PHONY : camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/multi_board_calibration.tar.gz.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/run_tests_camera_calibration.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/all: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/all
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target run_tests_camera_calibration"
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/rule
+
+# Convenience name for target.
+run_tests_camera_calibration: camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/rule
+.PHONY : run_tests_camera_calibration
+
+# clean rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/clean
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/run_tests_camera_calibration.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/all: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/all
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/all: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target run_tests_camera_calibration_nosetests"
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/rule
+
+# Convenience name for target.
+run_tests_camera_calibration_nosetests: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/rule
+.PHONY : run_tests_camera_calibration_nosetests
+
+# clean rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/clean
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/all:
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target run_tests_camera_calibration_nosetests_test.directed.py"
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
+
+# Convenience name for target.
+run_tests_camera_calibration_nosetests_test.directed.py: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/rule
+.PHONY : run_tests_camera_calibration_nosetests_test.directed.py
+
+# clean rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.directed.py.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir
+
+# All Build rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all:
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/depend
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 
+	@echo "Built target run_tests_camera_calibration_nosetests_test.multiple_boards.py"
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all
+
+# Build rule for subdir invocation for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
+
+# Convenience name for target.
+run_tests_camera_calibration_nosetests_test.multiple_boards.py: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/rule
+.PHONY : run_tests_camera_calibration_nosetests_test.multiple_boards.py
+
+# clean rule for target.
+camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean:
+	$(MAKE) -f camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/build.make camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
+.PHONY : camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
+
+# clean rule for target.
+clean: camera_calibration/CMakeFiles/run_tests_camera_calibration_nosetests_test.multiple_boards.py.dir/clean
 .PHONY : clean
 
 #=============================================================================

@@ -117,7 +117,7 @@ int main(int argc, char** argv)
   if(real_time)
   {
     /*Open the webcam*/
-    
+
     cap.open(device);		//Open system default camera INTEl
 
      // Check if video device can be opened with the given index
@@ -126,10 +126,10 @@ int main(int argc, char** argv)
       ROS_ERROR("No camera Found");
       return 1;
     }
-    
+
     /*Set Camera Parameters*/
     char read_param = 1; 
-    char set_param = 1;
+    char set_param = 0;
     if(set_param)
     {
   	

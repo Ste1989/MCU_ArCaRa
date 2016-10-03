@@ -30,24 +30,30 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /usr/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
+
+# Escaping for special characters.
+EQUALS = =
+
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/src
+CMAKE_SOURCE_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
+CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
-	/usr/bin/cmake -i .
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/local/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -57,19 +63,19 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
+	/usr/local/bin/cmake -P cmake_install.cmake
 .PHONY : install
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
+	/usr/local/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
 
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local
 
 # Special rule for the target install/local
@@ -79,7 +85,7 @@ install/local/fast: install/local
 # Special rule for the target install/strip
 install/strip: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip
 
 # Special rule for the target install/strip
@@ -98,7 +104,7 @@ list_install_components/fast: list_install_components
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -108,7 +114,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+	/usr/local/bin/ctest --force-new-ctest-process $(ARGS)
 .PHONY : test
 
 # Special rule for the target test
@@ -117,14 +123,14 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles /home/ste/Odroid_ArCaRa/odroid_ws/build/SaveImage/CMakeFiles/progress.marks
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/SaveImage/CMakeFiles/progress.marks
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/clean
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/clean
 .PHONY : clean
 
 # The main clean target
@@ -133,22 +139,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/preinstall
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/preinstall
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 SaveImage/CMakeFiles/CameraStream.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/CameraStream.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/CameraStream.dir/rule
 .PHONY : SaveImage/CMakeFiles/CameraStream.dir/rule
 
 # Convenience name for target.
@@ -157,12 +163,12 @@ CameraStream: SaveImage/CMakeFiles/CameraStream.dir/rule
 
 # fast build rule for target.
 CameraStream/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/build
 .PHONY : CameraStream/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -171,12 +177,12 @@ geometry_msgs_generate_messages_cpp: SaveImage/CMakeFiles/geometry_msgs_generate
 
 # fast build rule for target.
 geometry_msgs_generate_messages_cpp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
 .PHONY : geometry_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -185,12 +191,12 @@ geometry_msgs_generate_messages_lisp: SaveImage/CMakeFiles/geometry_msgs_generat
 
 # fast build rule for target.
 geometry_msgs_generate_messages_lisp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
 .PHONY : geometry_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
 .PHONY : SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -199,12 +205,12 @@ geometry_msgs_generate_messages_py: SaveImage/CMakeFiles/geometry_msgs_generate_
 
 # fast build rule for target.
 geometry_msgs_generate_messages_py/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
 .PHONY : geometry_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -213,12 +219,12 @@ roscpp_generate_messages_cpp: SaveImage/CMakeFiles/roscpp_generate_messages_cpp.
 
 # fast build rule for target.
 roscpp_generate_messages_cpp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_cpp.dir/build
 .PHONY : roscpp_generate_messages_cpp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -227,12 +233,12 @@ roscpp_generate_messages_lisp: SaveImage/CMakeFiles/roscpp_generate_messages_lis
 
 # fast build rule for target.
 roscpp_generate_messages_lisp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_lisp.dir/build
 .PHONY : roscpp_generate_messages_lisp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/rule
 .PHONY : SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -241,12 +247,12 @@ roscpp_generate_messages_py: SaveImage/CMakeFiles/roscpp_generate_messages_py.di
 
 # fast build rule for target.
 roscpp_generate_messages_py/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/build.make SaveImage/CMakeFiles/roscpp_generate_messages_py.dir/build
 .PHONY : roscpp_generate_messages_py/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -255,12 +261,12 @@ rosgraph_msgs_generate_messages_cpp: SaveImage/CMakeFiles/rosgraph_msgs_generate
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_cpp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
 .PHONY : rosgraph_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -269,12 +275,12 @@ rosgraph_msgs_generate_messages_lisp: SaveImage/CMakeFiles/rosgraph_msgs_generat
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_lisp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
 .PHONY : rosgraph_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 .PHONY : SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -283,12 +289,12 @@ rosgraph_msgs_generate_messages_py: SaveImage/CMakeFiles/rosgraph_msgs_generate_
 
 # fast build rule for target.
 rosgraph_msgs_generate_messages_py/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
 .PHONY : rosgraph_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -297,12 +303,12 @@ sensor_msgs_generate_messages_cpp: SaveImage/CMakeFiles/sensor_msgs_generate_mes
 
 # fast build rule for target.
 sensor_msgs_generate_messages_cpp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
 .PHONY : sensor_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -311,12 +317,12 @@ sensor_msgs_generate_messages_lisp: SaveImage/CMakeFiles/sensor_msgs_generate_me
 
 # fast build rule for target.
 sensor_msgs_generate_messages_lisp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build
 .PHONY : sensor_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
 .PHONY : SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -325,12 +331,12 @@ sensor_msgs_generate_messages_py: SaveImage/CMakeFiles/sensor_msgs_generate_mess
 
 # fast build rule for target.
 sensor_msgs_generate_messages_py/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/sensor_msgs_generate_messages_py.dir/build
 .PHONY : sensor_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
@@ -339,12 +345,12 @@ std_msgs_generate_messages_cpp: SaveImage/CMakeFiles/std_msgs_generate_messages_
 
 # fast build rule for target.
 std_msgs_generate_messages_cpp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
 .PHONY : std_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
 
 # Convenience name for target.
@@ -353,12 +359,12 @@ std_msgs_generate_messages_lisp: SaveImage/CMakeFiles/std_msgs_generate_messages
 
 # fast build rule for target.
 std_msgs_generate_messages_lisp/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
 .PHONY : std_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
 SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/rule:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/rule
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f CMakeFiles/Makefile2 SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 .PHONY : SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/rule
 
 # Convenience name for target.
@@ -367,7 +373,7 @@ std_msgs_generate_messages_py: SaveImage/CMakeFiles/std_msgs_generate_messages_p
 
 # fast build rule for target.
 std_msgs_generate_messages_py/fast:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/build
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/build.make SaveImage/CMakeFiles/std_msgs_generate_messages_py.dir/build
 .PHONY : std_msgs_generate_messages_py/fast
 
 src/CameraStream.o: src/CameraStream.cpp.o
@@ -375,7 +381,7 @@ src/CameraStream.o: src/CameraStream.cpp.o
 
 # target to build an object file
 src/CameraStream.cpp.o:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/src/CameraStream.cpp.o
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/src/CameraStream.cpp.o
 .PHONY : src/CameraStream.cpp.o
 
 src/CameraStream.i: src/CameraStream.cpp.i
@@ -383,7 +389,7 @@ src/CameraStream.i: src/CameraStream.cpp.i
 
 # target to preprocess a source file
 src/CameraStream.cpp.i:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/src/CameraStream.cpp.i
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/src/CameraStream.cpp.i
 .PHONY : src/CameraStream.cpp.i
 
 src/CameraStream.s: src/CameraStream.cpp.s
@@ -391,7 +397,7 @@ src/CameraStream.s: src/CameraStream.cpp.s
 
 # target to generate assembly for a file
 src/CameraStream.cpp.s:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/src/CameraStream.cpp.s
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(MAKE) -f SaveImage/CMakeFiles/CameraStream.dir/build.make SaveImage/CMakeFiles/CameraStream.dir/src/CameraStream.cpp.s
 .PHONY : src/CameraStream.cpp.s
 
 # Help Target
@@ -437,6 +443,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

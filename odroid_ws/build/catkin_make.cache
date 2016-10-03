@@ -1,2 +1,2 @@
-SaveImage
--DCATKIN_DEVEL_PREFIX=/home/ste/Odroid_ArCaRa/odroid_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ste/Odroid_ArCaRa/odroid_ws/install
+SaveImage:camera_calibration
+-DCATKIN_DEVEL_PREFIX=/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/devel -DCMAKE_INSTALL_PREFIX=/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/install -G Unix Makefiles

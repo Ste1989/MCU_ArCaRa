@@ -26,16 +26,22 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /usr/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
+
+# Escaping for special characters.
+EQUALS = =
+
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/src
+CMAKE_SOURCE_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
+CMAKE_BINARY_DIR = /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build
 
 # Utility rule file for doxygen.
 
@@ -43,8 +49,6 @@ CMAKE_BINARY_DIR = /home/ste/Odroid_ArCaRa/odroid_ws/build
 include CMakeFiles/doxygen.dir/progress.make
 
 CMakeFiles/doxygen:
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "doxygen found"
 
 doxygen: CMakeFiles/doxygen
 doxygen: CMakeFiles/doxygen.dir/build.make
@@ -59,6 +63,6 @@ CMakeFiles/doxygen.dir/clean:
 .PHONY : CMakeFiles/doxygen.dir/clean
 
 CMakeFiles/doxygen.dir/depend:
-	cd /home/ste/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ste/Odroid_ArCaRa/odroid_ws/src /home/ste/Odroid_ArCaRa/odroid_ws/src /home/ste/Odroid_ArCaRa/odroid_ws/build /home/ste/Odroid_ArCaRa/odroid_ws/build /home/ste/Odroid_ArCaRa/odroid_ws/build/CMakeFiles/doxygen.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/CMakeFiles/doxygen.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/doxygen.dir/depend
 

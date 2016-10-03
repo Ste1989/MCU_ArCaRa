@@ -1,8 +1,8 @@
-# Install script for directory: /home/ste/Odroid_ArCaRa/odroid_ws/src/SaveImage
+# Install script for directory: /home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/SaveImage
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/home/ste/Odroid_ArCaRa/odroid_ws/install")
+  SET(CMAKE_INSTALL_PREFIX "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/install")
 ENDIF(NOT DEFINED CMAKE_INSTALL_PREFIX)
 STRING(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,32 +33,32 @@ IF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ste/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_image.pc")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_image.pc")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/save_image/cmake" TYPE FILE FILES
-    "/home/ste/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig.cmake"
-    "/home/ste/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig-version.cmake"
+    "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig.cmake"
+    "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig-version.cmake"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/save_image" TYPE FILE FILES "/home/ste/Odroid_ArCaRa/odroid_ws/src/SaveImage/package.xml")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/save_image" TYPE FILE FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/SaveImage/package.xml")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ste/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_image.pc")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_image.pc")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/save_image/cmake" TYPE FILE FILES
-    "/home/ste/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig.cmake"
-    "/home/ste/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig-version.cmake"
+    "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig.cmake"
+    "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/build/SaveImage/catkin_generated/installspace/save_imageConfig-version.cmake"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/save_image" TYPE FILE FILES "/home/ste/Odroid_ArCaRa/odroid_ws/src/SaveImage/package.xml")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/save_image" TYPE FILE FILES "/home/stefano/Progetto_Drone/Odroid_ArCaRa/odroid_ws/src/SaveImage/package.xml")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
