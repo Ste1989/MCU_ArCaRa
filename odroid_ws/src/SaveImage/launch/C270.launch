@@ -3,9 +3,9 @@
 
 
     <node pkg="save_image" type="CameraStream" name="CameraStream" output="screen" >
-	<param name="device" type="int" value="0" />
-	<param name="width" type="double" value="640" />
-	<param name="height" type="double" value="480" />
+	<param name="device" type="int" value="1" />
+	<param name="width" type="double" value="960" />
+	<param name="height" type="double" value="544" />
 	<param name="fps" type="double" value="30" />
 
 	<param name="brigthness" type="double" value="0.501961" />

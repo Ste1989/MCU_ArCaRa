@@ -39,42 +39,25 @@ bool real_time, save_img;
 
 cv::VideoCapture cap;
 
-int const max_value = 255;
-int const max_type = 4;
-int const max_BINARY_value = 255;
-
-int bin_threshold ;
-int bin_type; ;
 
 
-int iLowH ;
-int iHighH ;
-int iLowS ; 
-int iHighS;
-int iLowV;
-int iHighV;
-int size_erode_clos;
-int size_dil_clos;
-int size_erode_fill;
-int size_dil_fill;
-int idx ;
-int id_test;
-
-int min_area_blob;
-int blob_color ;
-int min_threshold_blob;
-int max_threshold_blob ;
-int min_dist_blob ;
-int max_area_blob;
-int thresholdStep_blob ;
 
 
-//debug mode, per clibrazione di "copri pinza"
-int x = 0;
-int y = 0;
-int h = 20;
-int w = 20;
+double frame_width, frame_height, fps, brigthness, contrast, saturation, exposure, gain, hue, fourcc;
+int  brigthness_i, contrast_i, saturation_i, exposure_i, gain_i, hue_i;
 
+void make_control_window(  )
+{
+  /**********************Creo Una Finestra  DI Controllo***********************/
+  namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+  //Create trackbars in "Control" window
+  cvCreateTrackbar("brightness", "Control", &brigthness_i, 1000);
+  cvCreateTrackbar("contrast", "Control", &contrast_i, 1000);
+  cvCreateTrackbar("saturation", "Control", &saturation_i, 1000);
+  cvCreateTrackbar("exposure", "Control", &exposure_i, 1000);
+  cvCreateTrackbar("gain", "Control", &gain_i, 1000);
+  cvCreateTrackbar("hue", "Control", &hue_i, 1000);
+}
 /********************************************************************************
 *
 *    MAIN
@@ -92,7 +75,7 @@ int main(int argc, char** argv)
   //ros::Rate loop_rate(100);
   /*Camera 	parameters*/
   int device;
-  double frame_width, frame_height, fps, brigthness, contrast, saturation, exposure, gain, hue, fourcc;
+
   string img_path, img_path_save;
   //leggo i parametri specificati nel launch file
   nh.param<int>("/CameraStream/device", device, 2); //di defualt camera intel r200
@@ -110,6 +93,14 @@ int main(int argc, char** argv)
   nh.param<std::string>("/CameraStream/img_path_save", img_path_save, "");
   
 
+
+  //aggiorno i valori
+  brigthness_i = (int)(brigthness*1000);
+  contrast_i = (int)(contrast*1000);
+  saturation_i = (int)(saturation*1000);
+  exposure_i = (int)(exposure*1000);
+  gain_i = (int)(gain*1000);
+  hue_i = (int)(hue*1000);
 
 
 
@@ -186,6 +177,52 @@ int main(int argc, char** argv)
 
   while (nh.ok()) 
   {
+    make_control_window();
+    if(  brigthness_i != (int)(brigthness*1000))
+    {   
+        brigthness = (double)(brigthness_i)/1000;
+        cap.set(CV_CAP_PROP_BRIGHTNESS,brigthness);
+        brigthness_i = (int)(brigthness*1000);
+    }
+    if(  contrast_i != (int)(contrast*1000))
+    {   
+        contrast = (double)(contrast_i)/1000;
+        cap.set(CV_CAP_PROP_CONTRAST,contrast);
+        contrast_i = (int)(contrast*1000);
+    }
+    if(  saturation_i != (int)(saturation*1000))
+    {   
+        saturation = (double)(saturation_i)/1000;
+        cap.set(CV_CAP_PROP_SATURATION,saturation);
+        saturation_i = (int)(saturation*1000);
+    }
+    if(  gain_i != (int)(gain*1000))
+    {   
+        brigthness = (double)(gain_i)/1000;
+        cap.set(CV_CAP_PROP_GAIN,gain);
+        gain_i = (int)(gain*1000);
+    }
+    if(  hue_i != (int)(hue*1000))
+    {   
+        brigthness = (double)(hue_i)/1000;
+        cap.set(CV_CAP_PROP_HUE,hue);
+        hue_i = (int)(hue*1000);
+    }
+    if(  exposure_i != (int)(exposure*1000))
+    {   
+        brigthness = (double)(exposure_i)/1000;
+        cap.set(CV_CAP_PROP_EXPOSURE,exposure);
+        exposure_i = (int)(exposure*1000);
+    }
+
+
+
+
+
+
+
+
+
     double tempo;
     start=clock();
 
@@ -199,6 +236,10 @@ int main(int argc, char** argv)
       {
         ROS_ERROR("No camera Found");
       }
+
+      imshow("Immagine",bgr_image);
+      waitKey(31);
+
       //salvo l'immagine se richiesto
       if(save_img)
       {
