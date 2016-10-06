@@ -18,12 +18,12 @@ ros::Publisher info_pub;
 image_transport::Publisher image_pub;
 //Topic Subscriber
 ros::Subscriber attitude_sub;
+ros::Subscriber image_r200_sub;
 
 
 using namespace cv;
 using namespace std;
-//variabili globali
-bool real_time, save_img;
+
 
 //videocapture
 cv::VideoCapture cap;
@@ -48,7 +48,7 @@ int size_erode_fill;
 int size_dil_fill;
 int idx ;
 int id_test;
-
+int id_img;
 //blob
 int min_area_blob;
 int blob_color ;
@@ -83,6 +83,7 @@ int w = 20;
 struct camera
 {
   int device;
+  bool intel_r200;
   double frame_width;
   double frame_height;
   double fps;
@@ -101,6 +102,15 @@ struct camera
   double p1;
   double p2;
 };
+
+//parametri nodo
+struct param_node{
+  string img_path;
+  string img_path_save;
+  string camera_param_file;
+  bool save_img;
+  bool real_time;
+}params;
 
 //assetto struttura
 struct attitude
