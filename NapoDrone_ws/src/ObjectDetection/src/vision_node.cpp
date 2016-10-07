@@ -73,209 +73,8 @@ void AttitudeCallback(const geometry_msgs::Point::ConstPtr& msg)
   attitude_UAV.pitch = msg->y;
   attitude_UAV.yaw = msg->z;
 }
-/********************************************************************************
-*
-*    READ IMAGE REAL SENSE CALLBACK
-*
-**************************************************************************************/
-
-void ImageRealSenseCallback(const sensor_msgs::Image::ConstPtr& msg)
-{
-  //apro l'immagine a colori
-  //Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
-  //bgr_image = mgs->data;b
-  //obj_detection(data);
-}
-/********************************************************************************
-*
-*    Elabora Immagine
-*
-**************************************************************************************/
-void obj_detection(Mat bgr_image)
-{
-  double tempo;
-  start=clock();
-  //prealloco tutte le immagini
-  Mat bgr_image_rs = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat hsv_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat imgThresholded = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat img_red = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat img_edges = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  //salvo l'immagine se richiesto
-  if(params.save_img)
-  {
-    stringstream s_idx;
-    s_idx << id_img;
-    string str_path  = s_idx.str();
-
-    if(id_img < 10)
-      str_path  = params.img_path_save + "/left000"+ str_path + ".jpg";
-    if(id_img>=10 && id_img < 100)
-      str_path  = params.img_path_save +  "/left00"+ str_path + ".jpg";
-    if(id_img>=100 && id_img < 1000)
-      str_path  = params.img_path_save + "/left0"+ str_path + ".jpg";
-    if(id_img>=1000 && id_img < 10000)
-      str_path  = params.img_path_save +  "/left"+ str_path + ".jpg";
-
-    //salvo su disco l'immagine
-
-    imwrite( str_path, bgr_image );
-        
-    //currentTime = clock();
-    //cout << double(currentTime)/CLOCKS_PER_SEC << endl;
-    //salvo i tempi a cui ho acquisito la nuova immagine
-    //fd1=fopen("/home/odroid/time.txt", "a");
-    //fprintf(fd1, "%i", id_img);
-    //fprintf(fd1, "%s", "  ");
-    //fprintf(fd1, "%f\n",double(currentTime)/CLOCKS_PER_SEC) ;
-    //fclose(fd1);
-
-    id_img++;
-  }
-  //calcolo il tempo che ci metto per elaborare l'immagine
-  start_cv=clock();
-
-  
 
 
-
-  //1B-COPRO  LA PART CHE NON MI INTERESSA///////////////////////////////////////////////////////////////////
-  //questo serve per eliminare la pinza dall'immagine
-  //cout <<bin_image.size().width << endl << bin_image.size().height<< endl;
-  if(bgr_image.size().width == 960 && bgr_image.size().height == 540)
-  {
-    //levo immagine pinza più in alto
-    Rect rec1;
-    rec1.x = 640;
-    rec1.y = 0;
-    rec1.height = 100;
-    rec1.width = bgr_image.size().width - rec1.x;
-    rectangle(bgr_image, rec1, Scalar(0,0,0), CV_FILLED, 8, 0 );
-    //pinza piu bassa
-    Rect rec2;
-    rec2.x = 640;
-    rec2.y = 440;
-    rec2.height = bgr_image.size().height- rec2.y;
-    rec2.width = bgr_image.size().width- rec2.x;
-    rectangle(bgr_image, rec2, Scalar(0,0,0), CV_FILLED, 8, 0 );
-    //cebtro pinza
-    Rect rec3;
-    rec3.x = 845;
-    rec3.y = rec1.height;
-    rec3.height = 340;
-    rec3.width = bgr_image.size().width- rec3.x;
-    rectangle(bgr_image, rec3, Scalar(0,0,0), CV_FILLED, 8, 0 );
-  }
-  
-  if(!params.real_time && false)
-  {
-    namedWindow("Rect", CV_WINDOW_AUTOSIZE); 
-    cvCreateTrackbar("x", "Rect", &x, bgr_image.size().width);
-    cvCreateTrackbar("y", "Rect", &y, bgr_image.size().height);
-    cvCreateTrackbar("h", "Rect", &h, bgr_image.size().width); 
-    cvCreateTrackbar("w", "Rect", &w, bgr_image.size().height); 
-    Rect rec;
-    rec.x = x;
-    rec.y = y;
-    rec.height = h;
-    rec.width = w;
-    rectangle(bgr_image, rec, Scalar(120,0,255), CV_FILLED, 8, 0 );
-    imshow( "copro pinza", bgr_image );
-    waitKey(30);
-  }
-
-  //1-C RESIZE IMMAGINE
-  Size size(320,180);//the dst image size,e.g.100x100
-  resize(bgr_image,bgr_image_rs,size);//resize image
-  bgr_image = bgr_image_rs;
-    
-
-
-  //2- ottengo l'immagine in bianco e nero e l'iimagine in HSV e filtro per i vari colori//////////////////
-  Mat gray_image, gray_image_b;
-  cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
-  cv::cvtColor(bgr_image, gray_image, cv::COLOR_BGR2GRAY);
-  //Mat gray_image;
-  //cv::cvtColor(bgr_image, gray_image, cv::COLOR_BGR2GRAY);
-    
-  //gaussian Blur
-  //GaussianBlur(hsv_image, hsv_image,cv::Size(7,7),0 );
-
-
-  //2A- filtro rosso
-  img_red = color_filter_image(hsv_image, "red");
-  //2B- filtro blu
-  //Mat img_blue = color_filter_image(hsv_image, "blue");
-  //.. altri filtri per colori
-
-
-  //...combinazione di piu filtri..
-  //addWeighted(img_red, 1.0, img_blue, 1.0, 0.0, imgThresholded);
-  imgThresholded = img_red;
-
-  if(!params.real_time)
-  {
-    imshow( "imgThresholded", imgThresholded );
-    waitKey(30);
-  }
-
-
-
-  //3-Remove small object and fill small holes ////////////////////////////////////////////////////////////
-  morphological_filter(imgThresholded);
-  if(!params.real_time && false)
-  {
-    imshow( "imgThresholded_foreground", imgThresholded );
-    waitKey(30);
-  }
-
-  //4-Canny///////////////////////////////////////////////////////////////////////////////////////////////////
-  Canny(imgThresholded, img_edges, 50,100);
-  if(!params.real_time )
-  {
-    imshow( "canny", img_edges );
-    waitKey(30);
-  }
-
-  //5--Find contours//////////////////////////////////////////////////////////////////////////////////////////
-  vector<vector<Point> > contours;
-  vector<Vec4i> hierarchy;
-  findContours( img_edges, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, Point(0, 0) );
-    
-  //6-Find object///////////////////////////////////////////////////////////////////////////////////////////////
-  vector<Point2f>  boxObj;
-  find_object(contours, &boxObj);
-
-  cout<< "oggetti num : " <<  boxObj.size() / 4 << endl;
-  if(!params.real_time )
-  {
-    RNG rng(12345);
-    Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-    for(int i = 0 ; i < boxObj.size() / 4  ; i ++)
-    {
-      for( int j = 0; j < 4; j++ )
-      {
-        
-        line( bgr_image_rs, boxObj[j+i*4], boxObj[(j+1)%4 + i*4], color, 2, 8 );
-      }
-
-    }    
-
-    imshow( "drawing", bgr_image_rs );
-    waitKey(30);
-  }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-  end=clock();
-  tempo=((double)(end-start))/CLOCKS_PER_SEC;
-  cout << "FREQ: " << 1/tempo << endl;
-
-  tempo=((double)(end-start_cv))/CLOCKS_PER_SEC;
-  cout << "FREQ COMPUTER VISION: " << tempo << "meno di: " << 0.05 << endl;
-
-}
 
 /********************************************************************************
 *
@@ -316,23 +115,16 @@ int main(int argc, char** argv)
   nh.param<bool>("/VisionNode/save_img", params.save_img , false);
   nh.param<std::string>("/VisionNode/img_path_save", params.img_path_save, "");
 
-  //se cam.device = 0 si utilizza la intel r200
-  //se cam.device > 0 si apre una webcam e quindi dovrò pubblicare le immagini su un topic, ecc..
-  if (cam.device == 0)
-  {
-    cam.intel_r200 = true;
-    //mi devo sottorscrivere al topi della real sense r200
-    image_r200_sub= nh.subscribe("/camera/color/image_raw", 1, ImageRealSenseCallback);
-  }
-  else
-  {
-   cam.intel_r200 = false;
-   //Publisher
-   image_transport::ImageTransport it(nh);
-   image_pub = it.advertise("/camera/image_raw", 100);
-   info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",100);
-  }
-  
+ 
+ 
+  //Publisher
+  //1
+  image_transport::ImageTransport it(nh);
+  image_pub = it.advertise("/camera/image_raw", 100);
+  info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",100);
+  //2
+  features_rect_pub = nh.advertise<std_msgs::Float64MultiArray>("/obj_detection/features", 10);
+
   //Subscriber
   attitude_sub = nh.subscribe("/napodrone/attitude", 1, AttitudeCallback);
 
@@ -346,11 +138,11 @@ int main(int argc, char** argv)
 
 
   /*Se non sono in modalità debug, e ho una webcam, la apro****************************************/
-  if(params.real_time && !cam.intel_r200)
+  if(params.real_time)
   {
     /*Open the webcam*/
     
-    cap.open(cam.device);		//Open system default camera INTEl
+    cap.open(cam.device);		
 
      // Check if video device can be opened with the given index
     if(!cap.isOpened()) 
@@ -405,13 +197,8 @@ int main(int argc, char** argv)
 
   }else
   {
-    if(!params.real_time)
-    {
-    
-      //creo le finestre di controllo
-      make_control_window();
-
-    }
+    //creo le finestre di controllo
+    make_control_window();
   }
 
 
@@ -424,11 +211,11 @@ int main(int argc, char** argv)
   
 
   int id_img = 0;
-  if(params.real_time)
+  /*if(params.real_time)
   {
     fd1=fopen("/home/odroid/time.txt", "w");
     fclose(fd1);
-  }
+  }*/
 
 
 /*******************************************************************************************************
@@ -442,8 +229,9 @@ int main(int argc, char** argv)
 
 
     //caso in cui uso la WebCam
-    if(params.real_time && !cam.intel_r200)
-    {    Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
+    if(params.real_time)
+    {   
+        Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
         //catturo l'immagine dalla webcam
         cap >> bgr_image;
         // Check if grabbed frame is actually full with some content
@@ -467,41 +255,38 @@ int main(int argc, char** argv)
     }
     //se non utilizzo la camera...
     else{
-      if(!params.real_time)  
-      {
-        stringstream ss_id;
-        stringstream ss;
-        ss << idx;
-        string str = ss.str();
-        ss_id << id_test;
-        string num_test = ss_id.str();
-        if(idx < 10)
-          str = params.img_path + "test" + num_test+ "/left000"+ str+ ".jpg";
-        if(idx>=10 && idx < 100)
-          str = params.img_path + "test" + num_test+ "/left00"+ str+ ".jpg";
-        if(idx>=100 && idx < 1000)
-          str = params.img_path + "test" + num_test+ "/left0"+ str+ ".jpg";
-        if(idx>=1000 && idx < 10000)
-          str = params.img_path + "test" + num_test+ "/left"+ str+ ".jpg";
+ 
+      stringstream ss_id;
+      stringstream ss;
+      ss << idx;
+      string str = ss.str();
+      ss_id << id_test;
+      string num_test = ss_id.str();
+      if(idx < 10)
+        str = params.img_path + "test" + num_test+ "/left000"+ str+ ".jpg";
+      if(idx>=10 && idx < 100)
+        str = params.img_path + "test" + num_test+ "/left00"+ str+ ".jpg";
+      if(idx>=100 && idx < 1000)
+        str = params.img_path + "test" + num_test+ "/left0"+ str+ ".jpg";
+      if(idx>=1000 && idx < 10000)
+        str = params.img_path + "test" + num_test+ "/left"+ str+ ".jpg";
         
   	    
-        //apro l'immagine a colori
-        Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
-        bgr_image = imread( str, CV_LOAD_IMAGE_COLOR );
+      //apro l'immagine a colori
+      Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
+      bgr_image = imread( str, CV_LOAD_IMAGE_COLOR );
       
-        //la visualizzo a PC
-        imshow( "original image", bgr_image );
-        waitKey(30);
+      //la visualizzo a PC
+      imshow( "original image", bgr_image );
+      waitKey(30);
         
 
-        //elaboro l'immagine
-        obj_detection(bgr_image); 
-      }
+      //elaboro l'immagine
+      obj_detection(bgr_image); 
+      
     
     }
-
-    
-    
+  
     //valuta callback
     ros::spinOnce();
   }

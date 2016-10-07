@@ -5,17 +5,20 @@
 #include <iostream>
 #include <sensor_msgs/CameraInfo.h>
 #include <geometry_msgs/Point.h>
+#include <std_msgs/Float64MultiArray.h>
+#include <std_msgs/MultiArrayLayout.h>
 #include <string>
 #include <time.h>
 #include <opencv2/opencv.hpp>
 #include <math.h>
-
+#include <sensor_msgs/image_encodings.h>
 //#include <opencv2/imgproc/imgproc.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 
 //Topic Publisher
 ros::Publisher info_pub;
 image_transport::Publisher image_pub;
+ros::Publisher features_rect_pub;
 //Topic Subscriber
 ros::Subscriber attitude_sub;
 ros::Subscriber image_r200_sub;
@@ -83,7 +86,6 @@ int w = 20;
 struct camera
 {
   int device;
-  bool intel_r200;
   double frame_width;
   double frame_height;
   double fps;
@@ -143,3 +145,4 @@ void sort_point(Point2f* rect_points);
 void find_object(vector<vector<Point> > contours, vector<Point2f>*  boxObj);
 void virtual_image_plane_roll(double phi, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v);
 void virtual_image_plane_pitch(double theta, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v);
+void obj_detection(Mat bgr_image);
