@@ -1,0 +1,10 @@
+<launch>
+ 
+
+
+   <node pkg="obj_3d_detection" type="Vision3DNode" name="Vision3DNode" output="screen" >
+    </node>
+
+
+        
+</launch>
