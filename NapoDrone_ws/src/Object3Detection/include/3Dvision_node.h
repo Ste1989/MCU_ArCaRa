@@ -8,6 +8,7 @@
 #include <sensor_msgs/PointField.h>
 #include <opencv2/opencv.hpp>
 #include <math.h>
+#include <queue>  
 
 
 
@@ -42,20 +43,21 @@ struct points_packet
 	uint nsec;
 	//# 2D structure of the point cloud. If the cloud is unordered, height is
 	//# 1 and width is the length of the point cloud.
-	uint height;
+	/*uint height;
 	uint width;
 	std::vector<sensor_msgs::PointField> fields; //# Describes the channels and their layout in the binary data blob.
 	bool is_bigendian;  //# Is this data bigendian?
 	uint point_step;  //# Length of a point in bytes
 	uint row_step;   // # Length of a row in bytes
 	std::vector<unsigned char> data;  //# Actual point data, size is (row_step*height)
-	bool is_dense;  // # True if there are no invalid points
+	bool is_dense;  // # True if there are no invalid points*/
+	sensor_msgs::PointCloud2 point_cloud;
 
 };
 
 //buffer di ricezione dei pacchetti
-std::vector<points_packet> buffer_points_packet;
-std::vector<features_packet> buffer_features_packet;
+std::queue<points_packet> buffer_points_packet;
+std::queue<features_packet> buffer_features_packet;
 
 
 /**************************************************************************************

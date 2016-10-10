@@ -20,11 +20,13 @@ project(obj_3d_detection)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 #find_package(catkin REQUIRED COMPONENTS roscpp)
+
+set(PCL_DIR "/usr/share/pcl-1.7/")
 find_package(catkin REQUIRED 
   roscpp
   image_transport
   cv_bridge
-
+  PCL
 )
 
 ## System dependencies are found with CMake's conventions
@@ -54,13 +56,13 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS} 
-
+  ${PCL_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
 
 
 add_library(Vision3DFunction  src/3Dvision_function.cpp)
-target_link_libraries(Vision3DFunction  ${OpenCV_LIBS})
+target_link_libraries(Vision3DFunction  ${OpenCV_LIBS} ${PCL_LIBRARIES})
 
 #compilare eseguibile 
 add_executable(Vision3DNode src/3Dvision_node.cpp)

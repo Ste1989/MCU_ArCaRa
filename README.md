@@ -9,6 +9,10 @@
 - opencv  2.4.9
 - ssh e configurare la connessione ethernet
 - ros hector loclization https://github.com/tu-darmstadt-ros-pkg/hector_localization.git (non installata)
+- PCL: sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl
+  sudo apt-get update
+  sudo apt-get install libpcl-all
+  http://wiki.ros.org/hydro/Migration#PCL
 ------------ 
 # Collogamenti Hardware:
 

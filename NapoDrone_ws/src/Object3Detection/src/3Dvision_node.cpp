@@ -22,7 +22,7 @@ void Features2DCallback(const obj_detection::Features::ConstPtr& msg)
   pkg_features.nsec = msg->nsec;
 
   //lo metto nel buffer di ricezione
-  buffer_features_packet.push_back(pkg_features);
+  buffer_features_packet.push(pkg_features);
   check_syncronization_pkg();
 
 }
@@ -37,17 +37,18 @@ void PointCloudRealSenseCallback(const sensor_msgs::PointCloud2::ConstPtr& msg)
   points_packet pkg_points;
   pkg_points.sec = msg->header.stamp.sec;
   pkg_points.nsec = msg->header.stamp.nsec;
-  pkg_points.height = msg->height;
+  /*pkg_points.height = msg->height;
   pkg_points.width = msg->width;
   pkg_points.is_bigendian = msg->is_bigendian;
   pkg_points.point_step = msg->point_step;
   pkg_points.row_step = msg->row_step;
   pkg_points.is_dense = msg->is_dense;
   pkg_points.data = msg->data;
-  pkg_points.fields = msg->fields;
+  pkg_points.fields = msg->fields;*/
+  pkg_points.point_cloud = *msg;
 
   //lo metto nel buffer di ricezione
-  buffer_points_packet.push_back(pkg_points);
+  buffer_points_packet.push(pkg_points);
   //controllo se è arrivato il pacchetto features corrispondente
   check_syncronization_pkg();
 
