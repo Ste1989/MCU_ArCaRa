@@ -26,7 +26,6 @@ void  check_syncronization_pkg()
 		return;
 	}
 		
-
 	//estraggo il tempo del primo pacchetto nel buffer delle features e della point cloud
 	features_packet pkg_features = buffer_features_packet.front();
 	points_packet pkg_points = buffer_points_packet.front();
@@ -65,11 +64,8 @@ void  check_syncronization_pkg()
 			buffer_features_packet.pop_back();
 			check_syncronization_pkg();
 			return;
-		}
-		
+		}	
 	}
-	
-
 }
 /********************************************************************************
 *
