@@ -123,7 +123,7 @@ int main(int argc, char** argv)
   image_pub = it.advertise("/camera/image_raw", 100);
   info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera/camera_info",100);
   //2
-  features_rect_pub = nh.advertise<std_msgs::Float64MultiArray>("/obj_detection/features", 10);
+  features_rect_pub = nh.advertise<obj_detection::Features>("/obj_detection/features", 10);
 
   //Subscriber
   attitude_sub = nh.subscribe("/napodrone/attitude", 1, AttitudeCallback);
@@ -249,7 +249,12 @@ int main(int argc, char** argv)
         info_pub.publish(info_image);
 
         //elaboro l'immagine
-        obj_detection(bgr_image);
+        image_packet new_image;
+        new_image.bgr_image = bgr_image;
+        ros::Time now = ros::Time::now();
+        new_image.header_im.stamp.sec = now.sec;
+        new_image.header_im.stamp.nsec = now.nsec;
+        obj_detection_function(new_image);
       
       
     }
@@ -282,7 +287,12 @@ int main(int argc, char** argv)
         
 
       //elaboro l'immagine
-      obj_detection(bgr_image); 
+      image_packet new_image;
+      new_image.bgr_image = bgr_image;
+      ros::Time now = ros::Time::now();
+      new_image.header_im.stamp.sec = now.sec;
+      new_image.header_im.stamp.nsec = now.nsec;
+      obj_detection_function(new_image); 
       
     
     }

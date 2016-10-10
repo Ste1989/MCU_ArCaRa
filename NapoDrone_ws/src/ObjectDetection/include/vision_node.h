@@ -5,13 +5,13 @@
 #include <iostream>
 #include <sensor_msgs/CameraInfo.h>
 #include <geometry_msgs/Point.h>
-#include <std_msgs/Float64MultiArray.h>
-#include <std_msgs/MultiArrayLayout.h>
 #include <string>
 #include <time.h>
 #include <opencv2/opencv.hpp>
 #include <math.h>
 #include <sensor_msgs/image_encodings.h>
+#include <std_msgs/Header.h>
+#include "obj_detection/Features.h"
 //#include <opencv2/imgproc/imgproc.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 
@@ -130,6 +130,13 @@ struct str{
     }
 } comp;
 
+//pacchetto letto quando leggo una nuova immagine
+struct image_packet
+{
+  Mat bgr_image;
+  std_msgs::Header header_im;
+};
+
 /**************************************************************************************
 *
 *   FUNZIONI
@@ -145,4 +152,4 @@ void sort_point(Point2f* rect_points);
 void find_object(vector<vector<Point> > contours, vector<Point2f>*  boxObj);
 void virtual_image_plane_roll(double phi, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v);
 void virtual_image_plane_pitch(double theta, double u1, double v1, double fv, double fu, double u0, double v0, double* u, double* v);
-void obj_detection(Mat bgr_image);
+void obj_detection_function(image_packet bgr_image);

@@ -438,9 +438,10 @@ void virtual_image_plane_pitch(double theta, double u1, double v1, double fv, do
 *    Elabora Immagine
 *
 **************************************************************************************/
-void obj_detection(Mat bgr_image)
+void obj_detection_function(image_packet new_image)
 {
-  
+
+  Mat bgr_image = new_image.bgr_image;
   double tempo;
   start=clock();
   //prealloco tutte le immagini
@@ -618,26 +619,24 @@ void obj_detection(Mat bgr_image)
 
 
     //pubblico le coordinate dell'ogetto su topic
-    std_msgs::Float64MultiArray rect;
+ 
+    obj_detection::Features features_msg;
     //inserisco il primo punto (in realtà poi dovra essere messo un controllo che sia sempre lo stesso oggetto)
-    rect.data.push_back(boxObj[0].x);
-    rect.data.push_back(boxObj[0].y);
-    rect.data.push_back(boxObj[1].x);
-    rect.data.push_back(boxObj[1].y);
-    rect.data.push_back(boxObj[2].x);
-    rect.data.push_back(boxObj[2].y);
-    rect.data.push_back(boxObj[3].x);
-    rect.data.push_back(boxObj[3].y);
-    //layout
-    rect.layout.dim.push_back(std_msgs::MultiArrayDimension());
-    rect.layout.dim.push_back(std_msgs::MultiArrayDimension());
-    rect.layout.dim[0].label = "righe";
-    rect.layout.dim[0].size = 4;
-    //rect.layout.dim[0].stride = 1;
-    rect.layout.dim[1].label = "colonne";
-    rect.layout.dim[1].size = 2;
+    features_msg.features.push_back(boxObj[0].x);
+    features_msg.features.push_back(boxObj[0].y);
+    features_msg.features.push_back(boxObj[1].x);
+    features_msg.features.push_back(boxObj[1].y);
+    features_msg.features.push_back(boxObj[2].x);
+    features_msg.features.push_back(boxObj[2].y);
+    features_msg.features.push_back(boxObj[3].x);
+    features_msg.features.push_back(boxObj[3].y);
+    //metto il tempo a cui ho acquisito l'immagine
+    features_msg.sec = new_image.header_im.stamp.sec;
+    features_msg.nsec = new_image.header_im.stamp.nsec;
+
+
     //pubblico il messaggio su topic
-    features_rect_pub.publish(rect);
+    features_rect_pub.publish(features_msg);
 
 
   }

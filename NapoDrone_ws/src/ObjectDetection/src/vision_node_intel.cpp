@@ -82,6 +82,8 @@ void AttitudeCallback(const geometry_msgs::Point::ConstPtr& msg)
 void ImageRealSenseCallback(const sensor_msgs::Image::ConstPtr& msg)
 {
   //apro l'immagine a colori
+  
+  image_packet new_image;
 
   //Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
   cv_bridge::CvImagePtr cv_ptr;
@@ -95,7 +97,10 @@ void ImageRealSenseCallback(const sensor_msgs::Image::ConstPtr& msg)
   }
   
   Mat bgr_image = cv_ptr->image;
-  obj_detection(bgr_image);
+  
+  new_image.bgr_image = bgr_image;
+  new_image.header_im = msg->header;
+  obj_detection_function(new_image);
 }
 
 
@@ -129,7 +134,7 @@ int main(int argc, char** argv)
   attitude_sub = nh.subscribe("/napodrone/attitude", 1, AttitudeCallback);
   
   //Publisher
-  features_rect_pub = nh.advertise<std_msgs::Float64MultiArray>("/obj_detection/features", 10);
+  features_rect_pub = nh.advertise<obj_detection::Features>("/obj_detection/features", 10);
 
   
   /*inizializzo
