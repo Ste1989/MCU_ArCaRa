@@ -88,8 +88,21 @@ void compute_3D_data(features_packet pkg_features, points_packet pkg_points)
 		
       pcl::PointCloud<pcl::PointXYZ> input_;
 	  pcl::fromROSMsg(pkg_points.point_cloud, input_);
+	  FILE *fd1 ;
+	  fd1 = fopen("/home/ste/point.txt","w");
+	  fprintf(fd1, "%s", "[");
 	  for(int i = 0 ; i < input_.width * input_.height ; i++)
-	  cout << input_.points[i] << endl;
+	  {
+	  	fprintf(fd1, "%f", input_.points[i].x,"a");
+	  	fprintf(fd1, "%s", ",");
+	  	fprintf(fd1, "%f", input_.points[i].y,"a");
+	  	fprintf(fd1, "%s", ",");
+	  	fprintf(fd1, "%f", input_.points[i].z,"a");
+	  	fprintf(fd1, "%s\n", ";");
+	  }
+	  fprintf(fd1, "%s", "]");
+	  fclose(fd1);
+
 	
 	return;
 }
