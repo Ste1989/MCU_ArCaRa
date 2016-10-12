@@ -38,7 +38,7 @@ void make_control_window(  )
   //namedWindow("Bin e Contour", CV_WINDOW_AUTOSIZE); //create a window called "Bin e Contour"
   //cvCreateTrackbar("Canny Tresh", "Bin e Contour", &thresh  , max_thresh);
   //cvCreateTrackbar("Bin Image", "Bin e Contour", &bin_threshold , 255);
-  //cvCreateTrackbar("Bin Type", "Bin e Contour", &bin_type;  , 4);
+  //cvCreateTrackbar("Bin Typei", "Bin e Contour", &bin_type;  , 4);
 
 
 }

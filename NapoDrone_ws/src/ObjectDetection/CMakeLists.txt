@@ -61,6 +61,7 @@ add_message_files(
   FILES
   Features.msg
 )
+
 generate_messages()
 
 add_library(VisionFunction  src/vision_function.cpp)

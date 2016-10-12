@@ -39,7 +39,7 @@ include_directories(
 
 add_message_files(
   FILES
-  Param.msg
+  Param.msg 
 )
 generate_messages()
 add_executable(SerialManager src/rs232.cpp)
