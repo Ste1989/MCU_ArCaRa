@@ -13,6 +13,7 @@ void  check_syncronization_pkg()
 {
 	cout << "size features " << buffer_features_packet.size() << endl;
 	cout << "size points" << buffer_points_packet.size() << endl;
+	
 
 	//primo controllo: se uno dei due vettori è vuoto ritorno
 	if(buffer_points_packet.empty() || buffer_features_packet.empty())
@@ -88,7 +89,8 @@ void compute_3D_data(features_packet pkg_features, points_packet pkg_points)
 		
       pcl::PointCloud<pcl::PointXYZ> input_;
 	  pcl::fromROSMsg(pkg_points.point_cloud, input_);
-	  FILE *fd1 ;
+
+	  /*FILE *fd1 ;
 	  fd1 = fopen("/home/ste/point.txt","w");
 	  fprintf(fd1, "%s", "[");
 	  for(int i = 0 ; i < input_.width * input_.height ; i++)
@@ -101,7 +103,7 @@ void compute_3D_data(features_packet pkg_features, points_packet pkg_points)
 	  	fprintf(fd1, "%s\n", ";");
 	  }
 	  fprintf(fd1, "%s", "]");
-	  fclose(fd1);
+	  fclose(fd1);*/
 
 	
 	return;
