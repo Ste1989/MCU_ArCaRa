@@ -441,15 +441,17 @@ void virtual_image_plane_pitch(double theta, double u1, double v1, double fv, do
 void obj_detection_function(image_packet new_image)
 {
 
+
   Mat bgr_image = new_image.bgr_image;
   double tempo;
   start=clock();
   //prealloco tutte le immagini
-  Mat bgr_image_rs = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat hsv_image = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat imgThresholded = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat img_red = Mat::zeros( cv::Size(320,180), CV_8UC3 );
-  Mat img_edges = Mat::zeros( cv::Size(320,180), CV_8UC3 );
+  Size size(320,240);
+  Mat bgr_image_rs = Mat::zeros( size, CV_8UC3 );
+  Mat hsv_image = Mat::zeros( size, CV_8UC3 );
+  Mat imgThresholded = Mat::zeros( size, CV_8UC3 );
+  Mat img_red = Mat::zeros( size, CV_8UC3 );
+  Mat img_edges = Mat::zeros( size, CV_8UC3 );
   //salvo l'immagine se richiesto
   if(params.save_img)
   {
@@ -534,10 +536,8 @@ void obj_detection_function(image_packet new_image)
   }*/
 
   //1-C RESIZE IMMAGINE
-  Size size(320,180);//the dst image size,e.g.100x100
   resize(bgr_image,bgr_image_rs,size);//resize image
   bgr_image = bgr_image_rs;
-    
 
 
   //2- ottengo l'immagine in bianco e nero e l'iimagine in HSV e filtro per i vari colori//////////////////

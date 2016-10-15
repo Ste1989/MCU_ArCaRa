@@ -27,14 +27,17 @@ V :0-255
 void init_global_var(  )
 {
 
+  cout << "*********************************************" << endl;
+  cout << "PARAMETRI SETTATI PER SCATOLA                " << endl;
+  cout << "*********************************************" << endl;
   iLowH = 160;
   iHighH = 179;
-  iLowS = 90; 
+  iLowS = 50; //bottiglia = 90
   iHighS = 255;//165;
   iLowV = 90;
   iHighV = 255;
   size_erode_clos = 0;
-  size_dil_clos = 1;//20;
+  size_dil_clos = 3;  //bottiglia = 1
   size_erode_fill = 1;
   size_dil_fill = 1;//20;
   idx = 695;
