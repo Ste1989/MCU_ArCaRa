@@ -446,7 +446,8 @@ void obj_detection_function(image_packet new_image)
   double tempo;
   start=clock();
   //prealloco tutte le immagini
-  Size size(320,240);
+  int resize_factor = 2;
+  Size size(bgr_image.cols/resize_factor,bgr_image.rows/resize_factor);
   Mat bgr_image_rs = Mat::zeros( size, CV_8UC3 );
   Mat hsv_image = Mat::zeros( size, CV_8UC3 );
   Mat imgThresholded = Mat::zeros( size, CV_8UC3 );
@@ -622,14 +623,15 @@ void obj_detection_function(image_packet new_image)
  
     obj_detection::Features features_msg;
     //inserisco il primo punto (in realtà poi dovra essere messo un controllo che sia sempre lo stesso oggetto)
-    features_msg.features.push_back(boxObj[0].x);
-    features_msg.features.push_back(boxObj[0].y);
-    features_msg.features.push_back(boxObj[1].x);
-    features_msg.features.push_back(boxObj[1].y);
-    features_msg.features.push_back(boxObj[2].x);
-    features_msg.features.push_back(boxObj[2].y);
-    features_msg.features.push_back(boxObj[3].x);
-    features_msg.features.push_back(boxObj[3].y);
+    //moltiplico per resize_factor, perchè ho ridimensionato l'immagine
+    features_msg.features.push_back((boxObj[0].x)*resize_factor);
+    features_msg.features.push_back((boxObj[0].y*resize_factor));
+    features_msg.features.push_back((boxObj[1].x*resize_factor));
+    features_msg.features.push_back((boxObj[1].y*resize_factor));
+    features_msg.features.push_back((boxObj[2].x*resize_factor));
+    features_msg.features.push_back((boxObj[2].y*resize_factor));
+    features_msg.features.push_back((boxObj[3].x*resize_factor));
+    features_msg.features.push_back((boxObj[3].y*resize_factor));
     //metto il tempo a cui ho acquisito l'immagine
     features_msg.sec = new_image.header_im.stamp.sec;
     features_msg.nsec = new_image.header_im.stamp.nsec;
