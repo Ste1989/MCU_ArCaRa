@@ -65,17 +65,16 @@ add_message_files(
 generate_messages()
 
 add_library(VisionFunction  src/vision_function.cpp)
-target_link_libraries(VisionFunction  ${OpenCV_LIBS})
+target_link_libraries(VisionFunction  ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 #compilare eseguibile per webcam
 add_executable(VisionNode src/vision_node.cpp)
-#add_dependencies(CameraStream CameraStream_gencpp ${PROJECT_NAME})
 target_link_libraries(VisionNode VisionFunction ${OpenCV_LIBS} ${catkin_LIBRARIES} )
+
 
 
 #compilare eseguibile per intel
 add_executable(VisionNodeIntel src/vision_node_intel.cpp)
-#add_dependencies(CameraStream CameraStream_gencpp ${PROJECT_NAME})
 target_link_libraries(VisionNodeIntel VisionFunction ${OpenCV_LIBS} ${catkin_LIBRARIES} )
 
 catkin_package( 

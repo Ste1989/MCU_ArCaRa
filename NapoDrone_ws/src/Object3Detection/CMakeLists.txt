@@ -66,7 +66,6 @@ target_link_libraries(Vision3DFunction  ${OpenCV_LIBS} ${PCL_LIBRARIES})
 
 #compilare eseguibile 
 add_executable(Vision3DNode src/3Dvision_node.cpp)
-#add_dependencies(CameraStream CameraStream_gencpp ${PROJECT_NAME})
 target_link_libraries(Vision3DNode Vision3DFunction ${OpenCV_LIBS} ${catkin_LIBRARIES} )
 
 

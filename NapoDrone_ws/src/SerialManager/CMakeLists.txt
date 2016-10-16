@@ -42,6 +42,7 @@ add_message_files(
   Param.msg 
 )
 generate_messages()
+
 add_executable(SerialManager src/rs232.cpp)
 target_link_libraries(SerialManager ${catkin_LIBRARIES})
 
