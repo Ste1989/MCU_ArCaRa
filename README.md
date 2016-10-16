@@ -1,6 +1,6 @@
 # Odroid_ArCaRa
 ------------------------------------
-# Cosa installare sull'Odroid
+# Cosa installare sull'Odroid..da fare per l up board
 
 - Ubuntu 14.04 LTS
 - ROS indigo
