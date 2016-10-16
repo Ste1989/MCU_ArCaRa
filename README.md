@@ -2,6 +2,13 @@
 ------------------------------------
 # Cosa installare sull'Odroid..da fare per l up board
 
+- Ubuntu 14.04 e le librerie real sense, seguendo la guida di installazione
+- dronekit
+- opencv  2.4.9 (necessaria? su macchina virtuale no)
+- ssh e configurare la connessione ethernet
+
+# Cosa installare sull'Odroid
+
 - Ubuntu 14.04 LTS
 - ROS indigo
 - dronekit

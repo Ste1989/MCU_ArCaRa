@@ -85,14 +85,15 @@ void AttitudeCallback(const geometry_msgs::Point::ConstPtr& msg)
 void ImageRealSenseCallback(const sensor_msgs::Image::ConstPtr& msg)
 {
   //apro l'immagine a colori
-  
+
   image_packet new_image;
 
   //Mat bgr_image = Mat::zeros( cv::Size(cam.frame_width,cam.frame_height), CV_8UC3 );
   cv_bridge::CvImagePtr cv_ptr;
   try
-  {
+  {   cout << "SONO QUI" << endl;
     cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+  cout << "SONO QUI" << endl;
   }
   catch (cv_bridge::Exception& e)
   {
@@ -100,7 +101,7 @@ void ImageRealSenseCallback(const sensor_msgs::Image::ConstPtr& msg)
   }
   
   Mat bgr_image = cv_ptr->image;
-  
+  cout << "SONO QUI" << endl;
   new_image.bgr_image = bgr_image;
   new_image.header_im = msg->header;
   obj_detection_function(new_image);
