@@ -91,7 +91,7 @@ void compute_3D_data(features_packet pkg_features, points_packet pkg_points)
 	  pcl::fromROSMsg(pkg_points.point_cloud, input_);
 //salvo i punti 3d su file
 	  FILE *fd1 ;
-	  fd1 = fopen("/home/ste/point.txt","w");
+	  fd1 = fopen("/home/sistema/point.txt","w");
 
 	  for(int i = 0 ; i < input_.width * input_.height ; i++)
 	  {
@@ -107,7 +107,7 @@ void compute_3D_data(features_packet pkg_features, points_packet pkg_points)
 
 //salvo i punti 2d su file
   
-	  fd1 = fopen("/home/ste/point_2D.txt","w");
+	  fd1 = fopen("/home/sistema/point_2D.txt","w");
 	  
 	  for(int i = 0 ; i < 8 ; i++)
 	  {
