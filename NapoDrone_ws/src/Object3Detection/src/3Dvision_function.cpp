@@ -1,5 +1,14 @@
 #include "3Dvision_node.h"
+//#include <pcl_ros/transforms.h>
+///
 #include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_types.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>
+#include <pcl_ros/transforms.h>
+#include <Eigen/Dense>
+
+using Eigen::MatrixXd;
 /*************************************************************************************
 *
 *    CHECK PACKAGES ARRIVATI
@@ -86,28 +95,31 @@ void compute_3D_data(features_packet pkg_features, points_packet pkg_points)
 	if(!pkg_points.point_cloud.is_dense)
 		return;
 
-		
-      pcl::PointCloud<pcl::PointXYZ> input_;
-	  pcl::fromROSMsg(pkg_points.point_cloud, input_);
-//salvo i punti 3d su file
-	  FILE *fd1 ;
+
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(pkg_points.point_cloud,pcl_pc2);
+    Eigen::MatrixXf m;
+    pcl::PCLPointCloud2 p ;
+    pcl::getPointCloudAsEigen(pcl_pc2, m);
+
+
+//vedere come fare prima tra nuovo metodo e vecchio metodo,
+
+	 FILE *fd1 ;
 	  fd1 = fopen("/home/sistema/point.txt","w");
 
-	  for(int i = 0 ; i < input_.width * input_.height ; i++)
+	  for(int i = 0 ; i < m.size() ; i++)
 	  {
-	  	fprintf(fd1, "%f", input_.points[i].x,"a");
-	  	fprintf(fd1, "%s", ",");
-	  	fprintf(fd1, "%f", input_.points[i].y,"a");
-	  	fprintf(fd1, "%s", ",");
-	  	fprintf(fd1, "%f", input_.points[i].z,"a");
+	  	fprintf(fd1, "%f", m(i));
 	  	fprintf(fd1, "%s\n", ";");
+
 	  }
 	  
 	  fclose(fd1);
 
 //salvo i punti 2d su file
   
-	  fd1 = fopen("/home/sistema/point_2D.txt","w");
+	 /* fd1 = fopen("/home/sistema/point_2D.txt","w");
 	  
 	  for(int i = 0 ; i < 8 ; i++)
 	  {
@@ -115,7 +127,7 @@ void compute_3D_data(features_packet pkg_features, points_packet pkg_points)
 	  	fprintf(fd1, "%s\n", ";");
 	  }
 	
-	  fclose(fd1);
+	  fclose(fd1);*/
 
 
 

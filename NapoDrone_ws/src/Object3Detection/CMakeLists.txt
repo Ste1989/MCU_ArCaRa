@@ -22,7 +22,8 @@ project(obj_3d_detection)
 #find_package(catkin REQUIRED COMPONENTS roscpp)
 
 set(PCL_DIR "/usr/share/pcl-1.7/")
-find_package(catkin REQUIRED 
+set(Eigen_DIR "/usr/include/eigen3/")
+find_package(catkin REQUIRED cmake_modules
   roscpp
   image_transport
   cv_bridge
@@ -33,6 +34,7 @@ find_package(catkin REQUIRED
 find_package(Boost REQUIRED COMPONENTS thread)
 
 find_package( OpenCV  REQUIRED)
+find_package(Eigen REQUIRED)
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -43,7 +45,8 @@ find_package( OpenCV  REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  DEPENDS system_lib)
+  DEPENDS system_lib
+        DEPENDS Eigen)
 
 ###########
 ## Build ##
@@ -58,11 +61,13 @@ include_directories(
   ${Boost_INCLUDE_DIRS} 
   ${PCL_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-)
 
+  
+)
+include_directories(  ${EIGEN_INCLUDE_DIR})
 
 add_library(Vision3DFunction  src/3Dvision_function.cpp)
-target_link_libraries(Vision3DFunction  ${OpenCV_LIBS} ${PCL_LIBRARIES})
+target_link_libraries(Vision3DFunction  ${OpenCV_LIBS} ${PCL_LIBRARIES}  ${Eigen_LIBRARIES})
 
 #compilare eseguibile 
 add_executable(Vision3DNode src/3Dvision_node.cpp)

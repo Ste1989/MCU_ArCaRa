@@ -6,6 +6,13 @@
 - dronekit
 - opencv  2.4.9 (necessaria? su macchina virtuale no)
 - ssh e configurare la connessione ethernet
+- installato eigen3.3: [non so se necessario]
+    hg clone https://bitbucket.org/eigen/eigen/
+    cd Eigen
+    mkdir build
+    cd build
+    cmake ..
+    sudo make install
 
 # Cosa installare sull'Odroid
 
