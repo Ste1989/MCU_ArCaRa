@@ -117,7 +117,8 @@ private:
   bool processImage(cv::Mat input_image,cv::Mat output_image);
 
   //Launch file params
-  std::string calib_filename_;                    
+  std::string calib_filename_; 
+  std::string scenario_filename_;                    
   std::string space_type_;                        
   float marker_size_;
   int num_of_markers_;
