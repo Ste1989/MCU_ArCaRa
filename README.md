@@ -1,10 +1,9 @@
-# Odroid_ArCaRa
+# MCU_ArCaRa
 ------------------------------------
-# Cosa installare sull'Odroid..da fare per l up board
+# Cosa installare 
 
 - Ubuntu 14.04 e le librerie real sense, seguendo la guida di installazione
-- dronekit
-- opencv  2.4.9 (necessaria? su macchina virtuale no)
+- dronekit, dronekit-sitl
 - ssh e configurare la connessione ethernet
 - installato eigen3.3: [non so se necessario]
     hg clone https://bitbucket.org/eigen/eigen/
@@ -13,6 +12,7 @@
     cd build
     cmake ..
     sudo make install
+-installato libreria mraa scaricandola da git
 
 # Cosa installare sull'Odroid
 
