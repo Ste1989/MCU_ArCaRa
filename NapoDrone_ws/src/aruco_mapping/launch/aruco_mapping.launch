@@ -10,7 +10,7 @@
     <remap from="/image_raw" to="/camera/color/image_raw"/>
 
     <param name="calibration_file" type="string" value="$(find aruco_mapping)/data/R200.ini" /> 
-    <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scanario_0.map" /> 
+    <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_0.map" /> 
     <param name="num_of_markers" type="int" value="16" />
     <param name="marker_size" type="double" value="0.122"/>
     <param name="space_type" type="string" value="plane" />

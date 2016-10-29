@@ -101,19 +101,33 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   // Default markers_ initialization
   for(size_t i = 0; i < num_of_markers_;i++)
   {
-    //markers_[i].previous_marker_id = -1;
-    //markers_[i].visible = false;
-    //markers_[i].marker_id = -1;
     markers_[i].previous_marker_id =-1;
     markers_[i].visible = false;
     
   }
+
   //parsing del file contenente lo scenrio
+  parseScenarioFile(scenario_filename_);
+  
+
+}
+
+ArucoMapping::~ArucoMapping()
+{
+ delete listener_;
+}
+
+
+bool
+ArucoMapping::parseScenarioFile(std::string scenario_filename_)
+{
+
+  const char* filename = scenario_filename_.c_str();
   FILE* fd;
-  fd = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/src/aruco_mapping/data/scenario_0.map","rb");
+  fd = fopen(filename,"rb");
   if( fd == NULL ) {
-    cout << "NON HO TROVATO IL FILE DELLO SCANRIO"<< endl;
-    return ;
+    ROS_ERROR("Scenario data NOT FOUND ");
+    return false;
   }
   int id;
   float px;
@@ -129,20 +143,15 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
     markers_[id].geometry_msg_to_world.orientation.x = 0; // we assume a plane
     markers_[id].geometry_msg_to_world.orientation.y = 0; // we assume a plane
     markers_[id].geometry_msg_to_world.orientation.z = 0; // we assume a plane
-    markers_[id].geometry_msg_to_world.orientation.w = 1; // we assume a plane
-  
-
-    
+    markers_[id].geometry_msg_to_world.orientation.w = 1; // we assume a plane    
   }
 
   fclose(fd);
-
+  ROS_INFO_STREAM("Scenario data loaded successfully");
+  return true;
 }
 
-ArucoMapping::~ArucoMapping()
-{
- delete listener_;
-}
+
 
 bool
 ArucoMapping::parseCalibrationFile(std::string calib_filename)
@@ -285,9 +294,9 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
       markers_[current_marker_id].current_camera_pose.position.y = marker_origin.getY();
       markers_[current_marker_id].current_camera_pose.position.z = marker_origin.getZ();
       
-      cout << markers_[current_marker_id].current_camera_pose.position.x << endl;  
-      cout << markers_[current_marker_id].current_camera_pose.position.y << endl;  
-      cout << markers_[current_marker_id].current_camera_pose.position.z << endl;
+      //cout << markers_[current_marker_id].current_camera_pose.position.x << endl;  
+      //cout << markers_[current_marker_id].current_camera_pose.position.y << endl;  
+      //cout << markers_[current_marker_id].current_camera_pose.position.z << endl;
 
 
       const tf::Quaternion marker_quaternion = markers_[current_marker_id].current_camera_tf.getRotation();
@@ -378,7 +387,7 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
   // Publish all known markers
   //------------------------------------------------------
   
-  //publishTfs(true);
+  publishTfs(true);
 
   //------------------------------------------------------
   // Publish custom marker message
@@ -395,8 +404,8 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     marker_msg.marker_ids.clear();
     marker_msg.global_marker_poses.clear();
 
-    //stampo su file la posizione della camera stimata !
-    FILE* fd;
+    //stampo su file la posizione della camera stimata nel fram world
+    /*FILE* fd;
     fd = fopen("/home/robot/camera_pose.txt", "a");
     fprintf(fd, "%f", world_position_geometry_msg_.position.x);
     fprintf(fd, "%s", " ");
@@ -411,9 +420,9 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     fprintf(fd, "%f", world_position_geometry_msg_.orientation.z);
     fprintf(fd, "%s", " ");
     fprintf(fd, "%f\n", world_position_geometry_msg_.orientation.w);
-    fclose(fd);	
+    fclose(fd);*/	
 
-    for(size_t j = 0; j < marker_counter_; j++)
+    for(size_t j = 0; j < num_of_markers_; j++)
     {
       if(markers_[j].visible == true)
       {
@@ -443,9 +452,11 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 void
 ArucoMapping::publishTfs(bool world_option)
 {
-  for(int i = 0; i < marker_counter_; i++)
+  for(int i = 0; i < num_of_markers_; i++)
   {
-    // Actual Marker
+
+   //codice che funziona con i marker variabili
+   /*// Actual Marker
     std::stringstream marker_tf_id;
     marker_tf_id << "marker_" << i;
     // Older marker - or World
@@ -468,14 +479,18 @@ ArucoMapping::publishTfs(bool world_option)
       marker_globe << "marker_globe_" << i;
       broadcaster_.sendTransform(tf::StampedTransform(markers_[i].tf_to_world,ros::Time::now(),"world",marker_globe.str()));
     }
-
-    // Cubes for RVIZ - markers
-    publishMarker(markers_[i].geometry_msg_to_previous,markers_[i].marker_id,i);
+   */ 
+    if(markers_[i].visible == true)
+    {  
+      // Cubes for RVIZ - markers
+      publishMarker(markers_[i].geometry_msg_to_previous,markers_[i].marker_id,i);
+      publishMarker(markers_[i].geometry_msg_to_world,markers_[i].marker_id,i);
+    }
   }
 
   // Global Position of object
-  if(world_option == true)
-    broadcaster_.sendTransform(tf::StampedTransform(world_position_transform_,ros::Time::now(),"world","camera_position"));
+  //if(world_option == true)
+  //  broadcaster_.sendTransform(tf::StampedTransform(world_position_transform_,ros::Time::now(),"world","camera_position"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -485,14 +500,9 @@ ArucoMapping::publishMarker(geometry_msgs::Pose marker_pose, int marker_id, int 
 {
   visualization_msgs::Marker vis_marker;
 
-  if(index == 0)
-    vis_marker.header.frame_id = "world";
-  else
-  {
-    std::stringstream marker_tf_id_old;
-    marker_tf_id_old << "marker_" << markers_[index].previous_marker_id;
-    vis_marker.header.frame_id = marker_tf_id_old.str();
-  }
+  
+  vis_marker.header.frame_id = "world";
+ 
 
   vis_marker.header.stamp = ros::Time::now();
   vis_marker.ns = "basic_shapes";

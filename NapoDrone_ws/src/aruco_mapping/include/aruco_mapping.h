@@ -43,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <visualization_msgs/Marker.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
+#include <fstream>
 
 // Aruco libraries
 #include <aruco/aruco.h>
@@ -97,6 +98,9 @@ private:
   
   /** \brief Function to parse data from calibration file*/
   bool parseCalibrationFile(std::string filename);
+
+   /** \brief Function to parse data from scenario file*/
+   bool parseScenarioFile(std::string scenario_file);
 
   /** \brief Function to publish all known TFs*/
   void publishTfs(bool world_option);

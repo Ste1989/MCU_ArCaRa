@@ -36,6 +36,7 @@ catkin_package(
   LIBRARIES
 )
 
+#eseguibile con i marker fissi (old qeullo originale con i marker variabili)
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} aruco_mapping_gencpp )
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${aruco_LIBS} ${ROS_LIBRARIES} ${catkin_LIBRARIES})
