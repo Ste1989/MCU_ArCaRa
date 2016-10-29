@@ -1,10 +1,9 @@
 <launch>
  
-    <node pkg="roscore" type="roscore" name="roscore" output="screen" >
-    </node>
+
 
     <node pkg="serial_manager" type="SerialManager" name="SerialManager" output="screen" >
-	<param name="dev" type="string" value="/dev/ttyUSB0" />
+	<param name="dev" type="string" value="/dev/ttyUSB1" />
     </node>
 
         
