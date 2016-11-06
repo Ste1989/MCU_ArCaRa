@@ -37,8 +37,9 @@ int main(int argc, char **argv)
     int serial;
     // init della seriale
     int result = serial_init(&serial, seriale_dev.c_str());
-    //inizializzo time_1
-    gettimeofday(&time_1, NULL);
+    //inizializzo new_pkt_time
+    gettimeofday(&new_pkt_time, NULL);
+    gettimeofday(&ping_time, NULL);
     //ros::Rate loop_rate(100); // 100 Hz
     if (result == 1)
     {
@@ -47,12 +48,29 @@ int main(int argc, char **argv)
             read_from_serial(&serial);
 
             //leggo il tempo e calcolo quanto è passato dall'ultimo pacchetto ricevuto
-            gettimeofday(&time_2, NULL);
-            elapsed_time = (time_2.tv_sec - time_1.tv_sec) * 1000;
-            elapsed_time += (time_2.tv_usec - time_1.tv_usec) / 1000;
- /*           cout << elapsed_time << "ms.\n";
+            gettimeofday(&current_time, NULL);
+            elapsed_time_pkt_received = (current_time.tv_sec - new_pkt_time.tv_sec) * 1000;
+            elapsed_time_pkt_received += (current_time.tv_usec - new_pkt_time.tv_usec) / 1000;
+            //calcolo tempo per inviare un ping
+            elapsed_time_ping = (current_time.tv_sec - ping_time.tv_sec) * 1000;
+            elapsed_time_ping += (current_time.tv_usec - ping_time.tv_usec) / 1000;
+ 
+            if(elapsed_time_ping > 250)
+            {
 
-           if(elapsed_time > 2000)
+              coda_send_seriale.push(HEADER_CMD_A);
+              coda_send_seriale.push(HEADER_CMD_B);
+              coda_send_seriale.push(PAYLOAD_PING);
+              coda_send_seriale.push(PAYLOAD_ACK); 
+
+              //aggiorno ping_time
+              gettimeofday(&ping_time, NULL);
+            }
+
+ /*         
+ /*           cout << elapsed_time_pkt_received << "ms.\n";
+
+           if(elapsed_time_pkt_received > 2000)
             {
                 //comunicazione persa
                 coda_send_seriale.push('C');

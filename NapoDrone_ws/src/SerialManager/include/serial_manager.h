@@ -67,6 +67,7 @@
 #define HEADER_BYTES  2
 #define HEADER_CMD_A  (int)0xAB
 #define HEADER_CMD_B (int)0x1B
+#define PAYLOAD_PING (int)0x91
 #define PAYLOAD_ACK (int)0x90
 /**************************************************************************************************/
 /*********************************************MACCHINA A STATI*************************************/
@@ -94,12 +95,12 @@ waiting_msg state_msg;
 #define NBYTES_PAYLOAD_CMD 2
 #define PAYLOAD_CMD (int)0xF2
 //lista comandi
-#define PAYLOAD_ARM (int)0x80
-#define PAYLOAD_DISARM (int)0x81
-#define PAYLOAD_TAKEOFF (int)0x82
-#define PAYLOAD_LAND (int)0x83
-#define PAYLOAD_RTL (int)0x84
-#define PAYLOAD_EMERGENCYSTOP (int)0x85
+#define CMD_ARM (int)0x80
+#define CMD_DISARM (int)0x81
+#define CMD_TAKEOFF (int)0x82
+#define CMD_LAND (int)0x83
+#define CMD_RTL (int)0x84
+#define CMD_EMERGENCYSTOP (int)0x85
 /*possibili richiesta di comandi**********************************/
 typedef enum{
     NO_REQ,
@@ -215,8 +216,8 @@ double PI = 3.14159;
 using std::cout;
 using std::endl;
 //strutture dati emporali
-timeval time_1, time_2;
-double elapsed_time;
+timeval new_pkt_time, current_time, ping_time;
+double elapsed_time_pkt_received, elapsed_time_ping;
 
 
 /***************************FUNZIONI************************************************************************/

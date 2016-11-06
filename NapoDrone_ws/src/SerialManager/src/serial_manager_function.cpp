@@ -150,27 +150,27 @@ void decode_packet()
             coda_recv_seriale.pop();
             //è un pacchetto di comando, vedo che tipo di comando
             switch(coda_recv_seriale.front()){
-                case PAYLOAD_ARM:
+                case CMD_ARM:
                     cmd_msg = ARM;
                     coda_recv_seriale.pop();
                     break;
-                case PAYLOAD_DISARM:
+                case CMD_DISARM:
                     cmd_msg = DISARM;
                     coda_recv_seriale.pop();
                     break;
-                case PAYLOAD_TAKEOFF:
+                case CMD_TAKEOFF:
                     cmd_msg = TAKEOFF;
                     coda_recv_seriale.pop();
                     break;
-                case PAYLOAD_LAND:
+                case CMD_LAND:
                     cmd_msg = LAND;
                     coda_recv_seriale.pop();
                     break;
-                case PAYLOAD_RTL:
+                case CMD_RTL:
                     cmd_msg = RTL;
                     coda_recv_seriale.pop();
                     break;
-                case PAYLOAD_EMERGENCYSTOP:
+                case CMD_EMERGENCYSTOP:
                     cmd_msg = EMERGENCY_STOP;
                     coda_recv_seriale.pop();
                     break;
@@ -205,67 +205,67 @@ void decode_packet()
                 case MODE_ACRO:
                     mode_msg = ACRO;
                     coda_recv_seriale.pop();
-                    cout << "ACRO" << endl;
+                    cout << "MODE ACRO" << endl;
                     break;
                 case MODE_ALT_HOLD:
                     mode_msg = ALT_HOLD;
                     coda_recv_seriale.pop();
-                    cout << "ALT HOLD" << endl;
+                    cout << "MODE ALT HOLD" << endl;
                     break;
                 case MODE_AUTO:
                     mode_msg = AUTO;
                     coda_recv_seriale.pop();
-                    cout << "AUTO" << endl;
+                    cout << "MODE AUTO" << endl;
                     break;
                 case MODE_BRAKE:
                     mode_msg = BRAKE;
                     coda_recv_seriale.pop();
-                    cout << "BRAKE" << endl;
+                    cout << "MODE BRAKE" << endl;
                     break;
                 case MODE_CIRCLE:
                     mode_msg = CIRCLE;
                     coda_recv_seriale.pop();
-                    cout << "CIRCLE" << endl;
+                    cout << "MODE CIRCLE" << endl;
                     break;
                 case MODE_DRIFT:
                     mode_msg = DRIFT;
                     coda_recv_seriale.pop();
-                    cout << "DRIFT" << endl;
+                    cout << "MODE DRIFT" << endl;
                     break;
                 case MODE_FOLLOW_ME:
                     mode_msg = FOLLOW_ME;
                     coda_recv_seriale.pop();
-                    cout << "FOLLOW ME" << endl;
+                    cout << "MODE FOLLOW ME" << endl;
                     break;
                 case MODE_GUIDED:
                     mode_msg = GUIDED;
                     coda_recv_seriale.pop();
-                    cout << "GUIDED" << endl;
+                    cout << "MODE GUIDED" << endl;
                     break;
                 case MODE_LOITER:
                     mode_msg = LOITER;
                     coda_recv_seriale.pop();
-                    cout << "LOITER" << endl;
+                    cout << "MODE LOITER" << endl;
                     break;
                 case MODE_POS_HOLD:
                     mode_msg = POS_HOLD;
                     coda_recv_seriale.pop();
-                    cout << "POS HOLD" << endl;
+                    cout << "MODE POS HOLD" << endl;
                     break;
                 case MODE_SIMPLE_SUPER:
                     mode_msg = SIMPLE_SUPER;
                     coda_recv_seriale.pop();
-                    cout << "SIMPLE SUP" << endl;
+                    cout << "MODE SIMPLE SUP" << endl;
                     break;
                 case MODE_SPORT:
                     mode_msg = SPORT;
                     coda_recv_seriale.pop();
-                    cout << "SPORT" << endl;
+                    cout << "MODE SPORT" << endl;
                     break;
                 case MODE_STABILIZE:
                     mode_msg = STABILIZE;
                     coda_recv_seriale.pop();
-                    cout << "STAB" << endl;
+                    cout << "MODE STABILIZE" << endl;
                     break;
 
             }
@@ -345,7 +345,7 @@ void read_from_serial(int* serial)
     {
         decode_packet();
         //aggiorno il tempo
-        gettimeofday(&time_1, NULL);
+        gettimeofday(&new_pkt_time, NULL);
     }
 
 
@@ -359,6 +359,7 @@ void check_send_request()
     /*COMANDI*********************************************/
     if(cmd_msg != NO_REQ && cmd_msg != cmd_msg_last)
     {
+        cout << "COMANDO RICEVUTO" << endl;
         //preparo la struttura dati
         std_msgs::Int32 msg;
         //riempio la struttura dati
@@ -367,8 +368,8 @@ void check_send_request()
         req_topic.publish(msg);
 
         //invio ack
-        coda_send_seriale.push(HEADER_CMD_B);
         coda_send_seriale.push(HEADER_CMD_A);
+        coda_send_seriale.push(HEADER_CMD_B);
         coda_send_seriale.push(PAYLOAD_CMD);
         coda_send_seriale.push(PAYLOAD_ACK);
   
@@ -382,6 +383,7 @@ void check_send_request()
     /********PARAMETRI**********************************************/
     if(param_msg != NO_PARAM)
     {
+        cout << "PARAM RICEVUTO" << endl;
         //preparo la struttura dati
         serial_manager::Param msg;
         //riempio la struttura dati
@@ -389,8 +391,8 @@ void check_send_request()
         msg.param = param;
 
         //invio ack 
-        coda_send_seriale.push(HEADER_CMD_B);
         coda_send_seriale.push(HEADER_CMD_A);
+        coda_send_seriale.push(HEADER_CMD_B);
         coda_send_seriale.push(PAYLOAD_PARAM);
         coda_send_seriale.push(PAYLOAD_ACK);
         
@@ -403,13 +405,14 @@ void check_send_request()
      /********MODO GUIDA**********************************************/
     if(mode_msg != NO_MODE)
     {
+        cout << "FLIGHT MODE RICEVUTO" << endl;
         //preparo la struttura dati
         std_msgs::Int32 msg;
         //riempio la struttura dati
         msg.data = mode_msg;
         //invio ack 
-        coda_send_seriale.push(HEADER_CMD_B);
         coda_send_seriale.push(HEADER_CMD_A);
+        coda_send_seriale.push(HEADER_CMD_B);
         coda_send_seriale.push(PAYLOAD_MODE);
         coda_send_seriale.push(PAYLOAD_ACK);
         //pubblico sul topc
@@ -426,91 +429,91 @@ void check_send_request()
 void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
 {
     //routine che legge lo stato del drone
-    cout << "ricevuto" << endl;
+    cout << "MSG FROM PIXHAWK" << endl;
     switch(msg->data){
         case 0:
             current_status_px4 = CONNECTING;
             //preparo il pacchetto di ack da mandare su seriale
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(CONNECTING);
             break;
         case 1:
             current_status_px4 = CONNECTED;
             //preparo il pacchetto di ack da mandare su seriale
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(CONNECTED);
             break;
         case 2:
             current_status_px4 = ARMABLE;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(ARMABLE);
             break;
         case 3:
             current_status_px4 = NOT_ARMABLE;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(NOT_ARMABLE);
             break;
         case 4:
             current_status_px4 = ARMED;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(ARMED);
             break;
         case 5:
             current_status_px4 = TAKE_OFF;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(TAKE_OFF);
             break;
         case 6:
             current_status_px4 = LANDED;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(LANDED);
             break;
         case 7:
             current_status_px4 = DISCONNECTED;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(DISCONNECTED);
             break;
         case 8:
             current_status_px4 = HOVER;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(HOVER);
             break;
         case 9:
             current_status_px4 = LANDING;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(LANDING);
             break;
         case 10:
             current_status_px4 = RTL_STATUS;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(RTL);
             break;
         case 11:
             current_status_px4 = EMERGENCY_STOP_STATUS;
-            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(HEADER_CMD_A);
+            coda_send_seriale.push(HEADER_CMD_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(EMERGENCY_STOP_STATUS);
             break;
