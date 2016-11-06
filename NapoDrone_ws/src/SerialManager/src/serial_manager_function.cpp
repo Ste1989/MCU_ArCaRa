@@ -141,6 +141,8 @@ double decode_payload()
 /*****************************************************************/
 void decode_packet()
 {
+
+    
  label:
     while(!coda_recv_seriale.empty())
     {
@@ -150,6 +152,10 @@ void decode_packet()
             coda_recv_seriale.pop();
             //è un pacchetto di comando, vedo che tipo di comando
             switch(coda_recv_seriale.front()){
+                case CMD_NO_REQ:
+                    cmd_msg = NO_REQ;
+                    coda_recv_seriale.pop();
+                    break;
                 case CMD_ARM:
                     cmd_msg = ARM;
                     coda_recv_seriale.pop();
@@ -200,6 +206,7 @@ void decode_packet()
         if(coda_recv_seriale.front() == PAYLOAD_MODE && coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
         {
             coda_recv_seriale.pop();
+
             switch(coda_recv_seriale.front())
             {
                 case MODE_ACRO:
