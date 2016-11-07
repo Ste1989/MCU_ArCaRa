@@ -7,6 +7,7 @@ project(pixhawk_manager)
 find_package(catkin REQUIRED COMPONENTS
   message_generation
   rospy
+  roscpp
 )
 
 
@@ -32,7 +33,11 @@ catkin_package()
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
+
+add_executable(pix_manager_node src/pix_manager_node.cpp)
+target_link_libraries(pix_example ${catkin_LIBRARIES})
 
 catkin_python_setup()

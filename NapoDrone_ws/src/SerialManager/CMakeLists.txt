@@ -54,6 +54,8 @@ add_executable(SerialManager src/serial_manager_node.cpp)
 target_link_libraries(SerialManager SerialManagerFunction ${OpenCV_LIBS} ${catkin_LIBRARIES} )
 
 
+
+
 catkin_package( 
 	DEPENDS system_lib
 	CATKIN_DEPENDS message_runtime

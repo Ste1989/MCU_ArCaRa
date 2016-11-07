@@ -23,7 +23,7 @@ mode_request = enum(NO_MODE=0,STABILIZE=1,ALT_HOLD=2, LOITER=3,AUTO=4,ACRO=5,SPO
 
 
 #variabili globali
-takeoff_altitudine = 1
+takeoff_altitudine = 0.5
 #######################################################
 #						     #
 #  callback param	 			     #
