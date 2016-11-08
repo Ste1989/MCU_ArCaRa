@@ -37,7 +37,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(pix_manager_node src/pix_manager_node.cpp)
-target_link_libraries(pix_example ${catkin_LIBRARIES})
+add_library(PixManagerFunction  src/pix_manager_function.cpp)
+target_link_libraries(PixManagerFunction ${catkin_LIBRARIES})
+
+add_executable(PixManager src/pix_manager_node.cpp)
+target_link_libraries(PixManager PixManagerFunction ${catkin_LIBRARIES})
 
 catkin_python_setup()

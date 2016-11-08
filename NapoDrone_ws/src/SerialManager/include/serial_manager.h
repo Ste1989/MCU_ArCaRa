@@ -229,7 +229,7 @@ void encode_packet(std::queue<unsigned char> coda_seriale,int payload1, int payl
 void write_to_serial(int* serial);
 void read_from_serial(int* serial);
 void check_send_request();
-void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg);
+void Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg);
 int set_interface_attribs (int fd, int speed, int parity);
 void set_blocking (int fd, int should_block);
 int serial_init(int* fd,const char* seriale_dev);
