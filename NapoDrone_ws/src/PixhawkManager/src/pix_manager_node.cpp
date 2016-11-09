@@ -13,7 +13,9 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     //stato del drone
-    state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 10, state_cb);
+    state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 1, state_cb);
+    //leggo il barometro
+    pressure_sub = nh.subscribe<sensor_msgs::FluidPressure>("mavros/imu/atm_pressure", 1, pressure_cb);
     //comandi
     cmd_sub =  nh.subscribe<std_msgs::Int32>("/napodrone/cmd_request", 1, cmd_cb);
     //mode request
@@ -22,7 +24,7 @@ int main(int argc, char **argv)
     param_sub =  nh.subscribe<std_msgs::Int32>("/napodrone/param_request", 1, param_cb);
   
     //topic per override la radio
-    rc_pub = nh.advertise<mavros_msgs::OverrideRCIn>("mavros/rc/override", 10);
+    rc_pub = nh.advertise<mavros_msgs::OverrideRCIn>("mavros/rc/override", 1);
     //topic per scrivere lo stato
     state_pub = nh.advertise<std_msgs::Int32>("napodrone/px4_status", 10);
     
@@ -31,16 +33,42 @@ int main(int argc, char **argv)
     arming_client = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
     //service per cambiare il modo del drone
     set_mode_client = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
+    //service per avere lo strem di dati dal drone
+    set_stream_rate_client = nh.serviceClient<mavros_msgs::StreamRate>("mavros/set_stream_rate");
+
 
     //leggo i parametri specificati nel launch file
-    nh.param<int>("/PixManager/loop_rate", loop_rate, 50);
+    nh.param<int>("/PixManager/loop_rate", loop_rate, 100);
+    nh.param<int>("/PixManager/stream_rate", stream_rate, 50);
+    //PID param
+    nh.param<double>("/PixManager/Kp_roll", Kp_roll, 0);
+    nh.param<double>("/PixManager/Ki_roll", Ki_roll, 0);
+    nh.param<double>("/PixManager/Kd_roll", Kd_roll, 0);
+    nh.param<double>("/PixManager/Ts_roll", Ts_roll, 0);
+    nh.param<double>("/PixManager/Nd_roll", Nd_roll, 0);
 
+    nh.param<double>("/PixManager/Kp_pitch", Kp_pitch, 0);
+    nh.param<double>("/PixManager/Ki_pitch", Ki_pitch, 0);
+    nh.param<double>("/PixManager/Kd_pitch", Kd_pitch, 0);
+    nh.param<double>("/PixManager/Ts_pitch", Ts_pitch, 0);
+    nh.param<double>("/PixManager/Nd_pitch", Nd_pitch, 0);
+    
+    nh.param<double>("/PixManager/Kp_yaw", Kp_yaw, 0);
+    nh.param<double>("/PixManager/Ki_yaw", Ki_yaw, 0);
+    nh.param<double>("/PixManager/Kd_yaw", Kd_yaw, 0);
+    nh.param<double>("/PixManager/Ts_yaw", Ts_yaw, 0);
+    nh.param<double>("/PixManager/Nd_yaw", Nd_yaw, 0);
+
+    nh.param<double>("/PixManager/Kp_alt", Kp_alt, 0);
+    nh.param<double>("/PixManager/Ki_alt", Ki_alt, 0);
+    nh.param<double>("/PixManager/Kd_alt", Kd_alt, 0);
+    nh.param<double>("/PixManager/Ts_alt", Ts_alt, 0);
+    nh.param<double>("/PixManager/Nd_alt", Nd_alt, 0);
     //INIT//////////////////////////////////////////////////////////////////////////////////////////
+    init_global_variables();
     //imposto la frequenza del nodo 
     ros::Rate rate(loop_rate);
-    //inizializzo richiesta di comando
-    current_cmd_req = NO_REQ;
-
+   
     // wait for FCU connection
     while(ros::ok() && !current_state.connected)
     {
@@ -51,30 +79,18 @@ int main(int argc, char **argv)
     std_msgs::Int32 msg;
     msg.data = CONNECTED;
     state_pub.publish(msg);
-    ROS_INFO("SONO CONNESSO 1");
+    ROS_INFO("SONO CONNESSO ALL'AUTOPILOTA");
 
-    //impostiamo lo stato del drone a STABILIZE DI DEFAULT
-    mavros_msgs::SetMode default_mode;
-    default_mode.request.custom_mode = init_flight_mode;
-    ros::Time last_request = ros::Time::now();
-    //mavros_msgs::CommandBool arm_cmd;
-    //arm_cmd.request.value = true;
-
-    
    
-    //Attendo che sia in default mode
-    /*
-    while(ros::ok() && current_state.mode != init_flight_mode)
-    {
-        if( (ros::Time::now() - last_request > ros::Duration(5.0)))
-            ROS_INFO("PROVO  SETTARE IL MODE");
-            if( set_mode_client.call(default_mode) && default_mode.response.success){
-                ROS_INFO("DEFUALT MODE ENABLED");
-            }
-            last_request = ros::Time::now();
-    }
-    ROS_INFO("DEFUALT MODE SET");
-    */
+    //una volta connesso avvio lo stream dati dal drone
+    mavros_msgs::StreamRate srv_rate;
+    srv_rate.request.stream_id = 0;
+    srv_rate.request.message_rate = stream_rate;
+    srv_rate.request.on_off = 1;
+
+    set_stream_rate_client.call(srv_rate);
+    ROS_INFO("STREAM DATI AVVIATO");
+
     /********************ciclo principale*************************************************************************************/
     while(ros::ok())
     {
@@ -96,6 +112,8 @@ int main(int argc, char **argv)
                         msg.data = ARMED;
                         state_pub.publish(msg);
                     }
+                    else
+                        current_cmd_req = NO_REQ;
                     break;
                 case DISARM:
                     ROS_INFO("COMANDO : DISARMA");
@@ -108,10 +126,12 @@ int main(int argc, char **argv)
                         msg.data = ARMABLE;
                         state_pub.publish(msg);
                     }
+                    else
+                        current_cmd_req = NO_REQ;
                     break;
                 case TAKEOFF:
                     ROS_INFO("COMANDO : TAKE OFF");
-                    //res = arm_vehicle();
+                    res = takeoff_vehicle();
                     if(res)
                     {   
                         ROS_INFO("TAKE OFF");
@@ -119,6 +139,13 @@ int main(int argc, char **argv)
                         std_msgs::Int32 msg;
                         msg.data = TAKEOFF;
                         state_pub.publish(msg);
+                    }
+                    else
+                    {
+                        if(!init_takeoff)
+                            current_cmd_req = NO_REQ;
+                        else
+                            current_cmd_req = TAKEOFF;
                     }
                     break;
                 case LAND:
@@ -132,6 +159,8 @@ int main(int argc, char **argv)
                         msg.data = LANDED;
                         state_pub.publish(msg);
                     }
+                    else
+                        current_cmd_req = NO_REQ;
                     break;
                 case RTL:
                     ROS_INFO("COMANDO : RTL");
@@ -156,6 +185,14 @@ int main(int argc, char **argv)
                         msg.data = EMERGENCY_STOP;
                         state_pub.publish(msg);
                     }
+                    else
+                        current_cmd_req = NO_REQ;
+                    break;
+
+                case CLEAR_RADIO_OVERRIDE:
+                    ROS_INFO("COMANDO : CLEAR_RADIO_OVERRIDE");
+                    clear_radio_override();
+                    current_cmd_req = NO_REQ;
                     break;
                
             } 
@@ -165,7 +202,7 @@ int main(int argc, char **argv)
 
 
         ros::spinOnce();
-        rate.sleep();
+        //rate.sleep();
 
     }
 
@@ -173,34 +210,3 @@ int main(int argc, char **argv)
     return 0;
 }
 
-/*        if(current_state.armed)
-        {
-        ROS_INFO("Vehicle override");
-        //local_pos_pub.publish(pose);
-        mavros_msgs::OverrideRCIn rc;
-        
-        rc.channels[0] = 0;
-        rc.channels[1] = 0;
-        rc.channels[2] = 1500;
-        rc.channels[3] = 0; // yaw
-        //rc.channels[4] = 500;
-        rc_pub.publish(rc);
-
-
-
-        }
-        else{
-        
-        //local_pos_pub.publish(pose);
-        mavros_msgs::OverrideRCIn rc;
-        
-        rc.channels[3] = 0;
-        rc.channels[1] = 0;
-        rc.channels[2] = 0;
-        rc.channels[0] = 0;
-        //rc.channels[4] = 500;
-        rc_pub.publish(rc);
-        }
-
-    }
-*/

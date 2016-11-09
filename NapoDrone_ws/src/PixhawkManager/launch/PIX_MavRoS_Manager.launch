@@ -1,0 +1,33 @@
+<launch>
+
+    <node pkg="pixhawk_manager" type="PixManager" name="PixManager" output="screen" >
+	        <param name="loop_rate" type="int" value="100" />
+	        <param name="stream_rate" type="int" value="50" />
+	        <!--PID ROLL-->
+	        <param name="Kp_roll" type="double" value="0" />
+	        <param name="Ki_roll" type="double" value="0" />
+	        <param name="Kd_roll" type="double" value="0" />
+	        <param name="Ts_roll" type="double" value="0" />
+	        <param name="Nd_roll" type="double" value="0" />
+	        <!--PID PITCH-->
+	        <param name="Kp_pitch" type="double" value="0" />
+	        <param name="Ki_pitch" type="double" value="0" />
+	        <param name="Kd_pitch" type="double" value="0" />
+	        <param name="Ts_pitch" type="double" value="0" />
+	        <param name="Nd_pitch" type="double" value="0" />
+	        <!--PID YAW-->
+	        <param name="Kp_yaw" type="double" value="0" />
+	        <param name="Ki_yaw" type="double" value="0" />
+	        <param name="Kd_yaw" type="double" value="0" />
+	        <param name="Ts_yaw" type="double" value="0" />
+	        <param name="Nd_yaw" type="double" value="0" />
+	        <!--PID ALT-->
+	        <param name="Kp_roll" type="double" value="0" />
+	        <param name="Ki_roll" type="double" value="0" />
+	        <param name="Kd_roll" type="double" value="0" />
+	        <param name="Ts_roll" type="double" value="0" />
+	        <param name="Nd_roll" type="double" value="0" />
+    </node>
+
+        
+</launch>
