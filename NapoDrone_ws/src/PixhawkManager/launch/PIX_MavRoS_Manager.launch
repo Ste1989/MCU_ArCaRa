@@ -33,6 +33,6 @@
 
 
 	 
-	<node name="mavparam" pkg="mavros" type="mavparam" args="set SYSID_MYGCS 1" >
-	</node>
+	<!--<node name="mavparam" pkg="mavros" type="mavparam" args="set SYSID_MYGCS 1" > -->
+	<!--</node>-->
 </launch>

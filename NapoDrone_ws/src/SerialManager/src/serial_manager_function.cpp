@@ -148,7 +148,7 @@ void decode_packet()
     {
 
         if(coda_recv_seriale.front() == PAYLOAD_CMD && coda_recv_seriale.size() >= NBYTES_PAYLOAD_CMD)
-        {
+        {   
             coda_recv_seriale.pop();
             //è un pacchetto di comando, vedo che tipo di comando
             switch(coda_recv_seriale.front()){
@@ -209,8 +209,10 @@ void decode_packet()
 
         if(coda_recv_seriale.front() == PAYLOAD_MODE && coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
         {
+            
+            
             coda_recv_seriale.pop();
-
+            
             switch(coda_recv_seriale.front())
             {
                 case MODE_ACRO:

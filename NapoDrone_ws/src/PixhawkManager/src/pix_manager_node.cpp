@@ -175,6 +175,8 @@ int main(int argc, char **argv)
                         msg.data = RTL;
                         state_pub.publish(msg);
                     }
+                    else
+                        current_cmd_req = NO_REQ;
                     break;
                 case EMERGENCY_STOP:
                     ROS_INFO("COMANDO : EMERGENCY_STOP");
