@@ -6,8 +6,10 @@
 - dronekit, dronekit-sitl:
   sudo apt-get install python-pip python-dev
   sudo pip install dronekit
-  sudo pip install dronekit-sitl -UI
-- ssh e configurare la connessione ethernet
+  sudo pip install dronekit-sitl -UIgurare la connessione ethernet
+- ssh e configurare la connessione ethernet : 
+    sudo apt-get install openssh-client openssh-server
+    sudo service ssh restart
 - installato eigen3.3: [non so se necessario]
     hg clone https://bitbucket.org/eigen/eigen/
     cd Eigen
