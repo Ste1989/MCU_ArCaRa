@@ -21,8 +21,9 @@ int main(int argc, char **argv)
     //mode request
     mode_sub =  nh.subscribe<std_msgs::Int32>("/napodrone/mode_request", 1, mode_cb);
     //param request
-    param_sub =  nh.subscribe<std_msgs::Int32>("/napodrone/param_request", 1, param_cb);
-  
+    param_sub =  nh.subscribe<serial_manager::Param>("/napodrone/param_request", 1, param_cb);
+    //aruco poses
+    aruco_poses_sub =  nh.subscribe<aruco_mapping::ArucoMarker>("/aruco_poses", 1, poses_cb);
     //topic per override la radio
     rc_pub = nh.advertise<mavros_msgs::OverrideRCIn>("mavros/rc/override", 1);
     //topic per scrivere lo stato
@@ -91,11 +92,12 @@ int main(int argc, char **argv)
     set_stream_rate_client.call(srv_rate);
     ROS_INFO("STREAM DATI AVVIATO");
 
+    bool res = false;
     /********************ciclo principale*************************************************************************************/
     while(ros::ok())
     {
         //GESTIONE DELLA RICHIESTA DI COMANDO
-        bool res;
+        
         if(current_cmd_req != NO_REQ)
         {
             switch(current_cmd_req)
@@ -198,7 +200,63 @@ int main(int argc, char **argv)
             } 
 
         }//fine current_cmd_req/////////////////////////////////////////////////////////////////////////////////////
+        if(current_mode_req != NO_MODE)
+        {
+            mavros_msgs::SetMode offb_set_mode;
+            switch(current_mode_req)
+            {
 
+                case ALT_HOLD:
+                    ROS_INFO("FM : ALT HOLD ");
+                    
+                    offb_set_mode.request.custom_mode = "ALT HOLD";
+                    set_mode_client.call(offb_set_mode);
+                    
+                    if(offb_set_mode.response.success)
+                    {   
+                        ROS_INFO("ALT HOLD");
+                        current_mode_req = NO_MODE;
+                    }
+                    else
+                        current_mode_req = NO_MODE;
+                    break;
+
+                case STABILIZE:
+                    ROS_INFO("FM : STABILIZE ");
+                    
+                    offb_set_mode.request.custom_mode = "STABILIZE";
+                    set_mode_client.call(offb_set_mode);
+                    
+                    if(offb_set_mode.response.success)
+                    {   
+                        ROS_INFO("STABILIZE");
+                        current_mode_req = NO_MODE;
+                    }
+                    else
+                        current_mode_req = NO_MODE;
+                    break;
+
+                case LOITER:
+                    ROS_INFO("FM : LOITER ");
+                    
+                    offb_set_mode.request.custom_mode = "LOITER";
+                    set_mode_client.call(offb_set_mode);
+                    
+                    if(offb_set_mode.response.success)
+                    {   
+                        ROS_INFO("LOITER");
+                        current_mode_req = NO_MODE;
+                    }
+                    else
+                        current_mode_req = NO_MODE;
+                    break;
+
+                default:
+                    current_mode_req = NO_MODE;
+
+
+            }
+        }//fine current_mode_req/////////////////////////////////////////////////////////////////////////////////////
 
 
         ros::spinOnce();

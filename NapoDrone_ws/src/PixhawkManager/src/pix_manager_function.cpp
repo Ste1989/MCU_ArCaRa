@@ -41,7 +41,7 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg)
 /*******************************************************************************************/
 void cmd_cb(const std_msgs::Int32::ConstPtr& msg)
 {	
-	ROS_INFO("SONO QUA");
+	
  	switch(msg->data)
     {
             
@@ -82,16 +82,95 @@ void cmd_cb(const std_msgs::Int32::ConstPtr& msg)
 /*******************************************************************************************/
 void mode_cb(const std_msgs::Int32::ConstPtr& msg)
 {
-  
+   	switch(msg->data)
+    {
+		case STABILIZE:
+         	current_mode_req = STABILIZE;          
+			break;
+		case ALT_HOLD:
+         	current_mode_req = ALT_HOLD;          
+			break;
+		case AUTO:
+         	current_mode_req = AUTO;          
+			break;
+		case ACRO:
+         	current_mode_req = ACRO;          
+			break;
+		case SPORT:
+         	current_mode_req = SPORT;          
+			break;
+		case DRIFT:
+			current_mode_req = DRIFT;
+			break;
+		case GUIDED:
+			current_mode_req = GUIDED;          
+			break;
+		case CIRCLE:
+			current_mode_req = CIRCLE;          
+			break;
+		case POS_HOLD:
+			current_mode_req = POS_HOLD;          
+			break;
+		case BRAKE:
+			current_mode_req = BRAKE;          
+			break;
+		case FOLLOW_ME:
+			current_mode_req = FOLLOW_ME;          
+			break;
+		case SIMPLE_SUPER:
+			current_mode_req = SIMPLE_SUPER;          
+			break;
+		default:
+			current_mode_req = NO_MODE;
+     }         
 }
 /********************************************************************************************/
 /*                                                                                         */
 /*    CALBACK PER RICHIESTE DI PARAMETRI                                                    */
 /*                                                                                         */
 /*******************************************************************************************/
-void param_cb(const std_msgs::Int32::ConstPtr& msg)
+void param_cb(const serial_manager::Param::ConstPtr& msg)
 {
-  
+     	switch(msg->header)
+    {
+		case ALT_TAKEOFF:
+         	alt_takeoff_target = msg->param; 
+         	ROS_INFO("RICEVUTO PARAMTRO ALTEZZA");         
+			break;
+		default:          
+			break;
+	}
+}
+/********************************************************************************************/
+/*                                                                                         */
+/*    CALBACK STIMA DI POSIZIONE     	                                                    */
+/*                                                                                         */
+/*******************************************************************************************/
+void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
+{
+	marker_visibile = msg->marker_visibile;
+	if(marker_visibile)
+	{
+		//ho una stima buona della posizione della camera
+		global_camera_pose.position.x = msg->global_camera_pose.position.x;
+		global_camera_pose.position.y = msg->global_camera_pose.position.y;
+		global_camera_pose.position.z = msg->global_camera_pose.position.z;
+		//transformo il quaternione in un angoli di eulero
+		quaternion_2_euler(msg->global_camera_pose.orientation.x,msg->global_camera_pose.orientation.y,
+			msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
+			global_camera_pose.orientation.x,global_camera_pose.orientation.y,global_camera_pose.orientation.z);
+
+		cout << "POSA" << endl;
+		cout << global_camera_pose.position.x  << " " <<  global_camera_pose.position.y << " " << global_camera_pose.position.z  << endl;
+		cout << "ORIENTAZIONE" << endl;
+		cout << global_camera_pose.orientation.x  << " " <<  global_camera_pose.orientation.y << " " << global_camera_pose.orientation.z  << endl;
+	}
+	else
+	{
+		//non ho una stima della poszione del drone
+	}
+
+
 }
 /********************************************************************************************/
 /*                                                                                         */
@@ -327,7 +406,11 @@ double PIDController::update(double errore)
 
   	return uscita;
 }
-
+/********************************************************************************************/
+/*                                                                                         */
+/*    INIT                                                                     */
+/*                                                                                         */
+/*******************************************************************************************/
 void init_global_variables()
 {
  	//inizializzo richiesta di comando
@@ -341,5 +424,44 @@ void init_global_variables()
     pid_controllers.pitch.init(Kp_pitch,Ki_pitch,Kd_pitch,Ts_pitch, Nd_pitch,limit_max_pitch,limit_min_pitch);
     pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
     pid_controllers.altitude.init(Kp_alt,Ki_alt,Kd_alt,Ts_alt, Nd_alt,limit_max_alt,limit_min_alt);
+
+    marker_visibile = false;
+	//Pose global_camera_pose;
+    //..
+	//altezza da raggiungere in takeoff
+	alt_takeoff_target = 1.0;
     
 }
+/********************************************************************************************/
+/*                                                                                         */
+/*    QUATERNION_2_EULER                                                                    */
+/*                                                                                         */
+/*******************************************************************************************/
+void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw)
+{
+  	//Trasformo le corrdinate SVO in coordinate frame camera.
+  	double r11 = wquat*wquat + xquat*xquat - yquat*yquat - zquat*zquat;
+  	double r12 = 2*(xquat*yquat - wquat*zquat);
+  	double r13 = 2*(zquat*xquat + wquat*yquat);
+  	double r21 =  2*(xquat*yquat + wquat*zquat);
+  	double r22 = wquat*wquat - xquat*xquat + yquat*yquat - zquat*zquat;
+  	double r23 = 2*(yquat*zquat - wquat*xquat);
+  	double r31 = 2*(zquat*xquat - wquat*yquat);
+  	double r32 = 2*(yquat*zquat + wquat*xquat);
+  	double r33 = wquat*wquat - xquat*xquat - yquat*yquat + zquat*zquat;
+  	//Scrivo la trasposta:
+  	double rt11,rt12,rt13,rt21,rt22,rt23,rt31,rt32,rt33;
+  	rt11 = r11;
+  	rt12 = r21;
+  	rt13 = r31;
+  	rt21 = r12;
+  	rt22 = r22;
+  	rt23 = r32;
+  	rt31 = r13;
+  	rt32 = r23;
+  	rt33 = r33;
+  	//calcolo angoli di eulero
+  	roll = atan2(rt23,rt33);
+  	pitch = -asin(rt13);
+  	yaw = atan2(rt12,rt11);
+ }

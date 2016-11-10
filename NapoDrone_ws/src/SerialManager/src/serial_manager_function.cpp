@@ -180,6 +180,10 @@ void decode_packet()
                     cmd_msg = EMERGENCY_STOP;
                     coda_recv_seriale.pop();
                     break;
+                case CMD_CLEAR_RADIO_OVERRIDE:
+                    cmd_msg = CLEARRADIOOVERRIDE;
+                    coda_recv_seriale.pop();
+                    break;
 
             }
             goto label;

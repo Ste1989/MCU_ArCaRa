@@ -101,6 +101,7 @@ waiting_msg state_msg;
 #define CMD_LAND (int)0x83
 #define CMD_RTL (int)0x84
 #define CMD_EMERGENCYSTOP (int)0x85
+#define CMD_CLEAR_RADIO_OVERRIDE (int)0x86
 #define CMD_NO_REQ (int)0xFF
 /*possibili richiesta di comandi**********************************/
 typedef enum{
@@ -111,6 +112,7 @@ typedef enum{
     LAND,
     RTL,
     EMERGENCY_STOP,
+    CLEARRADIOOVERRIDE,
 } cmd_request;
 //variabile per la memorizzazione dello richiesta effettuata
 cmd_request cmd_msg;

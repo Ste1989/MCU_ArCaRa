@@ -29,5 +29,10 @@
 	        <param name="Nd_roll" type="double" value="0" />
     </node>
 
-        
+        <!--rosrun mavros mavparam set SYSID_MYGCS 1-->
+
+
+	 
+	<node name="mavparam" pkg="mavros" type="mavparam" args="set SYSID_MYGCS 1" >
+	</node>
 </launch>

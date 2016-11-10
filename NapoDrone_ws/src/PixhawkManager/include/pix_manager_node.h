@@ -8,6 +8,12 @@
 #include <mavros_msgs/StreamRate.h>
 #include <sensor_msgs/FluidPressure.h>
 #include <stdio.h>
+#include <aruco_mapping/ArucoMarker.h>
+#include <geometry_msgs/Pose.h>
+#include <serial_manager/Param.h>
+
+
+using namespace std;
 
 //Il gradiente barico verticale è legato alla variazione di pressione con l'aumentare o il diminuire della quota.
 // La sua variazione è fissata in 27 piedi (8,23 m) per ogni hPa (o millibar) 
@@ -28,6 +34,17 @@ bool init_takeoff;
 std::string init_flight_mode;
 int loop_rate;
 int stream_rate;
+bool marker_visibile;
+//altezza di takeoff da raggiungere
+double alt_takeoff_target;
+//struttura per la memorizzazione della posa della camera nel frame world
+struct global_pose
+{
+    geometry_msgs::Point position;
+    geometry_msgs::Point orientation;
+
+};
+global_pose global_camera_pose;
 
 //ros topic subscriber
 ros::Subscriber state_sub;
@@ -35,7 +52,7 @@ ros::Subscriber cmd_sub;
 ros::Subscriber mode_sub;
 ros::Subscriber param_sub;
 ros::Subscriber pressure_sub;
-
+ros::Subscriber aruco_poses_sub;
 //ros topic publisher
 ros::Publisher rc_pub;
 ros::Publisher state_pub;
@@ -96,6 +113,8 @@ typedef enum{
     FOLLOW_ME,
     SIMPLE_SUPER,
 } mode_request;
+
+mode_request current_mode_req;
 /*possibili richiesta di comandi**********************************/
 typedef enum{
     NO_REQ,
@@ -114,6 +133,7 @@ typedef enum{
     NO_PARAM,
     ALT_TAKEOFF,
 } param_request;
+
 
 /***********************************************************************************************/
 /*                                                                                             */
@@ -159,9 +179,12 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg);
 void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg);
 void cmd_cb(const std_msgs::Int32::ConstPtr& msg);
 void mode_cb(const std_msgs::Int32::ConstPtr& msg);
-void param_cb(const std_msgs::Int32::ConstPtr& msg);
+void param_cb(const serial_manager::Param::ConstPtr& msg);
+void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg);
 bool arm_vehicle();
 bool disarm_vehicle();
 bool takeoff_vehicle();
 void clear_radio_override();
+void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
+
 
