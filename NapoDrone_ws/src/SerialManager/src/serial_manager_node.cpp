@@ -16,7 +16,7 @@ int main(int argc, char **argv)
    * You must call one of the versions of ros::init() before using any other
    * part of the ROS system.
   */
-    ros::init(argc, argv, "Serial_Manager");
+  ros::init(argc, argv, "Serial_Manager");
 
   /**
    * NodeHandle is the main access point to communications with the ROS system.
@@ -28,11 +28,12 @@ int main(int argc, char **argv)
     param_topic = n.advertise<serial_manager::Param>("napodrone/param_request", 1);
     mode_topic = n.advertise<std_msgs::Int32>("napodrone/mode_request", 1);
     status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",10, &Status_Pixhawk_Callback);
+    pose_topic = n.subscribe<aruco_mapping::ArucoMarker>("/aruco_poses", 1, &Pose_cb);
 
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
     n.param<std::string>("/SerialManager/dev", seriale_dev, "/dev/ttyUSB0");
-
+    n.param<bool>("/SerialManager/stream_pose", stream_pose, false);
 
     int serial;
     // init della seriale
@@ -45,33 +46,37 @@ int main(int argc, char **argv)
     {
         while(ros::ok())
         {
-            read_from_serial(&serial);
 
-            //leggo il tempo e calcolo quanto è passato dall'ultimo pacchetto ricevuto
-            gettimeofday(&current_time, NULL);
-            elapsed_time_pkt_received = (current_time.tv_sec - new_pkt_time.tv_sec) * 1000;
-            elapsed_time_pkt_received += (current_time.tv_usec - new_pkt_time.tv_usec) / 1000;
-            //calcolo tempo per inviare un ping
-            elapsed_time_ping = (current_time.tv_sec - ping_time.tv_sec) * 1000;
-            elapsed_time_ping += (current_time.tv_usec - ping_time.tv_usec) / 1000;
- 
-            if(elapsed_time_ping > 250)
-            {
+          /*LEGGO LA SERIALE*************************************************************************/  
+          read_from_serial(&serial);
 
-              coda_send_seriale.push(HEADER_CMD_A);
-              coda_send_seriale.push(HEADER_CMD_B);
-              coda_send_seriale.push(PAYLOAD_PING);
-              coda_send_seriale.push(PAYLOAD_ACK); 
+          /*CALCOLO TEMPI*******************************************************************************/
+          //leggo il tempo e calcolo quanto è passato dall'ultimo pacchetto ricevuto
+          gettimeofday(&current_time, NULL);
+          elapsed_time_pkt_received = (current_time.tv_sec - new_pkt_time.tv_sec) * 1000;
+          elapsed_time_pkt_received += (current_time.tv_usec - new_pkt_time.tv_usec) / 1000;
+          //calcolo tempo per inviare un ping
+          elapsed_time_ping = (current_time.tv_sec - ping_time.tv_sec) * 1000;
+          elapsed_time_ping += (current_time.tv_usec - ping_time.tv_usec) / 1000;
+          
+          /********INVIO UN PING******************************************************************************/
+          if(elapsed_time_ping > 250 && false)
+          {
 
-              //aggiorno ping_time
-              gettimeofday(&ping_time, NULL);
-            }
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
+            coda_send_seriale.push(PAYLOAD_PING);
+            coda_send_seriale.push(PAYLOAD_ACK); 
+
+            //aggiorno ping_time
+            gettimeofday(&ping_time, NULL);
+          }
 
  /*         
- /*           cout << elapsed_time_pkt_received << "ms.\n";
+ /*        cout << elapsed_time_pkt_received << "ms.\n";
 
            if(elapsed_time_pkt_received > 2000)
-            {
+          {
                 //comunicazione persa
                 coda_send_seriale.push('C');
                 coda_send_seriale.push('O');
@@ -82,18 +87,19 @@ int main(int argc, char **argv)
                 coda_send_seriale.push('S');
                 coda_send_seriale.push('T');
                 coda_send_seriale.push('.');
-            }*/
+          }*/
 
+          /*********CONTROLLO RICHIESTE DI COMANDI***********************************************************/
+          //controllo se vi è una richiesta di comando
+          check_send_request();
 
-            //controllo se vi è una richiesta di comando
-            check_send_request();
+          /*********LEGGO LE CALLBACK***********************************************************/
+          //vedi se arrivato qualcosa sulle callback
+          ros::spinOnce();
 
-
-            //vedi se arrivato qualcosa sulle callback
-            ros::spinOnce();
-
-            //funzione per scrivere su seriale
-           write_to_serial(&serial);
+          /*********INVIO SU SERIALE***********************************************************/
+          //funzione per scrivere su seriale
+          write_to_serial(&serial);
 
 
             //loop_rate.sleep();

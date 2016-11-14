@@ -14,6 +14,41 @@
 /************************************************************/
 
 
+/*****************************************************************/
+/*                                                               */
+/*                 CALLBACK LEGGI POSA                            */
+/*****************************************************************/
+void Pose_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
+{
+    if(msg->marker_visibile)
+    {
+        //ho una stima buona della posizione della camera
+        global_camera_pose.position.x = msg->global_camera_pose.position.x;
+        global_camera_pose.position.y = msg->global_camera_pose.position.y;
+        global_camera_pose.position.z = msg->global_camera_pose.position.z;
+        //transformo il quaternione in un angoli di eulero
+        quaternion_2_euler(msg->global_camera_pose.orientation.x,msg->global_camera_pose.orientation.y,
+        msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
+        global_camera_pose.orientation.x,global_camera_pose.orientation.y,global_camera_pose.orientation.z);
+        cout << "nuova posa letta" << endl;
+        if(stream_pose)
+        {
+            //devo inviare la posizione letta
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
+            coda_send_seriale.push(PAYLOAD_POSE);
+            encode_payload(global_camera_pose.position.x );
+            encode_payload(global_camera_pose.position.y );
+            encode_payload(global_camera_pose.position.z );
+            encode_payload(global_camera_pose.orientation.z );
+
+
+        }else
+        {
+            //non invio
+        }       
+    }
+}
 
 
 /*****************************************************************/
@@ -28,7 +63,7 @@ void parser_mess(unsigned char buffer){
     switch(state_msg){
         case HEADER_1:
 
-            if(buffer == HEADER_CMD_A)
+            if(buffer == HEADER_A)
             {
                 state_msg=HEADER_2;
             }else
@@ -38,7 +73,7 @@ void parser_mess(unsigned char buffer){
             break;
 
         case HEADER_2:
-            if(buffer == HEADER_CMD_B)
+            if(buffer == HEADER_B)
             {
                 state_msg=PAYLOAD_1_1;
                 //è stato riconosciuto un header-->è in arrivo un nuovo pacchetto
@@ -58,6 +93,8 @@ void parser_mess(unsigned char buffer){
                 state_msg=PAYLOAD_2_2;
             else if(buffer == PAYLOAD_MODE)
                 state_msg = PAYLOAD_3_2;
+            else if(buffer == PAYLOAD_WAYPOINT)
+                state_msg = PAYLOAD_4_2;
             break;
 
 
@@ -94,8 +131,8 @@ void parser_mess(unsigned char buffer){
 
         case PAYLOAD_2_6:
             coda_recv_seriale.push(buffer);
+            state_msg = HEADER_1;
             new_packet = 1;
-            state_msg=HEADER_1;
             break;
             /*********************************************************/
             //PCCHETTO CONTENTENTE UN MODO
@@ -105,8 +142,77 @@ void parser_mess(unsigned char buffer){
             new_packet = 1;
             state_msg=HEADER_1;
             break;
-
-
+            /*********************************************************/
+            //PCCHETTO CONTENTENTE UN  X Y Z RZ
+            //X
+        case PAYLOAD_4_2:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_3;
+            break;
+        case PAYLOAD_4_3:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_4;
+            break;
+        case PAYLOAD_4_4:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_5;
+            break;
+        case PAYLOAD_4_5:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_6;
+            break;
+            //Y
+        case PAYLOAD_4_6:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_7;
+            break;
+        case PAYLOAD_4_7:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_8;
+            break;
+        case PAYLOAD_4_8:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_9;
+            break;
+        case PAYLOAD_4_9:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_10;
+            break;
+            //Z
+        case PAYLOAD_4_10:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_11;
+            break;
+        case PAYLOAD_4_11:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_12;
+            break;
+        case PAYLOAD_4_12:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_13;
+            break;
+        case PAYLOAD_4_13:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_14;
+            break;
+            //Z
+        case PAYLOAD_4_14:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_15;
+            break;
+        case PAYLOAD_4_15:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_16;
+            break;
+        case PAYLOAD_4_16:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_4_17;
+            break;
+        case PAYLOAD_4_17:
+            coda_recv_seriale.push(buffer);
+            state_msg = HEADER_1;
+            new_packet = 1;
+            break;
 
     }
 
@@ -207,6 +313,18 @@ void decode_packet()
             goto label;
         }
 
+
+        if(coda_recv_seriale.front() == PAYLOAD_WAYPOINT && coda_recv_seriale.size() >= NBYTES_PAYLOAD_WAYPOINT)
+        {
+            coda_recv_seriale.pop();
+            //devo decodificare il pacchetto
+            double x_waypoint = decode_payload();
+            double y_waypoint = decode_payload();
+            double z_waypoint = decode_payload();
+            double rz_waypoint = decode_payload();
+            goto label;
+        }
+
         if(coda_recv_seriale.front() == PAYLOAD_MODE && coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
         {
             
@@ -304,15 +422,22 @@ void decode_packet()
 }
 /*****************************************************************/
 /*                                                               */
-/*                  ENCODE PACKET                                */
+/*                  ENCODE PAYALOD                               */
 /*****************************************************************/
-void encode_packet(std::queue<unsigned char> coda_seriale,int payload1, int payload2)
+void encode_payload(double payload)
 {
 
-//vedere dalla tesi delle macchinine come fare
-
-
-
+    //vedere dalla tesi delle macchinine come fare
+    long int payload_1000 = (long int)(payload *1000);
+    coda_send_seriale.push((unsigned char)(0x000000FF & payload_1000));
+    
+    coda_send_seriale.push((unsigned char)(0x000000FF & (payload_1000 >> 8)));
+    
+    coda_send_seriale.push((unsigned char)(0x000000FF & (payload_1000 >> 16)));
+    
+   coda_send_seriale.push((unsigned char)(0x000000FF & (payload_1000 >> 24)));
+    
+    cout << payload_1000 << endl;
 }
 
 /*****************************************************************/
@@ -381,8 +506,8 @@ void check_send_request()
         req_topic.publish(msg);
 
         //invio ack
-        coda_send_seriale.push(HEADER_CMD_A);
-        coda_send_seriale.push(HEADER_CMD_B);
+        coda_send_seriale.push(HEADER_A);
+        coda_send_seriale.push(HEADER_B);
         coda_send_seriale.push(PAYLOAD_CMD);
         coda_send_seriale.push(PAYLOAD_ACK);
   
@@ -404,8 +529,8 @@ void check_send_request()
         msg.param = param;
 
         //invio ack 
-        coda_send_seriale.push(HEADER_CMD_A);
-        coda_send_seriale.push(HEADER_CMD_B);
+        coda_send_seriale.push(HEADER_A);
+        coda_send_seriale.push(HEADER_B);
         coda_send_seriale.push(PAYLOAD_PARAM);
         coda_send_seriale.push(PAYLOAD_ACK);
         
@@ -424,8 +549,8 @@ void check_send_request()
         //riempio la struttura dati
         msg.data = mode_msg;
         //invio ack 
-        coda_send_seriale.push(HEADER_CMD_A);
-        coda_send_seriale.push(HEADER_CMD_B);
+        coda_send_seriale.push(HEADER_A);
+        coda_send_seriale.push(HEADER_B);
         coda_send_seriale.push(PAYLOAD_MODE);
         coda_send_seriale.push(PAYLOAD_ACK);
         //pubblico sul topc
@@ -447,86 +572,86 @@ void  Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg)
         case 0:
             current_status_px4 = CONNECTING;
             //preparo il pacchetto di ack da mandare su seriale
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(CONNECTING);
             break;
         case 1:
             current_status_px4 = CONNECTED;
             //preparo il pacchetto di ack da mandare su seriale
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(CONNECTED);
             break;
         case 2:
             current_status_px4 = ARMABLE;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(ARMABLE);
             break;
         case 3:
             current_status_px4 = NOT_ARMABLE;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(NOT_ARMABLE);
             break;
         case 4:
             current_status_px4 = ARMED;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(ARMED);
             break;
         case 5:
             current_status_px4 = TAKE_OFF;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(TAKE_OFF);
             break;
         case 6:
             current_status_px4 = LANDED;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(LANDED);
             break;
         case 7:
             current_status_px4 = DISCONNECTED;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(DISCONNECTED);
             break;
         case 8:
             current_status_px4 = HOVER;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(HOVER);
             break;
         case 9:
             current_status_px4 = LANDING;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(LANDING);
             break;
         case 10:
             current_status_px4 = RTL_STATUS;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(RTL);
             break;
         case 11:
             current_status_px4 = EMERGENCY_STOP_STATUS;
-            coda_send_seriale.push(HEADER_CMD_A);
-            coda_send_seriale.push(HEADER_CMD_B);
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_PX4);
             coda_send_seriale.push(EMERGENCY_STOP_STATUS);
             break;
@@ -628,4 +753,35 @@ int serial_init(int* fd,const char* seriale_dev)
 
     return 1;
 }
-
+/*****************************************************************/
+/*                                                               */
+/*                  QUATERNIONe TO EULERO                             */
+/*****************************************************************/
+void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw)
+{
+    //Trasformo le corrdinate SVO in coordinate frame camera.
+    double r11 = wquat*wquat + xquat*xquat - yquat*yquat - zquat*zquat;
+    double r12 = 2*(xquat*yquat - wquat*zquat);
+    double r13 = 2*(zquat*xquat + wquat*yquat);
+    double r21 =  2*(xquat*yquat + wquat*zquat);
+    double r22 = wquat*wquat - xquat*xquat + yquat*yquat - zquat*zquat;
+    double r23 = 2*(yquat*zquat - wquat*xquat);
+    double r31 = 2*(zquat*xquat - wquat*yquat);
+    double r32 = 2*(yquat*zquat + wquat*xquat);
+    double r33 = wquat*wquat - xquat*xquat - yquat*yquat + zquat*zquat;
+    //Scrivo la trasposta:
+    double rt11,rt12,rt13,rt21,rt22,rt23,rt31,rt32,rt33;
+    rt11 = r11;
+    rt12 = r21;
+    rt13 = r31;
+    rt21 = r12;
+    rt22 = r22;
+    rt23 = r32;
+    rt31 = r13;
+    rt32 = r23;
+    rt33 = r33;
+    //calcolo angoli di eulero
+    roll = atan2(rt23,rt33);
+    pitch = -asin(rt13);
+    yaw = atan2(rt12,rt11);
+ }

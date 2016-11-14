@@ -20,6 +20,8 @@
 #include <iostream>
 #include <queue>
 #include <sys/time.h>
+#include <aruco_mapping/ArucoMarker.h>
+#include <geometry_msgs/Point.h>
 /*************************************************************/
 //
 //modulo che preposto alla ricezione e alla decodifica dei messaggi
@@ -62,11 +64,14 @@
 //     ____________________________________________________________
 //     | HEADER_CMD_B |HEADER_CMD_A|  PAYLOAD_MODE   | PAYLOAD_ACK|
 //     ____________________________________________________________
-
+//5- pos packet
+//     _____________________________________________________________________________________
+//     | HEADER_CMD_B |HEADER_CMD_A|  PAYLOAD_POS   | X_POS x4 | Y_POS x4| Z_POS x4| YAWx4  |
+//     _____________________________________________________________________________________
 /*define bytes di header e ack*/
 #define HEADER_BYTES  2
-#define HEADER_CMD_A  (int)0xAB
-#define HEADER_CMD_B (int)0x1B
+#define HEADER_A  (int)0xAB
+#define HEADER_B (int)0x1B
 #define PAYLOAD_PING (int)0x91
 #define PAYLOAD_ACK (int)0x90
 /**************************************************************************************************/
@@ -85,10 +90,32 @@ typedef enum{
     PAYLOAD_2_6,
 
     PAYLOAD_3_2,
+
+    PAYLOAD_4_2,
+    PAYLOAD_4_3,
+    PAYLOAD_4_4,
+    PAYLOAD_4_5,
+    PAYLOAD_4_6,
+    PAYLOAD_4_7,
+    PAYLOAD_4_8,
+    PAYLOAD_4_9,
+    PAYLOAD_4_10,
+    PAYLOAD_4_11,
+    PAYLOAD_4_12,
+    PAYLOAD_4_13,
+    PAYLOAD_4_14,
+    PAYLOAD_4_15,
+    PAYLOAD_4_16,
+    PAYLOAD_4_17,
 } waiting_msg;
 
 //variabile per la memorizzazione dello stato della macchina a stati
 waiting_msg state_msg;
+/**************************************************************************************************/
+/******************PACCHETTO DI WAYPOINT************************************************************/
+/**************************************************************************************************/
+#define NBYTES_PAYLOAD_WAYPOINT 17
+#define PAYLOAD_WAYPOINT  (int)0xF0
 /**************************************************************************************************/
 /******************PACCHETTO DI COMANDO************************************************************/
 /**************************************************************************************************/
@@ -178,6 +205,7 @@ mode_request mode_msg;
 /******************STATO AUTOPILOTA**********************************************************/
 /**************************************************************************************************/
 #define PAYLOAD_PX4 (int)0xE0
+#define PAYLOAD_POSE (int)0xE1
 typedef enum{
     CONNECTING,
     CONNECTED,
@@ -206,6 +234,7 @@ std::queue<unsigned char> coda_send_seriale;
 /**********************TOPIC ROS********************************************************************/
 //ros Subscriber
 ros::Subscriber status_topic;
+ros::Subscriber pose_topic;
 //ros topic request
 ros::Publisher req_topic;
 ros::Publisher param_topic;
@@ -221,17 +250,26 @@ using std::endl;
 //strutture dati emporali
 timeval new_pkt_time, current_time, ping_time;
 double elapsed_time_pkt_received, elapsed_time_ping;
+//struttura per la memorizzazione della posa della camera nel frame world
+struct global_pose
+{
+    geometry_msgs::Point position;
+    geometry_msgs::Point orientation;
 
-
+};
+global_pose global_camera_pose;
+bool stream_pose;
 /***************************FUNZIONI************************************************************************/
 void parser_mess(unsigned char buffer);
 double decode_payload();
 void decode_packet();
-void encode_packet(std::queue<unsigned char> coda_seriale,int payload1, int payload2);
+void encode_payload(double payload);
 void write_to_serial(int* serial);
 void read_from_serial(int* serial);
 void check_send_request();
 void Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg);
+void Pose_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg);
 int set_interface_attribs (int fd, int speed, int parity);
 void set_blocking (int fd, int should_block);
 int serial_init(int* fd,const char* seriale_dev);
+void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
