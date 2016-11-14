@@ -163,7 +163,7 @@ void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
 		cout << "POSA" << endl;
 		cout << global_camera_pose.position.x  << " " <<  global_camera_pose.position.y << " " << global_camera_pose.position.z  << endl;
 		cout << "ORIENTAZIONE" << endl;
-		cout << global_camera_pose.orientation.x  << " " <<  global_camera_pose.orientation.y << " " << global_camera_pose.orientation.z  << endl;
+		cout << global_camera_pose.orientation.x*180.0/3.14 << " " <<  global_camera_pose.orientation.y*180.0/3.14 << " " << global_camera_pose.orientation.z*180.0/3.14  << endl;
 	}
 	else
 	{
