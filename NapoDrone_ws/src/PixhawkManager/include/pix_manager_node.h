@@ -11,6 +11,7 @@
 #include <aruco_mapping/ArucoMarker.h>
 #include <geometry_msgs/Pose.h>
 #include <serial_manager/Param.h>
+#include <sys/time.h>
 
 
 using namespace std;
@@ -28,7 +29,10 @@ double init_pressure;
 double current_pressure;
 double alt_from_barometer; 
 
-
+//cvarianili per la gestione del tempo
+timeval  current_time, control_time;
+double elapsed_time_control;
+char waypoint_recv;
 
 bool init_takeoff;
 std::string init_flight_mode;
@@ -46,6 +50,9 @@ struct global_pose
 };
 global_pose global_camera_pose;
 
+//memorizzo waypoint
+geometry_msgs::Pose current_waypoint;
+
 //ros topic subscriber
 ros::Subscriber state_sub;
 ros::Subscriber cmd_sub;
@@ -53,6 +60,7 @@ ros::Subscriber mode_sub;
 ros::Subscriber param_sub;
 ros::Subscriber pressure_sub;
 ros::Subscriber aruco_poses_sub;
+ros::Subscriber waypoint_sub;
 //ros topic publisher
 ros::Publisher rc_pub;
 ros::Publisher state_pub;
@@ -180,11 +188,13 @@ void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg);
 void cmd_cb(const std_msgs::Int32::ConstPtr& msg);
 void mode_cb(const std_msgs::Int32::ConstPtr& msg);
 void param_cb(const serial_manager::Param::ConstPtr& msg);
+void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg);
 void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg);
 bool arm_vehicle();
 bool disarm_vehicle();
 bool takeoff_vehicle();
 void clear_radio_override();
 void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
+void update_PID();
 
 

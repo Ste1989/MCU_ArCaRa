@@ -22,6 +22,8 @@ int main(int argc, char **argv)
     mode_sub =  nh.subscribe<std_msgs::Int32>("/napodrone/mode_request", 1, mode_cb);
     //param request
     param_sub =  nh.subscribe<serial_manager::Param>("/napodrone/param_request", 1, param_cb);
+    //waypoint
+    waypoint_sub =  nh.subscribe<geometry_msgs::Pose>("/napodrone/waypoint", 1, waypoint_cb);
     //aruco poses
     aruco_poses_sub =  nh.subscribe<aruco_mapping::ArucoMarker>("/aruco_poses", 1, poses_cb);
     //topic per override la radio
@@ -93,6 +95,8 @@ int main(int argc, char **argv)
     ROS_INFO("STREAM DATI AVVIATO");
 
     bool res = false;
+    gettimeofday(&control_time, NULL);
+    waypoint_recv = 0;
     /********************ciclo principale*************************************************************************************/
     while(ros::ok())
     {
@@ -147,7 +151,7 @@ int main(int argc, char **argv)
                         if(!init_takeoff)
                             current_cmd_req = NO_REQ;
                         else
-                            current_cmd_req = TAKEOFF;
+                            current_cmd_req = gettimeofday(&current_time, NULL);TAKEOFF;
                     }
                     break;
                 case LAND:
@@ -259,6 +263,30 @@ int main(int argc, char **argv)
 
             }
         }//fine current_mode_req/////////////////////////////////////////////////////////////////////////////////////
+
+
+    /********************************************************************************************/
+    /*                                                                                         */
+    /*                     CICLO PRINCIPALE CONTROLLO                                          */
+    /*                                                                                         */
+    /*******************************************************************************************/
+    if(waypoint_recv)
+    {
+        gettimeofday(&current_time, NULL);
+        elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
+        elapsed_time_control += (current_time.tv_usec - control_time.tv_usec) / 1000;
+        if(elapsed_time_control  > 50)
+        {
+            update_PID();
+            gettimeofday(&control_time, NULL);  
+        }
+        
+
+    }
+
+
+
+
 
 
         ros::spinOnce();
