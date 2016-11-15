@@ -151,7 +151,7 @@ int main(int argc, char **argv)
                         if(!init_takeoff)
                             current_cmd_req = NO_REQ;
                         else
-                            current_cmd_req = gettimeofday(&current_time, NULL);TAKEOFF;
+                            current_cmd_req = TAKEOFF;
                     }
                     break;
                 case LAND:

@@ -509,7 +509,7 @@ void update_PID()
 
   //controllo di altezza
   double z = global_camera_pose.position.z;
-  double z_des = waypoint_recv.position.z;
+  double z_des = current_waypoint.position.z;
   //calcolo errore
   double e_z = z_des - z ;
   double u_z = pid_controllers.altitude.update(e_z); 
