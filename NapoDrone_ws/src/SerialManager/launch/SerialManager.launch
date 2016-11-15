@@ -5,6 +5,8 @@
     <node pkg="serial_manager" type="SerialManager" name="SerialManager" output="screen" >
 	<param name="dev" type="string" value="/dev/ttyUSB0" />
 	<param name="stream_pose" type="bool" value="True" />
+	<param name="ack_el_time" type="int" value="250" />
+	<param name="pose_el_time" type="int" value="500" />
     </node>
 
         

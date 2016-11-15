@@ -30,23 +30,8 @@ void Pose_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
         quaternion_2_euler(msg->global_camera_pose.orientation.x,msg->global_camera_pose.orientation.y,
         msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
         global_camera_pose.orientation.x,global_camera_pose.orientation.y,global_camera_pose.orientation.z);
-        cout << "nuova posa letta" << endl;
-        if(stream_pose)
-        {
-            //devo inviare la posizione letta
-            coda_send_seriale.push(HEADER_A);
-            coda_send_seriale.push(HEADER_B);
-            coda_send_seriale.push(PAYLOAD_POSE);
-            encode_payload(global_camera_pose.position.x );
-            encode_payload(global_camera_pose.position.y );
-            encode_payload(global_camera_pose.position.z );
-            encode_payload(global_camera_pose.orientation.z );
-
-
-        }else
-        {
-            //non invio
-        }       
+        new_packet_pose = 1;
+    
     }
 }
 
@@ -236,8 +221,8 @@ double decode_payload()
     decode = decode | (0xFF000000 &(((long int)coda_recv_seriale.front())<<24));
     coda_recv_seriale.pop();
 
-    double param_ = (double)decode / 100;
-    cout << "ricevuto parametro : " << param_ << endl;
+    double param_ = (double)decode / 1000;
+    cout << "ricevuto payload : " << param_ << endl;
     return param_;
 }
 
@@ -316,12 +301,28 @@ void decode_packet()
 
         if(coda_recv_seriale.front() == PAYLOAD_WAYPOINT && coda_recv_seriale.size() >= NBYTES_PAYLOAD_WAYPOINT)
         {
+
+
+           
             coda_recv_seriale.pop();
             //devo decodificare il pacchetto
             double x_waypoint = decode_payload();
             double y_waypoint = decode_payload();
             double z_waypoint = decode_payload();
             double rz_waypoint = decode_payload();
+
+            /*salvo nella variabile gloable*/
+            waypoint_recv.position.x = x_waypoint;
+            waypoint_recv.position.y = y_waypoint;
+            waypoint_recv.position.z = z_waypoint;
+
+            waypoint_recv.orientation.x = 0;
+            waypoint_recv.orientation.y = 0;
+            waypoint_recv.orientation.z = rz_waypoint / 180 * PI;
+            waypoint_recv.orientation.w = 0;
+
+            new_waypoint = 1;
+            cout << "NEW WAYPOINT X:" << x_waypoint << " Y:" << y_waypoint << " Z:" << z_waypoint << " RZ:" << rz_waypoint << endl;
             goto label;
         }
 
@@ -435,9 +436,9 @@ void encode_payload(double payload)
     
     coda_send_seriale.push((unsigned char)(0x000000FF & (payload_1000 >> 16)));
     
-   coda_send_seriale.push((unsigned char)(0x000000FF & (payload_1000 >> 24)));
+    coda_send_seriale.push((unsigned char)(0x000000FF & (payload_1000 >> 24)));
     
-    cout << payload_1000 << endl;
+
 }
 
 /*****************************************************************/
@@ -558,6 +559,22 @@ void check_send_request()
 
         mode_msg = NO_MODE;
 
+    }
+    /**************NEW WAYPOINT****************************************/
+    if(new_waypoint)
+    {
+        cout << "WAYPOINT RICEVUTO" << endl;
+        //invio ack 
+        coda_send_seriale.push(HEADER_A);
+        coda_send_seriale.push(HEADER_B);
+        coda_send_seriale.push(PAYLOAD_WAYPOINT);
+        coda_send_seriale.push(PAYLOAD_ACK);
+
+        //pubblico il waypoint sul topic
+        geometry_msgs::Pose msg = waypoint_recv;
+        waypoint_topic.publish(msg);
+
+        new_waypoint = 0;
     }
 }
 /*****************************************************************/

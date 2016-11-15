@@ -27,6 +27,8 @@ int main(int argc, char **argv)
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
     param_topic = n.advertise<serial_manager::Param>("napodrone/param_request", 1);
     mode_topic = n.advertise<std_msgs::Int32>("napodrone/mode_request", 1);
+    waypoint_topic = n.advertise<geometry_msgs::Pose>("napodrone/waypoint", 1);
+
     status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",10, &Status_Pixhawk_Callback);
     pose_topic = n.subscribe<aruco_mapping::ArucoMarker>("/aruco_poses", 1, &Pose_cb);
 
@@ -34,6 +36,8 @@ int main(int argc, char **argv)
     std::string seriale_dev;
     n.param<std::string>("/SerialManager/dev", seriale_dev, "/dev/ttyUSB0");
     n.param<bool>("/SerialManager/stream_pose", stream_pose, false);
+    n.param<int>("/SerialManager/ack_el_time", ack_el_time, 250);
+    n.param<int>("/SerialManager/pose_el_time", pose_el_time, 500);
 
     int serial;
     // init della seriale
@@ -41,6 +45,7 @@ int main(int argc, char **argv)
     //inizializzo new_pkt_time
     gettimeofday(&new_pkt_time, NULL);
     gettimeofday(&ping_time, NULL);
+    gettimeofday(&stream_pose_time, NULL);
     //ros::Rate loop_rate(100); // 100 Hz
     if (result == 1)
     {
@@ -58,9 +63,12 @@ int main(int argc, char **argv)
           //calcolo tempo per inviare un ping
           elapsed_time_ping = (current_time.tv_sec - ping_time.tv_sec) * 1000;
           elapsed_time_ping += (current_time.tv_usec - ping_time.tv_usec) / 1000;
+          //calcolo tempo per invio di una misura di poszione
+          elapsed_time_pose = (current_time.tv_sec - stream_pose_time.tv_sec) * 1000;
+          elapsed_time_pose += (current_time.tv_usec - stream_pose_time.tv_usec) / 1000;
           
           /********INVIO UN PING******************************************************************************/
-          if(elapsed_time_ping > 250 && false)
+          if(elapsed_time_ping > ack_el_time)
           {
 
             coda_send_seriale.push(HEADER_A);
@@ -70,6 +78,23 @@ int main(int argc, char **argv)
 
             //aggiorno ping_time
             gettimeofday(&ping_time, NULL);
+          }
+          /*************************INVIO POSE*********************************************************************/
+          if(stream_pose && elapsed_time_pose > pose_el_time && new_packet_pose)
+          {
+
+            //devo inviare la posizione letta
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
+            coda_send_seriale.push(PAYLOAD_POSE);
+            encode_payload(global_camera_pose.position.x );
+            encode_payload(global_camera_pose.position.y );
+            encode_payload(global_camera_pose.position.z );
+            encode_payload(global_camera_pose.orientation.z );
+
+            new_packet_pose = 0;
+
+
           }
 
  /*         

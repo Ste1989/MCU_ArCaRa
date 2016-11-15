@@ -22,6 +22,7 @@
 #include <sys/time.h>
 #include <aruco_mapping/ArucoMarker.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/Pose.h>
 /*************************************************************/
 //
 //modulo che preposto alla ricezione e alla decodifica dei messaggi
@@ -36,7 +37,7 @@
 //1-param
 //     ___________________________________________________________________
 //     | HEADER_CMD_A |HEADER_CMD_B|  PAYLOAD_PARAM   | PAYLOAD x4        |
-//     ___________________________________________________________________
+//     _____________________________________________#include <geometry_msgs/Point.h>______________________
 //
 //3-copter flight mode
 //     ___________________________________________________________________
@@ -239,17 +240,20 @@ ros::Subscriber pose_topic;
 ros::Publisher req_topic;
 ros::Publisher param_topic;
 ros::Publisher mode_topic;
+ros::Publisher waypoint_topic;
 
 /******************GLOBAL VAR***********************************************************************/
 int count = 0;
 double param = 0.0;
 char new_packet = 0;
+char new_packet_pose = 0;
+int pose_el_time, ack_el_time;
 double PI = 3.14159;
 using std::cout;
 using std::endl;
 //strutture dati emporali
-timeval new_pkt_time, current_time, ping_time;
-double elapsed_time_pkt_received, elapsed_time_ping;
+timeval new_pkt_time, current_time, ping_time, stream_pose_time;
+double elapsed_time_pkt_received, elapsed_time_ping, elapsed_time_pose;
 //struttura per la memorizzazione della posa della camera nel frame world
 struct global_pose
 {
@@ -259,6 +263,11 @@ struct global_pose
 };
 global_pose global_camera_pose;
 bool stream_pose;
+char new_waypoint = 0;
+geometry_msgs::Pose waypoint_recv;
+
+
+
 /***************************FUNZIONI************************************************************************/
 void parser_mess(unsigned char buffer);
 double decode_payload();
