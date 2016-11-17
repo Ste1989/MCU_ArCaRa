@@ -154,10 +154,43 @@ cmd_request cmd_msg_last;
 #define PAYLOAD_PARAM (int)0xF3
 //lista parametri che posso inviare
 #define PARAM_ALT_TAKEOFF (int)0x10
+#define PARAM_KP_YAW (int)0x40
+#define PARAM_KI_YAW (int)0x41
+#define PARAM_KD_YAW (int)0x42
+#define PARAM_TS_YAW (int)0x43
+#define PARAM_ND_YAW (int)0x44
+#define PARAM_LUP_YAW (int)0x45
+#define PARAM_LDOWN_YAW (int)0x46
+
 /*possibili richieste di cambio parametri*****************************/
 typedef enum{
     NO_PARAM,
-    ALT_TAKEOFF,
+    ALT_TAKEOFF, 
+
+    KP_ROLL,
+    KI_ROLL,
+    KD_ROLL, 
+    TS_ROLL, 
+    ND_ROLL, 
+    LUP_ROLL,  
+    LDOWN_ROLL, 
+
+    KP_PITCH, 
+    KI_PITCH, 
+    KD_PITCH,  
+    TS_PITCH,  
+    ND_PITCH,  
+    LUP_PITCH,  
+    LDOWN_PITCH,
+
+    KP_YAW, 
+    KI_YAW, 
+    KD_YAW, 
+    TS_YAW, 
+    ND_YAW, 
+    LUP_YAW, 
+    LDOWN_YAW,
+    
 } param_request;
 param_request param_msg;
 

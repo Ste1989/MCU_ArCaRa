@@ -2,19 +2,13 @@
 <launch> 
 
 
-
-    
- 
-
-
-
   <!-- ArUco mapping -->
-  <node pkg="aruco_mapping" type="aruco_mapping" name="aruco_mapping" output="screen">
+  <node pkg="aruco_mapping" type="aruco_mapping" name="aruco_mapping">
     <remap from="/image_raw" to="/camera/color/image_raw"/>
 
     <param name="calibration_file" type="string" value="$(find aruco_mapping)/data/R200.ini" /> 
-    <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_0.map" /> 
-    <param name="num_of_markers" type="int" value="26" />
+    <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_AUTEC.map" /> 
+    <param name="num_of_markers" type="int" value="15" />
     <param name="marker_size" type="double" value="0.119"/>
     <param name="space_type" type="string" value="plane" />
     <param name="roi_allowed" type="bool" value="false" /> 

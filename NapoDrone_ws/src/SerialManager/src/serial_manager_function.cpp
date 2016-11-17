@@ -288,10 +288,45 @@ void decode_packet()
             switch(coda_recv_seriale.front())
             {
                 case PARAM_ALT_TAKEOFF:
-
                     coda_recv_seriale.pop();
                     param = decode_payload();
                     param_msg = ALT_TAKEOFF;
+                    break;
+                    /*parametri dei pid: YAW*/
+                case PARAM_KP_YAW:
+                    coda_recv_seriale.pop();
+                    param = decode_payload();
+                    param_msg = KP_YAW;
+                    break;
+                case PARAM_KI_YAW:
+                    coda_recv_seriale.pop();
+                    param = decode_payload();
+                    param_msg = KI_YAW;
+                    break;
+                case PARAM_KD_YAW:
+                    coda_recv_seriale.pop();
+                    param = decode_payload();
+                    param_msg = KD_YAW;
+                    break;
+                case PARAM_TS_YAW:
+                    coda_recv_seriale.pop();
+                    param = decode_payload();
+                    param_msg = TS_YAW;
+                    break;
+                case PARAM_ND_YAW:
+                    coda_recv_seriale.pop();
+                    param = decode_payload();
+                    param_msg = ND_YAW;
+                    break;
+                case PARAM_LUP_YAW:
+                    coda_recv_seriale.pop();
+                    param = decode_payload();
+                    param_msg = LUP_YAW;
+                    break;
+                case PARAM_LDOWN_YAW:
+                    coda_recv_seriale.pop();
+                    param = decode_payload();
+                    param_msg = LDOWN_YAW;
                     break;
 
             }
@@ -526,7 +561,8 @@ void check_send_request()
         //preparo la struttura dati
         serial_manager::Param msg;
         //riempio la struttura dati
-        msg.header = 1;
+    
+        msg.header = param_msg;
         msg.param = param;
 
         //invio ack 

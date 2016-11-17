@@ -134,9 +134,47 @@ void param_cb(const serial_manager::Param::ConstPtr& msg)
     switch(msg->header)
     {
 		case ALT_TAKEOFF:
-         	alt_takeoff_target = msg->param; 
-         	ROS_INFO("RICEVUTO PARAMTRO ALTEZZA");         
+      alt_takeoff_target = msg->param;
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw); 
+      ROS_INFO("RICEVUTO PARAMETRO ALTEZZA");         
 			break;
+    /*YAW*/
+    case KP_YAW:
+      Kp_yaw = msg->param;
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw); 
+      ROS_INFO("RICEVUTO PARAMETRO KP_YAW");         
+      break;
+    case KI_YAW:
+      Ki_yaw = msg->param;
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw); 
+      ROS_INFO("RICEVUTO PARAMETRO KI_YAW");         
+      break;
+    case KD_YAW:
+      Kd_yaw = msg->param; 
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
+      ROS_INFO("RICEVUTO PARAMETRO KD_YAW");         
+      break;
+    case TS_YAW:
+      Ts_yaw = msg->param; 
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
+      ROS_INFO("RICEVUTO PARAMETRO TS_YAW");         
+      break;
+    case ND_YAW:
+      Nd_yaw = msg->param; 
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
+      ROS_INFO("RICEVUTO PARAMETRO ND_YAW");         
+      break;
+    case LUP_YAW:
+      limit_max_yaw = msg->param; 
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
+      ROS_INFO("RICEVUTO PARAMETRO LUP_YAW");         
+      break;
+    case LDOWN_YAW:
+      limit_min_yaw = msg->param; 
+      pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
+      ROS_INFO("RICEVUTO PARAMETRO LDOWN_YAW");         
+      break;
+
 		default:          
 			break;
 	}
@@ -173,10 +211,7 @@ void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
 			msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
 			global_camera_pose.orientation.x,global_camera_pose.orientation.y,global_camera_pose.orientation.z);
 
-		cout << "POSA" << endl;
-		cout << global_camera_pose.position.x  << " " <<  global_camera_pose.position.y << " " << global_camera_pose.position.z  << endl;
-		cout << "ORIENTAZIONE" << endl;
-		cout << global_camera_pose.orientation.x*180.0/3.14 << " " <<  global_camera_pose.orientation.y*180.0/3.14 << " " << global_camera_pose.orientation.z*180.0/3.14  << endl;
+		
 	}
 	else
 	{
@@ -442,15 +477,15 @@ void init_global_variables()
     init_pressure = 0;
     alt_from_barometer = 0;
 
-    //inizializzo i controllori
-    pid_controllers.roll.init(Kp_roll,Ki_roll,Kd_roll,Ts_roll, Nd_roll,limit_max_roll,limit_min_roll);
-    pid_controllers.pitch.init(Kp_pitch,Ki_pitch,Kd_pitch,Ts_pitch, Nd_pitch,limit_max_pitch,limit_min_pitch);
-    pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
-    pid_controllers.altitude.init(Kp_alt,Ki_alt,Kd_alt,Ts_alt, Nd_alt,limit_max_alt,limit_min_alt);
+  //inizializzo i controllori
+  pid_controllers.roll.init(Kp_roll,Ki_roll,Kd_roll,Ts_roll, Nd_roll,limit_max_roll,limit_min_roll);
+  pid_controllers.pitch.init(Kp_pitch,Ki_pitch,Kd_pitch,Ts_pitch, Nd_pitch,limit_max_pitch,limit_min_pitch);
+  pid_controllers.yaw.init(Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw);
+  pid_controllers.altitude.init(Kp_alt,Ki_alt,Kd_alt,Ts_alt, Nd_alt,limit_max_alt,limit_min_alt);
 
-    marker_visibile = false;
+  marker_visibile = false;
 	//Pose global_camera_pose;
-    //..
+   //..
 	//altezza da raggiungere in takeoff
 	alt_takeoff_target = 1.0;
 
@@ -500,26 +535,89 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 	yaw = atan2(rt12,rt11);
 }
  /********************************************************************************************/
+/*                                                                                          */
+/*    MAP CONTROLLO TO RADIO PWM                                                            */
 /*                                                                                         */
-/*    QUATERNION_2_EULER                                                                    */
+/*******************************************************************************************/
+double map_control_2_radio(double u, int channel)
+{
+  double radio_pwm = PWM_MEDIUM;
+  /*controllo di yaw*/
+  if(channel == RC_YAW)
+  {
+
+      double m = (PWM_LOW_LIMIT - PWM_HIGH_LIMIT)/2;
+      double q = PWM_MEDIUM;
+      double y = m*u + q;
+
+      if(y < PWM_LOW_LIMIT)
+        y = PWM_LOW_LIMIT;
+      if(y > PWM_HIGH_LIMIT)
+        y = PWM_HIGH_LIMIT;
+
+      
+      radio_pwm = y;
+      cout << "RADIO YAW : " << y << endl; 
+
+  }
+}
+
+ /********************************************************************************************/
+/*                                                                                         */
+/*    UPDATE_PID CONTROL                                                                   */
 /*                                                                                         */
 /*******************************************************************************************/
 void update_PID()
 {
 
   //controllo di altezza
-  double z = global_camera_pose.position.z;
-  double z_des = current_waypoint.position.z;
+  double rz = global_camera_pose.orientation.z;
+  double rz_des = current_waypoint.orientation.z;
   //calcolo errore
-  double e_z = z_des - z ;
-  double u_z = pid_controllers.altitude.update(e_z); 
-
+  double e_rz = rz_des - rz ;
+  double u_rz = pid_controllers.yaw.update(e_rz); 
+  cout << "rz: " << rz << endl;
+  cout << "rz_des: " << rz_des << endl; 
+  cout << "u_rz: " << u_rz << endl;
   //devo mappare l'ingresso in un comando ai servo
-  //...
+  double yaw_commad = map_control_2_radio(u_rz, RC_YAW);
 
 
+ //publish control to radio
+  mavros_msgs::OverrideRCIn radio_pwm;
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = yaw_commad;
+  rc_pub.publish(radio_pwm);
+}
+ /********************************************************************************************/
+/*                                                                                         */
+/*    LEGGI PID FILE                                                                       */
+/*                                                                                         */
+/*******************************************************************************************/
+bool leggi_PID_file(std::string PID_file)
+{
+  //lettura del file PID
+  const char* filename = PID_file.c_str();
+  FILE* fd;
+  fd = fopen(filename,"rb");
+  if( fd == NULL ) {
+    ROS_ERROR("File pid NOT FOUND ");
+    return false;
+  }
+  int id;
+  float px; 
+  float py;
+  while(!feof(fd)) 
+  {
+    fscanf(fd,"%d %f %f",&id,&px,&py );
+    
+  }
 
-
-
+  fclose(fd);
+  ROS_INFO_STREAM("File pid loaded successfully");
+  return true;
 
 }

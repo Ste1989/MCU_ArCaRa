@@ -33,7 +33,7 @@ double alt_from_barometer;
 timeval  current_time, control_time;
 double elapsed_time_control;
 char waypoint_recv;
-
+std::string PID_file;
 bool init_takeoff;
 std::string init_flight_mode;
 int loop_rate;
@@ -82,6 +82,7 @@ ros::ServiceClient set_stream_rate_client;
 #define RC_THROTTLE 2
 #define PWM_LOW_LIMIT 1000
 #define PWM_HIGH_LIMIT 2000
+#define PWM_MEDIUM 1500
 #define NO_OVERRIDE 0
 
 
@@ -139,7 +140,31 @@ cmd_request current_cmd_req;
 /*possibili richieste di cambio parametri*****************************/
 typedef enum{
     NO_PARAM,
-    ALT_TAKEOFF,
+    ALT_TAKEOFF, 
+
+    KP_ROLL,
+    KI_ROLL,
+    KD_ROLL, 
+    TS_ROLL, 
+    ND_ROLL, 
+    LUP_ROLL,  
+    LDOWN_ROLL, 
+
+    KP_PITCH, 
+    KI_PITCH, 
+    KD_PITCH,  
+    TS_PITCH,  
+    ND_PITCH,  
+    LUP_PITCH,  
+    LDOWN_PITCH,
+
+    KP_YAW, 
+    KI_YAW, 
+    KD_YAW, 
+    TS_YAW, 
+    ND_YAW, 
+    LUP_YAW, 
+    LDOWN_YAW,
 } param_request;
 
 
@@ -196,5 +221,6 @@ bool takeoff_vehicle();
 void clear_radio_override();
 void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
 void update_PID();
-
+double map_control_2_radio(double u, int channel);
+bool leggi_PID_file(std::string PID_file);
 
