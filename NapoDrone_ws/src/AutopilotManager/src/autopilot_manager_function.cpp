@@ -1,4 +1,4 @@
-#include "pix_manager_node.h"
+#include "autopilot_manager_node.h"
 
 /********************************************************************************************/
 /*                                                                                         */
@@ -379,6 +379,7 @@ PIDController::PIDController()
 
 void PIDController::init(double Kp, double Ki, double Kd, double Ts, double Nd,double limit_max, double limit_min)
 {
+  cum_error = 0;
 	double* vet_a = new double[3];
 	double* vet_b = new double[3];
 
@@ -560,6 +561,7 @@ double map_control_2_radio(double u, int channel)
       cout << "RADIO YAW : " << y << endl; 
 
   }
+  return radio_pwm;
 }
 
  /********************************************************************************************/
@@ -575,7 +577,10 @@ void update_PID()
   double rz_des = current_waypoint.orientation.z;
   //calcolo errore
   double e_rz = rz_des - rz ;
-  double u_rz = pid_controllers.yaw.update(e_rz); 
+  //double u_rz = pid_controllers.yaw.update(e_rz);
+  pid_controllers.yaw.cum_error = pid_controllers.yaw.cum_error + e_rz; 
+  double u_rz = Kp_yaw * e_rz + Ki_yaw * pid_controllers.yaw.cum_error;
+
   cout << "rz: " << rz << endl;
   cout << "rz_des: " << rz_des << endl; 
   cout << "u_rz: " << u_rz << endl;
@@ -604,20 +609,103 @@ bool leggi_PID_file(std::string PID_file)
   FILE* fd;
   fd = fopen(filename,"rb");
   if( fd == NULL ) {
-    ROS_ERROR("File pid NOT FOUND ");
+    ROS_ERROR("File PID NOT FOUND ");
     return false;
   }
-  int id;
-  float px; 
-  float py;
+  double param;
+  int i = 0;
+  double vect_pid[4*7];
   while(!feof(fd)) 
   {
-    fscanf(fd,"%d %f %f",&id,&px,&py );
-    
+    fscanf(fd,"%lf",&param );
+    vect_pid[i] = param;
+    i++;
   }
-
   fclose(fd);
+
+  //ricopio valori nel file
+  //roll
+  Kp_roll = vect_pid[0];
+  Ki_roll = vect_pid[1];
+  Kd_roll = vect_pid[2];
+  Ts_roll = vect_pid[3];
+  Nd_roll = vect_pid[4];
+  limit_max_roll = vect_pid[5];
+  limit_min_roll = vect_pid[6];
+  //pitch
+  Kp_pitch = vect_pid[7];
+  Ki_pitch = vect_pid[8];
+  Kd_pitch = vect_pid[9];
+  Ts_pitch = vect_pid[10];
+  Nd_pitch = vect_pid[11];
+  limit_max_pitch = vect_pid[12];
+  limit_min_pitch = vect_pid[13];
+  //yaw
+  Kp_yaw = vect_pid[14];
+  Ki_yaw = vect_pid[15];
+  Kd_yaw = vect_pid[16];
+  Ts_yaw = vect_pid[17];
+  Nd_yaw = vect_pid[18];
+  limit_max_yaw = vect_pid[19];
+  limit_min_yaw = vect_pid[20];
+  //alt
+  Kp_alt = vect_pid[21];
+  Ki_alt = vect_pid[22];
+  Kd_alt = vect_pid[23];
+  Ts_alt = vect_pid[24];
+  Nd_alt = vect_pid[25];
+  limit_max_alt = vect_pid[26];
+  limit_min_alt = vect_pid[27];
+
+
+  
   ROS_INFO_STREAM("File pid loaded successfully");
+  return true;
+
+}
+
+ /********************************************************************************************/
+/*                                                                                         */
+/*    SCRIVI FILE PID                                                                      */
+/*                                                                                         */
+/*******************************************************************************************/
+bool scrivi_PID_file(std::string PID_file)
+{
+  //scrittura del file PIDs
+  const char* filename = PID_file.c_str();
+  FILE* fd;
+  fd = fopen(filename,"w");
+  fprintf(fd, "%lf\n", Kp_roll);
+  fprintf(fd, "%lf\n", Ki_roll);
+  fprintf(fd, "%lf\n", Kd_roll);
+  fprintf(fd, "%lf\n", Ts_roll);
+  fprintf(fd, "%lf\n", Nd_roll);
+  fprintf(fd, "%lf\n", limit_max_roll);
+  fprintf(fd, "%lf\n", limit_min_roll);
+  fprintf(fd, "%lf\n", Kp_pitch);
+  fprintf(fd, "%lf\n", Ki_pitch);
+  fprintf(fd, "%lf\n", Kd_pitch);
+  fprintf(fd, "%lf\n", Ts_pitch);
+  fprintf(fd, "%lf\n", Nd_pitch);
+  fprintf(fd, "%lf\n", limit_max_pitch);
+  fprintf(fd, "%lf\n", limit_min_pitch);
+  fprintf(fd, "%lf\n", Kp_yaw);
+  fprintf(fd, "%lf\n", Ki_yaw);
+  fprintf(fd, "%lf\n", Kd_yaw);
+  fprintf(fd, "%lf\n", Ts_yaw);
+  fprintf(fd, "%lf\n", Nd_yaw);
+  fprintf(fd, "%lf\n", limit_max_yaw);
+  fprintf(fd, "%lf\n", limit_min_yaw);
+  fprintf(fd, "%lf\n", Kp_alt);
+  fprintf(fd, "%lf\n", Ki_alt);
+  fprintf(fd, "%lf\n", Kd_alt);
+  fprintf(fd, "%lf\n", Ts_alt);
+  fprintf(fd, "%lf\n", Nd_alt);
+  fprintf(fd, "%lf\n", limit_max_alt);
+  fprintf(fd, "%lf\n", limit_min_alt);
+  fclose(fd);
+
+  ROS_INFO_STREAM("File pid saved successfully");
   return true;
 
 }

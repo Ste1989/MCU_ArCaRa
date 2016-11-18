@@ -184,12 +184,13 @@ class PIDController {
     //vettori contenenti la memoria del filtro
     double* u;
     double* y;
-
+    
 
   public:
     PIDController();
     void init(double Kp, double Ki, double Kd, double Ts, double Nd,double limit_up, double limit_down);
     double update(double errore);
+    double cum_error;
 };
 
 struct Controllers 
@@ -223,4 +224,5 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 void update_PID();
 double map_control_2_radio(double u, int channel);
 bool leggi_PID_file(std::string PID_file);
+bool scrivi_PID_file(std::string PID_file);
 

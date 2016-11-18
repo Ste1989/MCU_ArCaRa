@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>pixhawk_manager</name>
+  <name>autopilot_manager</name>
   <version>0.0.0</version>
   <description>The PixhawkManager package</description>
 

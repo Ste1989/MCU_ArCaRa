@@ -1,5 +1,5 @@
 
-#include "pix_manager_node.h"
+#include "autopilot_manager_node.h"
 
 
 /********************************************************************************************/
@@ -41,38 +41,12 @@ int main(int argc, char **argv)
 
 
     //leggo i parametri specificati nel launch file
-    nh.param<int>("/PixManager/loop_rate", loop_rate, 100);
-    nh.param<int>("/PixManager/stream_rate", stream_rate, 50);
+    nh.param<int>("/AutopilotManager/loop_rate", loop_rate, 30);
+    nh.param<int>("/AutopilotManager/stream_rate", stream_rate, 50);
     //PID file
-    nh.param<std::string>("/PixManager/PID_file", PID_file);
-    //PID param
-    nh.param<double>("/PixManager/Kp_roll", Kp_roll, 0);
-    nh.param<double>("/PixManager/Ki_roll", Ki_roll, 0);
-    nh.param<double>("/PixManager/Kd_roll", Kd_roll, 0);
-    nh.param<double>("/PixManager/Ts_roll", Ts_roll, 0);
-    nh.param<double>("/PixManager/Nd_roll", Nd_roll, 0);
-
-    nh.param<double>("/PixManager/Kp_pitch", Kp_pitch, 0);
-    nh.param<double>("/PixManager/Ki_pitch", Ki_pitch, 0);
-    nh.param<double>("/PixManager/Kd_pitch", Kd_pitch, 0);
-    nh.param<double>("/PixManager/Ts_pitch", Ts_pitch, 0);
-    nh.param<double>("/PixManager/Nd_pitch", Nd_pitch, 0);
-    
-    nh.param<double>("/PixManager/Kp_yaw", Kp_yaw, 0);
-    nh.param<double>("/PixManager/Ki_yaw", Ki_yaw, 0);
-    nh.param<double>("/PixManager/Kd_yaw", Kd_yaw, 0);
-    nh.param<double>("/PixManager/Ts_yaw", Ts_yaw, 0);
-    nh.param<double>("/PixManager/Nd_yaw", Nd_yaw, 0);
-    nh.param<double>("/PixManager/limit_up_yaw", limit_max_yaw, 1);
-    nh.param<double>("/PixManager/limit_down_yaw", limit_min_yaw, -1);
-    
+    nh.param<std::string>("/AutopilotManager/pid_file", PID_file, "");
 
 
-    nh.param<double>("/PixManager/Kp_alt", Kp_alt, 0);
-    nh.param<double>("/PixManager/Ki_alt", Ki_alt, 0);
-    nh.param<double>("/PixManager/Kd_alt", Kd_alt, 0);
-    nh.param<double>("/PixManager/Ts_alt", Ts_alt, 0);
-    nh.param<double>("/PixManager/Nd_alt", Nd_alt, 0);
     //////////////////////////////////////LEGGI FILE PID////////////////////////////////////////////
     if(PID_file == "empty")
         ROS_WARN("PID filename empty! Check the launch file paths");
@@ -81,11 +55,11 @@ int main(int argc, char **argv)
         ROS_INFO_STREAM("PID file path: " << PID_file );
         leggi_PID_file(PID_file);
     }
-
+    
     //INIT//////////////////////////////////////////////////////////////////////////////////////////
     init_global_variables();
     //imposto la frequenza del nodo 
-    ros::Rate rate(loop_rate);
+    //ros::Rate rate(loop_rate);
    
     // wait for FCU connection
     /*while(ros::ok() && !current_state.connected)
@@ -290,8 +264,8 @@ int main(int argc, char **argv)
         gettimeofday(&current_time, NULL);
         elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
         elapsed_time_control += (current_time.tv_usec - control_time.tv_usec) / 1000;
-        if(elapsed_time_control  > 100)
-        {   cout << elapsed_time_control << endl;
+        if(elapsed_time_control  >= (1000/loop_rate)) //30Hz
+        {   cout << "elapsed time control: " << elapsed_time_control << endl;
             update_PID();
             gettimeofday(&control_time, NULL);  
         }

@@ -2,8 +2,8 @@
  
 
 
-    <node pkg="pixhawk_manager" type="Pixhawk_Node" name="PixhawkManager" output="screen" >
-	<param name="dev" type="string" value="/dev/ttyACM1" />
+    <node pkg="autopilot_manager" type="AutopilotManager_Node" name="AutopilotManager" output="screen" >s
+	<param name="dev" type="string" value="/dev/ttyUSB1" />
         <param name="real_vehicle" type="boolean" value="True" />
         <param name="loop_rate_hz" type="int" value="50" />
     </node>

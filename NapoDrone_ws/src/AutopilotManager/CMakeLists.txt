@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pixhawk_manager)
+project(autopilot_manager)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -37,10 +37,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(PixManagerFunction  src/pix_manager_function.cpp)
-target_link_libraries(PixManagerFunction ${catkin_LIBRARIES})
+add_library(AutopilotManagerFunction  src/autopilot_manager_function.cpp)
+target_link_libraries(AutopilotManagerFunction ${catkin_LIBRARIES})
 
-add_executable(PixManager src/pix_manager_node.cpp)
-target_link_libraries(PixManager PixManagerFunction ${catkin_LIBRARIES})
+add_executable(AutopilotManager_Node src/autopilot_manager_node.cpp)
+target_link_libraries(AutopilotManager_Node AutopilotManagerFunction ${catkin_LIBRARIES})
 
 catkin_python_setup()

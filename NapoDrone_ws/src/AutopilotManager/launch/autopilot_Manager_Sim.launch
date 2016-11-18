@@ -2,7 +2,7 @@
  
 
 
-    <node pkg="pixhawk_manager" type="Pixhawk_Node" name="PixhawkManager" output="screen" >
+    <node pkg="autopilot_manager" type="AutopilotManager_Node" name="AutopilotManager" output="screen" >
         <param name="real_vehicle" type="boolean" value="False" />
         <param name="loop_rate_hz" type="int" value="50" />
     </node>

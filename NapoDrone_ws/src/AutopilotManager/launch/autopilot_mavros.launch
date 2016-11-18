@@ -1,0 +1,15 @@
+<launch>
+
+    <node pkg="autopilot_manager" type="AutopilotManager_Node" name="AutopilotManager" output="screen" >
+	        <param name="loop_rate" type="int" value="30" />
+	        <param name="stream_rate" type="int" value="50" />
+	        <param name="pid_file" type="string" value="$(find autopilot_manager)/data/PID_iris.txt" /> 
+    </node>
+
+        <!--rosrun mavros mavparam set SYSID_MYGCS 1-->
+
+
+	 
+	<!--<node name="mavparam" pkg="mavros" type="mavparam" args="set SYSID_MYGCS 1" >-->
+	<!--</node>-->
+</launch>
