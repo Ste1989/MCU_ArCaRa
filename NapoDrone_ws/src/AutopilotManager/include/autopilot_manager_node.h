@@ -142,29 +142,41 @@ typedef enum{
     NO_PARAM,
     ALT_TAKEOFF, 
 
-    KP_ROLL,
-    KI_ROLL,
-    KD_ROLL, 
+    K_ROLL,
+    B_ROLL,
+    TI_ROLL, 
     TS_ROLL, 
+    TD_ROLL, 
     ND_ROLL, 
     LUP_ROLL,  
     LDOWN_ROLL, 
 
-    KP_PITCH, 
-    KI_PITCH, 
-    KD_PITCH,  
-    TS_PITCH,  
-    ND_PITCH,  
+    K_PITCH,
+    B_PITCH,
+    TI_PITCH, 
+    TS_PITCH, 
+    TD_PITCH, 
+    ND_PITCH, 
     LUP_PITCH,  
-    LDOWN_PITCH,
+    LDOWN_PITCH, 
 
-    KP_YAW, 
-    KI_YAW, 
-    KD_YAW, 
+    K_YAW,
+    B_YAW,
+    TI_YAW, 
     TS_YAW, 
+    TD_YAW, 
     ND_YAW, 
-    LUP_YAW, 
-    LDOWN_YAW,
+    LUP_YAW,  
+    LDOWN_YAW, 
+
+    K_ALT,
+    B_ALT,
+    TI_ALT, 
+    TS_ALT, 
+    TD_ALT, 
+    ND_ALT, 
+    LUP_ALT,  
+    LDOWN_ALT,
 } param_request;
 
 
@@ -175,22 +187,33 @@ typedef enum{
 /***********************************************************************************************/
 class PIDController {
   private:
-    //vettori contenenti i parametri della G(z)
-    double* a;
-    double* b;
-    unsigned int length_a;
-    unsigned int length_b;
-    double  limit_down, limit_up;
-    //vettori contenenti la memoria del filtro
-    double* u;
-    double* y;
+    //parametri del controllore
+    double K;
+    double b;
+    double Ti;
+    double Td;
+    double Ts;
+    double Nd;
+    double saturazione_max;
+    double saturazione_min;
+    //parametri che memorizzano lo stato del controllore
+    double I_k;
+    double D_k;
     
-
   public:
     PIDController();
-    void init(double Kp, double Ki, double Kd, double Ts, double Nd,double limit_up, double limit_down);
-    double update(double errore);
-    double cum_error;
+    void init_PID();
+    double update_PID(double errore);
+    void set_K(double param);
+    void set_b(double param);
+    void set_Ti(double param);
+    void set_Td(double param);
+    void set_Ts(double param);
+    void set_Nd(double param);
+    void set_saturazione_max(double param);
+    void set_saturazione_min(double param);
+
+    
 };
 
 struct Controllers 
@@ -203,10 +226,10 @@ struct Controllers
   PIDController altitude;
 } pid_controllers;
 
-double Kp_roll,Ki_roll,Kd_roll,Ts_roll, Nd_roll,limit_max_roll,limit_min_roll;
-double Kp_pitch,Ki_pitch,Kd_pitch,Ts_pitch, Nd_pitch,limit_max_pitch,limit_min_pitch;
-double Kp_yaw,Ki_yaw,Kd_yaw,Ts_yaw, Nd_yaw,limit_max_yaw,limit_min_yaw;
-double Kp_alt,Ki_alt,Kd_alt,Ts_alt, Nd_alt,limit_max_alt,limit_min_alt;
+//double K_roll,B_roll,Ti_roll,Ts_roll, Td_roll,Nd_roll,limit_max_roll,limit_min_roll;
+//double K_pitch,B_pitch,Ti_pitch,Ts_pitch, Td_pitch,Nd_pitch,limit_max_pitch,limit_min_pitch;
+//double K_yaw,B_yaw,Ti_yaw,Ts_yaw, Td_yaw,Nd_yaw,limit_max_yaw,limit_min_yaw;
+//double K_alt,B_alt,Ti_alt,Ts_alt, Td_alt,Nd_alt,limit_max_alt,limit_min_alt;
 //FUNZIONI////////////////////////////////////////////////////////////////////////////////////
 void init_global_variables();
 void state_cb(const mavros_msgs::State::ConstPtr& msg);
@@ -221,7 +244,7 @@ bool disarm_vehicle();
 bool takeoff_vehicle();
 void clear_radio_override();
 void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
-void update_PID();
+void update_control();
 double map_control_2_radio(double u, int channel);
 bool leggi_PID_file(std::string PID_file);
 bool scrivi_PID_file(std::string PID_file);

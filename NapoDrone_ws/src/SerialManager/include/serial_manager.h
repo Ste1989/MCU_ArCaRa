@@ -154,42 +154,79 @@ cmd_request cmd_msg_last;
 #define PAYLOAD_PARAM (int)0xF3
 //lista parametri che posso inviare
 #define PARAM_ALT_TAKEOFF (int)0x10
-#define PARAM_KP_YAW (int)0x40
-#define PARAM_KI_YAW (int)0x41
-#define PARAM_KD_YAW (int)0x42
+#define PARAM_K_ROLL (int)0x20
+#define PARAM_B_ROLL (int)0x21
+#define PARAM_TI_ROLL (int)0x22
+#define PARAM_TS_ROLL (int)0x23
+#define PARAM_TD_ROLL (int)0x24
+#define PARAM_ND_ROLL (int)0x25
+#define PARAM_LUP_ROLL (int)0x26
+#define PARAM_LDOWN_ROLL (int)0x27
+#define PARAM_K_PITCH (int)0x30
+#define PARAM_B_PITCH (int)0x31
+#define PARAM_TI_PITCH (int)0x32
+#define PARAM_TS_PITCH (int)0x33
+#define PARAM_TD_PITCH (int)0x34
+#define PARAM_ND_PITCH (int)0x35
+#define PARAM_LUP_PITCH (int)0x36
+#define PARAM_LDOWN_PITCH (int)0x37
+#define PARAM_K_YAW (int)0x40
+#define PARAM_B_YAW (int)0x41
+#define PARAM_TI_YAW (int)0x42
 #define PARAM_TS_YAW (int)0x43
-#define PARAM_ND_YAW (int)0x44
-#define PARAM_LUP_YAW (int)0x45
-#define PARAM_LDOWN_YAW (int)0x46
+#define PARAM_TD_YAW (int)0x44
+#define PARAM_ND_YAW (int)0x45
+#define PARAM_LUP_YAW (int)0x46
+#define PARAM_LDOWN_YAW (int)0x47
+#define PARAM_K_ALT (int)0x50
+#define PARAM_B_ALT (int)0x51
+#define PARAM_TI_ALT (int)0x52
+#define PARAM_TS_ALT (int)0x53
+#define PARAM_TD_ALT (int)0x54
+#define PARAM_ND_ALT (int)0x55
+#define PARAM_LUP_ALT (int)0x56
+#define PARAM_LDOWN_ALT (int)0x57
 
 /*possibili richieste di cambio parametri*****************************/
 typedef enum{
     NO_PARAM,
     ALT_TAKEOFF, 
 
-    KP_ROLL,
-    KI_ROLL,
-    KD_ROLL, 
+    K_ROLL,
+    B_ROLL,
+    TI_ROLL, 
     TS_ROLL, 
+    TD_ROLL, 
     ND_ROLL, 
     LUP_ROLL,  
     LDOWN_ROLL, 
 
-    KP_PITCH, 
-    KI_PITCH, 
-    KD_PITCH,  
-    TS_PITCH,  
-    ND_PITCH,  
+    K_PITCH,
+    B_PITCH,
+    TI_PITCH, 
+    TS_PITCH, 
+    TD_PITCH, 
+    ND_PITCH, 
     LUP_PITCH,  
-    LDOWN_PITCH,
+    LDOWN_PITCH, 
 
-    KP_YAW, 
-    KI_YAW, 
-    KD_YAW, 
+    K_YAW,
+    B_YAW,
+    TI_YAW, 
     TS_YAW, 
+    TD_YAW, 
     ND_YAW, 
-    LUP_YAW, 
-    LDOWN_YAW,
+    LUP_YAW,  
+    LDOWN_YAW, 
+
+    K_ALT,
+    B_ALT,
+    TI_ALT, 
+    TS_ALT, 
+    TD_ALT, 
+    ND_ALT, 
+    LUP_ALT,  
+    LDOWN_ALT, 
     
 } param_request;
 param_request param_msg;

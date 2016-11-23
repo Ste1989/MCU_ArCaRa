@@ -259,19 +259,19 @@ int main(int argc, char **argv)
     /*                     CICLO PRINCIPALE CONTROLLO                                          */
     /*                                                                                         */
     /*******************************************************************************************/
-    if(waypoint_recv)
+   /* if(waypoint_recv)
     {
         gettimeofday(&current_time, NULL);
         elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
         elapsed_time_control += (current_time.tv_usec - control_time.tv_usec) / 1000;
         if(elapsed_time_control  >= (1000/loop_rate)) //30Hz
         {   cout << "elapsed time control: " << elapsed_time_control << endl;
-            update_PID();
+            update_control();
             gettimeofday(&control_time, NULL);  
         }
         
 
-    }
+    }*/
 
 
 
