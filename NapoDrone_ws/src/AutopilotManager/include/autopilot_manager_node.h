@@ -198,12 +198,14 @@ class PIDController {
     double saturazione_min;
     //parametri che memorizzano lo stato del controllore
     double I_k;
+    double y_k;
     double D_k;
     
   public:
     PIDController();
     void init_PID();
-    double update_PID(double errore);
+    double update_PID(double y, double y_des);
+    double map_control_2_radio(double u);
     void set_K(double param);
     void set_b(double param);
     void set_Ti(double param);
@@ -212,6 +214,14 @@ class PIDController {
     void set_Nd(double param);
     void set_saturazione_max(double param);
     void set_saturazione_min(double param);
+    double get_K();
+    double get_b();
+    double get_Ti();
+    double get_Td();
+    double get_Ts();
+    double get_Nd();
+    double get_saturazione_max();
+    double get_saturazione_min();
 
     
 };
@@ -226,10 +236,7 @@ struct Controllers
   PIDController altitude;
 } pid_controllers;
 
-//double K_roll,B_roll,Ti_roll,Ts_roll, Td_roll,Nd_roll,limit_max_roll,limit_min_roll;
-//double K_pitch,B_pitch,Ti_pitch,Ts_pitch, Td_pitch,Nd_pitch,limit_max_pitch,limit_min_pitch;
-//double K_yaw,B_yaw,Ti_yaw,Ts_yaw, Td_yaw,Nd_yaw,limit_max_yaw,limit_min_yaw;
-//double K_alt,B_alt,Ti_alt,Ts_alt, Td_alt,Nd_alt,limit_max_alt,limit_min_alt;
+
 //FUNZIONI////////////////////////////////////////////////////////////////////////////////////
 void init_global_variables();
 void state_cb(const mavros_msgs::State::ConstPtr& msg);
@@ -245,7 +252,6 @@ bool takeoff_vehicle();
 void clear_radio_override();
 void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
 void update_control();
-double map_control_2_radio(double u, int channel);
 bool leggi_PID_file(std::string PID_file);
 bool scrivi_PID_file(std::string PID_file);
 

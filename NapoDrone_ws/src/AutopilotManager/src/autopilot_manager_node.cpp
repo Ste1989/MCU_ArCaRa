@@ -259,7 +259,7 @@ int main(int argc, char **argv)
     /*                     CICLO PRINCIPALE CONTROLLO                                          */
     /*                                                                                         */
     /*******************************************************************************************/
-   /* if(waypoint_recv)
+    if(waypoint_recv)
     {
         gettimeofday(&current_time, NULL);
         elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
@@ -271,7 +271,7 @@ int main(int argc, char **argv)
         }
         
 
-    }*/
+    }
 
 
 

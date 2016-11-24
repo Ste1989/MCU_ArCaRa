@@ -139,166 +139,197 @@ void param_cb(const serial_manager::Param::ConstPtr& msg)
 			break;
     /*ROLL***************************************************************************************/
     case K_ROLL:
-      pid_controllers.roll.K = msg->param;
-      pid_controllers.roll.init_PID(); 
+      pid_controllers.roll.set_K(msg->param); 
+      pid_controllers.roll.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO K_ROLL");         
       break;
     case B_ROLL:
-      pid_controllers.roll.b = msg->param;
+      pid_controllers.roll.set_b(msg->param); 
       pid_controllers.roll.init_PID(); 
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO B_ROLL");         
       break;
     case TI_ROLL:
-      pid_controllers.roll.Ti = msg->param; 
+      pid_controllers.roll.set_Ti(msg->param); 
       pid_controllers.roll.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TI_ROLL");         
       break;
     case TS_ROLL:
-      pid_controllers.roll.Ts_roll = msg->param; 
+      pid_controllers.roll.set_Ts(msg->param); 
       pid_controllers.roll.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TS_ROLL");         
       break;
     case TD_ROLL:
-      pid_controllers.roll.Td = msg->param; 
+      pid_controllers.roll.set_Td(msg->param); 
       pid_controllers.roll.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TD_ROLL");         
       break;
     case ND_ROLL:
-      pid_controllers.roll.Nd = msg->param; 
+      pid_controllers.roll.set_Nd(msg->param); 
       pid_controllers.roll.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO ND_ROLL");         
       break;
     case LUP_ROLL:
-      pid_controllers.roll.saturazione_max = msg->param; 
+      pid_controllers.roll.set_saturazione_max(msg->param); 
       pid_controllers.roll.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LUP_ROLL");         
       break;
     case LDOWN_ROLL:
-      pid_controllers.roll.saturazione_min = msg->param; 
+      pid_controllers.roll.set_saturazione_min(msg->param); 
       pid_controllers.roll.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LDOWN_roll");         
       break;
     /*PITCH***************************************************************************************/
     case K_PITCH:
-      pid_contpitchers.pitch.K = msg->param;
-      pid_contpitchers.pitch.init_PID(); 
+      pid_controllers.pitch.set_K(msg->param); 
+      pid_controllers.pitch.init_PID(); 
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO K_PITCH");         
       break;
     case B_PITCH:
-      pid_contpitchers.pitch.b = msg->param;
-      pid_contpitchers.pitch.init_PID(); 
+      pid_controllers.pitch.set_b(msg->param); 
+      pid_controllers.pitch.init_PID(); 
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO B_PITCH");         
       break;
     case TI_PITCH:
-      pid_contpitchers.pitch.Ti = msg->param; 
-      pid_contpitchers.pitch.init_PID();
+      pid_controllers.pitch.set_Ti(msg->param); 
+      pid_controllers.pitch.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TI_PITCH");         
       break;
     case TS_PITCH:
-      pid_contpitchers.pitch.Ts = msg->param; 
-      pid_contpitchers.pitch.init_PID();
+      pid_controllers.pitch.set_Ts(msg->param);  
+      pid_controllers.pitch.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TS_PITCH");         
       break;
     case TD_PITCH:
-      pid_contpitchers.pitch.Td = msg->param; 
-      pid_contpitchers.pitch.init_PID();
+      pid_controllers.pitch.set_Td(msg->param); 
+      pid_controllers.pitch.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TD_PITCH");         
       break;
     case ND_PITCH:
-      pid_contpitchers.pitch.Nd = msg->param; 
-      pid_contpitchers.pitch.init_PID();
+      pid_controllers.pitch.set_Nd(msg->param); 
+      pid_controllers.pitch.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO ND_PITCH");         
       break;
     case LUP_PITCH:
-      pid_contpitchers.pitch.saturazione_max = msg->param; 
-      pid_contpitchers.pitch.init_PID();
+      pid_controllers.pitch.set_saturazione_max(msg->param); 
+      pid_controllers.pitch.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LUP_PITCH");         
       break;
     case LDOWN_PITCH:
-      pid_contpitchers.pitch.saturazione_min = msg->param; 
-      pid_contpitchers.pitch.init_PID();
+      pid_controllers.pitch.set_saturazione_min(msg->param); 
+      pid_controllers.pitch.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LDOWN_PITCH");         
       break;
     /*YAW***************************************************************************************/
     case K_YAW:
-      pid_controllers.yaw.K = msg->param;
+      pid_controllers.yaw.set_K(msg->param); 
       pid_controllers.yaw.init_PID(); 
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO K_YAW");         
       break;
     case B_YAW:
-      pid_controllers.yaw.b = msg->param;
+      pid_controllers.yaw.set_b(msg->param); 
       pid_controllers.yaw.init_PID(); 
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO B_YAW");         
       break;
     case TI_YAW:
-      pid_controllers.yaw.Ti = msg->param; 
+      pid_controllers.yaw.set_Ti(msg->param); 
       pid_controllers.yaw.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TI_YAW");         
       break;
     case TS_YAW:
-      pid_controllers.yaw.Ts = msg->param; 
+      pid_controllers.yaw.set_Ts(msg->param); 
       pid_controllers.yaw.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TS_YAW");         
       break;
     case TD_YAW:
-      pid_controllers.yaw.Td = msg->param; 
+      pid_controllers.yaw.set_Td(msg->param); 
       pid_controllers.yaw.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TD_YAW");         
       break;
     case ND_YAW:
-      pid_controllers.yaw.Nd = msg->param; 
+      pid_controllers.yaw.set_Nd(msg->param); 
       pid_controllers.yaw.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO ND_YAW");         
       break;
     case LUP_YAW:
-      pid_controllers.yaw.saturazione_max = msg->param; 
+      pid_controllers.yaw.set_saturazione_max(msg->param); 
       pid_controllers.yaw.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LUP_YAW");         
       break;
     case LDOWN_YAW:
-      pid_controllers.yaw.saturazione_min = msg->param; 
+      pid_controllers.yaw.set_saturazione_min(msg->param);  
       pid_controllers.yaw.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LDOWN_YAW");         
       break;
     /*ALT***************************************************************************************/
     case K_ALT:
-      pid_controllers.alt.K = msg->param;
-      pid_controllers.alt.init_PID(); 
+      pid_controllers.altitude.set_K(msg->param); 
+      pid_controllers.altitude.init_PID(); 
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO K_ALT");         
       break;
     case B_ALT:
-      pid_controllers.alt.b = msg->param;
-      pid_controllers.alt.init_PID(); 
+      pid_controllers.altitude.set_b(msg->param); 
+      pid_controllers.altitude.init_PID(); 
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO B_ALT");         
       break;
     case TI_ALT:
-      pid_controllers.alt.Ti = msg->param; 
-      pid_controllers.alt.init_PID();
+      pid_controllers.altitude.set_Ti(msg->param); 
+      pid_controllers.altitude.init_PID();
       ROS_INFO("RICEVUTO PARAMETRO TI_ALT");         
       break;
     case TS_ALT:
-      pid_controllers.alt.Ts = msg->param; 
-      pid_controllers.alt.init_PID();
+      pid_controllers.altitude.set_Ts(msg->param);  
+      pid_controllers.altitude.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TS_ALT");         
       break;
-    case TD_alt:
-      pid_controllers.alt.Td = msg->param; 
-      pid_controllers.alt.init_PID();
+    case TD_ALT:
+      pid_controllers.altitude.set_Td(msg->param); 
+      pid_controllers.altitude.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO TD_ALT");         
       break;
     case ND_ALT:
-      pid_controllers.alt.Nd = msg->param; 
-      pid_controllers.alt.init_PID();
+      pid_controllers.altitude.set_Nd(msg->param); 
+      pid_controllers.altitude.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO ND_ALT");         
       break;
     case LUP_ALT:
-      pid_controllers.alt.saturazione_max = msg->param; 
-      pid_controllers.alt.init_PID();
+      pid_controllers.altitude.set_saturazione_max(msg->param); 
+      pid_controllers.altitude.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LUP_ALT");         
       break;
     case LDOWN_ALT:
-      pid_controllers.alt.saturazione_min = msg->param; 
-      pid_controllers.alt.init_PID();
+      pid_controllers.altitude.set_saturazione_min(msg->param); 
+      pid_controllers.altitude.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO LDOWN_ALT");         
       break;
 
@@ -504,18 +535,126 @@ PIDController::PIDController()
 {
 }
 
-void PIDController::init_PID(double Kp, double Ki, double Kd, double Ts, double Nd,double limit_max, double limit_min)
+void PIDController::init_PID()
 {
-  I_K = 0;
+  I_k = 0;
+  y_k = 0;
   D_k = 0;
 }
 
-double PIDController::update_PID(double errore)
+double PIDController::update_PID(double y, double y_des)
 {
+  //calcolo dell'errore
+  double e = y_des - y;
   
+  //P
+  double P = K * (b*y_des - y);
+
+  //I
+  double I_k_1 = 0;
+  if(Ti == 0)
+    I_k_1 = 0;
+  else
+    I_k_1 = I_k + (K*Ts)/Ti * e;
+  //memorizzo integrale
+  I_k = I_k_1;
+
+  //D
+  double D_k_1 = 0;
+  if((Nd*Ts+Td) == 0)
+    D_k_1 = 0;
+  else
+    D_k_1 = Td/(Nd*Ts+Td) * D_k - (K*Td*Nd)/(Nd*Ts+Td) * (y - y_k);
+  //memorizzo derivativo
+  y_k = y; 
+  D_k = D_k_1;
 
 
-  	return uscita;
+  return (P + I_k_1 + D_k_1);
+}
+double PIDController::map_control_2_radio(double u)
+{
+
+  double m = (saturazione_min - saturazione_max)/2;
+  double q = PWM_MEDIUM;
+  double y = m*u + q;
+
+  if(y < saturazione_min)
+    y = saturazione_min;
+  if(y > saturazione_max)
+    y = saturazione_max;
+    
+  
+  cout << "PWM CALCOLATO: " << y << endl; 
+
+  return y;
+} 
+
+void PIDController::set_K(double param)
+{
+  K = param;
+}
+void PIDController::set_b(double param)
+{
+  b = param;
+}
+void PIDController::set_Ti(double param)
+{
+  Ti = param;
+}
+void PIDController::set_Td(double param)
+{
+  Td = param;
+}
+void PIDController::set_Ts(double param)
+{
+  Ts = param;
+}
+void PIDController::set_Nd(double param)
+{
+  Nd = param;
+}
+void PIDController::set_saturazione_max(double param)
+{
+  saturazione_max = param;
+}
+void PIDController::set_saturazione_min(double param)
+{
+  saturazione_min = param;
+}
+
+
+double PIDController::get_K()
+{
+  return K;
+}
+double PIDController::get_b()
+{
+  return b;
+}
+double PIDController::get_Ti()
+{
+  return Ti;
+}
+double PIDController::get_Td()
+{
+  return Td;
+}
+double PIDController::get_Ts()
+{
+  return Ts;
+}
+double PIDController::get_Nd()
+{
+  return Nd;
+}
+double PIDController::get_saturazione_max()
+{
+  return saturazione_max;
+}
+double PIDController::get_saturazione_min()
+{
+  return saturazione_min;
 }
 /********************************************************************************************/
 /*                                                                                         */
@@ -586,35 +725,6 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 	yaw = atan2(rt12,rt11);
 }
  /********************************************************************************************/
-/*                                                                                          */
-/*    MAP CONTROLLO TO RADIO PWM                                                            */
-/*                                                                                         */
-/*******************************************************************************************/
-double map_control_2_radio(double u, int channel)
-{
-  double radio_pwm = PWM_MEDIUM;
-  /*controllo di yaw*/
-  if(channel == RC_YAW)
-  {
-
-      double m = (PWM_LOW_LIMIT - PWM_HIGH_LIMIT)/2;
-      double q = PWM_MEDIUM;
-      double y = m*u + q;
-
-      if(y < PWM_LOW_LIMIT)
-        y = PWM_LOW_LIMIT;
-      if(y > PWM_HIGH_LIMIT)
-        y = PWM_HIGH_LIMIT;
-
-      
-      radio_pwm = y;
-      cout << "RADIO YAW : " << y << endl; 
-
-  }
-  return radio_pwm;
-}
-
- /********************************************************************************************/
 /*                                                                                         */
 /*    UPDATE_PID CONTROL                                                                   */
 /*                                                                                         */
@@ -622,22 +732,15 @@ double map_control_2_radio(double u, int channel)
 void update_control()
 {
 
-/*  //controllo di altezza
+  //3)controllo di HEADING
   double rz = global_camera_pose.orientation.z;
   double rz_des = current_waypoint.orientation.z;
-  //calcolo errore
-  double e_rz = rz_des - rz ;
-  //double u_rz = pid_controllers.yaw.update(e_rz);
-  pid_controllers.yaw.cum_error = pid_controllers.yaw.cum_error + e_rz; 
-  double u_rz = Kp_yaw * e_rz + Ki_yaw * pid_controllers.yaw.cum_error;
-
-  cout << "rz: " << rz << endl;
-  cout << "rz_des: " << rz_des << endl; 
-  cout << "u_rz: " << u_rz << endl;
+  //calcolo il controllo da attuare
+  double u_rz = pid_controllers.yaw.update_PID(rz, rz_des);
   //devo mappare l'ingresso in un comando ai servo
-  double yaw_commad = map_control_2_radio(u_rz, RC_YAW);
+  double yaw_commad = pid_controllers.yaw.map_control_2_radio(u_rz);
 
-*/
+
  //publish control to radio
   mavros_msgs::OverrideRCIn radio_pwm;
   radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
@@ -675,42 +778,41 @@ bool leggi_PID_file(std::string PID_file)
 
   //ricopio valori nel file
   //roll
-  pid_controllers.roll.K = vect_pid[0];
-  pid_controllers.roll.b = vect_pid[1];
-  pid_controllers.roll.Ti = vect_pid[2];
-  pid_controllers.roll.Ts = vect_pid[3];
-  pid_controllers.roll.Td = vect_pid[4];
-  pid_controllers.roll.Nd = vect_pid[5];
-  pid_controllers.roll.saturation_max = vect_pid[6];
-  pid_controllers.roll.saturation_min = vect_pid[7];
+  pid_controllers.roll.set_K(vect_pid[0]);
+  pid_controllers.roll.set_b(vect_pid[1]);
+  pid_controllers.roll.set_Ti(vect_pid[2]);
+  pid_controllers.roll.set_Ts(vect_pid[3]);
+  pid_controllers.roll.set_Td(vect_pid[4]);
+  pid_controllers.roll.set_Nd(vect_pid[5]);
+  pid_controllers.roll.set_saturazione_max(vect_pid[6]);
+  pid_controllers.roll.set_saturazione_min(vect_pid[7]);
   //pitch
-  pid_controllers.pitch.K = vect_pid[8];
-  pid_controllers.pitch.b = vect_pid[9];
-  pid_controllers.pitch.Ti = vect_pid[10];
-  pid_controllers.pitch.Ts = vect_pid[11];
-  pid_controllers.pitch.Td = vect_pid[12];
-  pid_controllers.pitch.Nd = vect_pid[13];
-  pid_controllers.pitch.saturation_max = vect_pid[14];
-  pid_controllers.pitch.saturatiopitchn_min = vect_pid[15];
+  pid_controllers.pitch.set_K(vect_pid[8]);
+  pid_controllers.pitch.set_b(vect_pid[9]);
+  pid_controllers.pitch.set_Ti(vect_pid[10]);
+  pid_controllers.pitch.set_Ts(vect_pid[11]);
+  pid_controllers.pitch.set_Td(vect_pid[12]);
+  pid_controllers.pitch.set_Nd(vect_pid[13]);
+  pid_controllers.pitch.set_saturazione_max(vect_pid[14]);
+  pid_controllers.pitch.set_saturazione_min(vect_pid[15]);
   //yaw
-  pid_controllers.yaw.K = vect_pid[16];
-  pid_controllers.yaw.b = vect_pid[17];
-  pid_controllers.yaw.Ti = vect_pid[18];
-  pid_controllers.yaw.Ts = vect_pid[19];
-  pid_controllers.yaw.Td = vect_pid[20];
-  pid_controllers.yaw.Nd = vect_pid[21];
-  pid_controllers.yaw.saturation_max = vect_pid[22];
-  pid_controllers.yaw.saturatiopitchn_min = vect_pid[23];
+  pid_controllers.yaw.set_K(vect_pid[16]);
+  pid_controllers.yaw.set_b(vect_pid[17]);
+  pid_controllers.yaw.set_Ti(vect_pid[18]);
+  pid_controllers.yaw.set_Ts(vect_pid[19]);
+  pid_controllers.yaw.set_Td(vect_pid[20]);
+  pid_controllers.yaw.set_Nd(vect_pid[21]);
+  pid_controllers.yaw.set_saturazione_max(vect_pid[22]);
+  pid_controllers.yaw.set_saturazione_min(vect_pid[23]);
   //alt
-  pid_controllers.alt.K = vect_pid[24];
-  pid_controllers.alt.b = vect_pid[25];
-  pid_controllers.alt.Ti = vect_pid[26];
-  pid_controllers.alt.Ts = vect_pid[27];
-  pid_controllers.alt.Td = vect_pid[28];
-  pid_controllers.alt.Nd = vect_pid[29];
-  pid_controllers.alt.saturation_max = vect_pid[30];
-  pid_controllers.alt.saturatiopitchn_min = vect_pid[31];
-
+  pid_controllers.altitude.set_K(vect_pid[24]);
+  pid_controllers.altitude.set_b(vect_pid[25]);
+  pid_controllers.altitude.set_Ti(vect_pid[26]);
+  pid_controllers.altitude.set_Ts(vect_pid[27]);
+  pid_controllers.altitude.set_Td(vect_pid[28]);
+  pid_controllers.altitude.set_Nd(vect_pid[29]);
+  pid_controllers.altitude.set_saturazione_max(vect_pid[30]);
+  pid_controllers.altitude.set_saturazione_min(vect_pid[31]);
 
   ROS_INFO_STREAM("File pid loaded successfully");
   return true;
@@ -725,38 +827,42 @@ bool leggi_PID_file(std::string PID_file)
 bool scrivi_PID_file(std::string PID_file)
 {
   //scrittura del file PIDs
-  /*const char* filename = PID_file.c_str();
+  const char* filename = PID_file.c_str();
   FILE* fd;
   fd = fopen(filename,"w");
-  fprintf(fd, "%lf\n", Kp_roll);
-  fprintf(fd, "%lf\n", Ki_roll);
-  fprintf(fd, "%lf\n", Kd_roll);
-  fprintf(fd, "%lf\n", Ts_roll);
-  fprintf(fd, "%lf\n", Nd_roll);
-  fprintf(fd, "%lf\n", limit_max_roll);
-  fprintf(fd, "%lf\n", limit_min_roll);
-  fprintf(fd, "%lf\n", Kp_pitch);
-  fprintf(fd, "%lf\n", Ki_pitch);
-  fprintf(fd, "%lf\n", Kd_pitch);
-  fprintf(fd, "%lf\n", Ts_pitch);
-  fprintf(fd, "%lf\n", Nd_pitch);
-  fprintf(fd, "%lf\n", limit_max_pitch);
-  fprintf(fd, "%lf\n", limit_min_pitch);
-  fprintf(fd, "%lf\n", Kp_yaw);
-  fprintf(fd, "%lf\n", Ki_yaw);
-  fprintf(fd, "%lf\n", Kd_yaw);
-  fprintf(fd, "%lf\n", Ts_yaw);
-  fprintf(fd, "%lf\n", Nd_yaw);
-  fprintf(fd, "%lf\n", limit_max_yaw);
-  fprintf(fd, "%lf\n", limit_min_yaw);
-  fprintf(fd, "%lf\n", Kp_alt);
-  fprintf(fd, "%lf\n", Ki_alt);
-  fprintf(fd, "%lf\n", Kd_alt);
-  fprintf(fd, "%lf\n", Ts_alt);
-  fprintf(fd, "%lf\n", Nd_alt);
-  fprintf(fd, "%lf\n", limit_max_alt);
-  fprintf(fd, "%lf\n", limit_min_alt);
-  fclose(fd);*/
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_K());
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_b());
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_Ti());
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_Ts());
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_Td());
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_Nd());
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_saturazione_max());
+  fprintf(fd, "%lf\n", pid_controllers.roll.get_saturazione_min());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_K());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_b());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_Ti());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_Ts());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_Td());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_Nd());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_saturazione_max());
+  fprintf(fd, "%lf\n", pid_controllers.pitch.get_saturazione_min());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_K());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_b());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_Ti());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_Ts());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_Td());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_Nd());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_saturazione_max());
+  fprintf(fd, "%lf\n", pid_controllers.yaw.get_saturazione_min());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_K());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_b());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_Ti());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_Ts());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_Td());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_Nd());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_saturazione_max());
+  fprintf(fd, "%lf\n", pid_controllers.altitude.get_saturazione_min());
+  fclose(fd);
 
   ROS_INFO_STREAM("File pid saved successfully");
   return true;
