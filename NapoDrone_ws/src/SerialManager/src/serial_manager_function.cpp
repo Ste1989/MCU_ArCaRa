@@ -88,7 +88,7 @@ void parser_mess(unsigned char buffer){
         case PAYLOAD_1_2:
             coda_recv_seriale.push(buffer);
             //notifico che c'è un nuovo pacchetto da decodificare
-            new_packet = 1;
+            new_packet++;
             state_msg=HEADER_1;
             break;
 
@@ -117,14 +117,14 @@ void parser_mess(unsigned char buffer){
         case PAYLOAD_2_6:
             coda_recv_seriale.push(buffer);
             state_msg = HEADER_1;
-            new_packet = 1;
+            new_packet++;
             break;
             /*********************************************************/
             //PCCHETTO CONTENTENTE UN MODO
         case PAYLOAD_3_2:
             coda_recv_seriale.push(buffer);
             //notifico che c'è un nuovo pacchetto da decodificare
-            new_packet = 1;
+            new_packet++;
             state_msg=HEADER_1;
             break;
             /*********************************************************/
@@ -196,7 +196,7 @@ void parser_mess(unsigned char buffer){
         case PAYLOAD_4_17:
             coda_recv_seriale.push(buffer);
             state_msg = HEADER_1;
-            new_packet = 1;
+            new_packet++;
             break;
 
     }
@@ -234,356 +234,385 @@ void decode_packet()
 {
 
     
- label:
-    while(!coda_recv_seriale.empty())
+    switch(coda_recv_seriale.front())
     {
-        cout <<(int)coda_recv_seriale.front() << endl;
-
-        if(coda_recv_seriale.front() == PAYLOAD_CMD && coda_recv_seriale.size() >= NBYTES_PAYLOAD_CMD)
-        {   
-            coda_recv_seriale.pop();
-            //è un pacchetto di comando, vedo che tipo di comando
-            switch(coda_recv_seriale.front()){
-                case CMD_NO_REQ:
-                    cmd_msg = NO_REQ;
-                    coda_recv_seriale.pop();
-                    break;
-                case CMD_ARM:
-                    cmd_msg = ARM;
-                    coda_recv_seriale.pop();
-                    break;
-                case CMD_DISARM:
-                    cmd_msg = DISARM;
-                    coda_recv_seriale.pop();
-                    break;
-                case CMD_TAKEOFF:
-                    cmd_msg = TAKEOFF;
-                    coda_recv_seriale.pop();
-                    break;
-                case CMD_LAND:
-                    cmd_msg = LAND;
-                    coda_recv_seriale.pop();
-                    break;
-                case CMD_RTL:
-                    cmd_msg = RTL;
-                    coda_recv_seriale.pop();
-                    break;
-                case CMD_EMERGENCYSTOP:
-                    cmd_msg = EMERGENCY_STOP;
-                    coda_recv_seriale.pop();
-                    break;
-                case CMD_CLEAR_RADIO_OVERRIDE:
-                    cmd_msg = CLEARRADIOOVERRIDE;
-                    coda_recv_seriale.pop();
-                    break;
-
-            }
-            goto label;
-        }
-
-        if(coda_recv_seriale.front() == PAYLOAD_PARAM && coda_recv_seriale.size() >= NBYTES_PAYLOAD_PARAM)
-        {
-            coda_recv_seriale.pop();
-            //in coda_recv_seriale ho 4 bytes che devono essere convertiti in un intero
-            //il primo bytes mi dice che parametro si tratta
-            switch(coda_recv_seriale.front())
+        case PAYLOAD_CMD:
+            //verifico che abbia tutto il pacchetto 
+            if(coda_recv_seriale.size() >= NBYTES_PAYLOAD_CMD)
             {
-                case PARAM_ALT_TAKEOFF:
+                coda_recv_seriale.pop();
+                //è un pacchetto di comando, vedo che tipo di comando
+                switch(coda_recv_seriale.front())
+                {
+                    case CMD_NO_REQ:
+                        cmd_msg = NO_REQ;
+                        coda_recv_seriale.pop();
+                        cout << "sono qui n" << endl;
+                        break;
+                    case CMD_ARM:
+                        cmd_msg = ARM;
+                        coda_recv_seriale.pop();
+                        cout << "sono qui a" << endl;
+                        break;
+                    case CMD_DISARM:
+                        cmd_msg = DISARM;
+                        coda_recv_seriale.pop();
+                        cout << "sono qui d" << endl;
+                        break;
+                    case CMD_TAKEOFF:
+                        cmd_msg = TAKEOFF;
+                        coda_recv_seriale.pop();
+                        break;
+                    case CMD_LAND:
+                        cmd_msg = LAND;
+                        coda_recv_seriale.pop();
+                        break;
+                    case CMD_RTL:
+                        cmd_msg = RTL;
+                        coda_recv_seriale.pop();
+                        break;
+                    case CMD_EMERGENCYSTOP:
+                        cmd_msg = EMERGENCY_STOP;
+                        coda_recv_seriale.pop();
+                        break;
+                    case CMD_CLEAR_RADIO_OVERRIDE:
+                        cmd_msg = CLEARRADIOOVERRIDE;
+                        cout << "sono qui" << endl;
+                        coda_recv_seriale.pop();
+                        break;
+                    default:
+                    //pacchetto non riconosciuto
                     coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = ALT_TAKEOFF;
-                    break;
-                /*parametri dei pid: ROLL**********************************************************/
-                case PARAM_KP_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KP_ROLL;
-                    break;
-                case PARAM_B_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = B_ROLL;
-                    break;
-                case PARAM_KI_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KI_ROLL;
-                    break;
-                case PARAM_KY_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KY_ROLL;
-                    break;
-                case PARAM_TD_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = TD_ROLL;
-                    break;
-                case PARAM_ND_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = ND_ROLL;
-                    break;
-                case PARAM_LUP_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LUP_ROLL;
-                    break;
-                case PARAM_LDOWN_ROLL:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LDOWN_ROLL;
-                    break;
-                /*parametri dei pid:_PITCH*********************************************************/
-                case PARAM_KP_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KP_PITCH;
-                    break;
-                case PARAM_B_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = B_PITCH;
-                    break;
-                case PARAM_KI_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KI_PITCH;
-                    break;
-                case PARAM_KY_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KY_PITCH;
-                    break;
-                case PARAM_TD_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = TD_PITCH;
-                    break;
-                case PARAM_ND_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = ND_PITCH;
-                    break;
-                case PARAM_LUP_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LUP_PITCH;
-                    break;
-                case PARAM_LDOWN_PITCH:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LDOWN_PITCH;
-                    break;
-                    /*parametri dei pid: YAW**********************************************************/
-                case PARAM_KP_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KP_YAW;
-                    break;
-                case PARAM_B_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = B_YAW;
-                    break;
-                case PARAM_KI_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KI_YAW;
-                    break;
-                case PARAM_KY_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KY_YAW;
-                    break;
-                case PARAM_TD_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = TD_YAW;
-                    break;
-                case PARAM_ND_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = ND_YAW;
-                    break;
-                case PARAM_LUP_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LUP_YAW;
-                    break;
-                case PARAM_LDOWN_YAW:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LDOWN_YAW;
-                    break;
-                /*parametri dei pid: ALT******************************************************************/
-                case PARAM_KP_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KP_ALT;
-                    break;
-                case PARAM_B_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = B_ALT;
-                    break;
-                case PARAM_KI_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KI_ALT;
-                    break;
-                case PARAM_KY_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = KY_ALT;
-                    break;
-                case PARAM_TD_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = TD_ALT;
-                    break;
-                case PARAM_ND_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = ND_ALT;
-                    break;
-                case PARAM_LUP_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LUP_ALT;
-                    break;
-                case PARAM_LDOWN_ALT:
-                    coda_recv_seriale.pop();
-                    param = decode_payload();
-                    param_msg = LDOWN_ALT;
-                    break;
+                    cout << "PKT CMD NON RICONOSCIUTO" << endl;
 
-            }
-            goto label;
-        }
+                }//fine switch
+                //pacchetto è stato analizzato: resetto new_packet
+                new_packet--;
+            }//fine payload cmd
+            break;
+        
 
-
-        if(coda_recv_seriale.front() == PAYLOAD_WAYPOINT && coda_recv_seriale.size() >= NBYTES_PAYLOAD_WAYPOINT)
-        {
-
-
-           
-            coda_recv_seriale.pop();
-            //devo decodificare il pacchetto
-            double x_waypoint = decode_payload();
-            double y_waypoint = decode_payload();
-            double z_waypoint = decode_payload();
-            double rz_waypoint = decode_payload();
-
-            /*salvo nella variabile gloable*/
-            waypoint_recv.position.x = x_waypoint;
-            waypoint_recv.position.y = y_waypoint;
-            waypoint_recv.position.z = z_waypoint;
-
-            waypoint_recv.orientation.x = 0;
-            waypoint_recv.orientation.y = 0;
-            waypoint_recv.orientation.z = rz_waypoint / 180 * PI;
-            waypoint_recv.orientation.w = 0;
-
-            new_waypoint = 1;
-            cout << "NEW WAYPOINT X:" << x_waypoint << " Y:" << y_waypoint << " Z:" << z_waypoint << " RZ:" << rz_waypoint << endl;
-            goto label;
-        }
-
-        if(coda_recv_seriale.front() == PAYLOAD_MODE && coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
-        {
-            
-            
-            coda_recv_seriale.pop();
-            
-            switch(coda_recv_seriale.front())
+        case PAYLOAD_PARAM: 
+            //vedo se il pacchetto è completo
+            if( coda_recv_seriale.size() >= NBYTES_PAYLOAD_PARAM )
             {
-                case MODE_ACRO:
-                    mode_msg = ACRO;
-                    coda_recv_seriale.pop();
-                    cout << "MODE ACRO" << endl;
-                    break;
-                case MODE_ALT_HOLD:
-                    mode_msg = ALT_HOLD;
-                    coda_recv_seriale.pop();
-                    cout << "MODE ALT HOLD" << endl;
-                    break;
-                case MODE_AUTO:
-                    mode_msg = AUTO;
-                    coda_recv_seriale.pop();
-                    cout << "MODE AUTO" << endl;
-                    break;
-                case MODE_BRAKE:
-                    mode_msg = BRAKE;
-                    coda_recv_seriale.pop();
-                    cout << "MODE BRAKE" << endl;
-                    break;
-                case MODE_CIRCLE:
-                    mode_msg = CIRCLE;
-                    coda_recv_seriale.pop();
-                    cout << "MODE CIRCLE" << endl;
-                    break;
-                case MODE_DRIFT:
-                    mode_msg = DRIFT;
-                    coda_recv_seriale.pop();
-                    cout << "MODE DRIFT" << endl;
-                    break;
-                case MODE_FOLLOW_ME:
-                    mode_msg = FOLLOW_ME;
-                    coda_recv_seriale.pop();
-                    cout << "MODE FOLLOW ME" << endl;
-                    break;
-                case MODE_GUIDED:
-                    mode_msg = GUIDED;
-                    coda_recv_seriale.pop();
-                    cout << "MODE GUIDED" << endl;
-                    break;
-                case MODE_LOITER:
-                    mode_msg = LOITER;
-                    coda_recv_seriale.pop();
-                    cout << "MODE LOITER" << endl;
-                    break;
-                case MODE_POS_HOLD:
-                    mode_msg = POS_HOLD;
-                    coda_recv_seriale.pop();
-                    cout << "MODE POS HOLD" << endl;
-                    break;
-                case MODE_SIMPLE_SUPER:
-                    mode_msg = SIMPLE_SUPER;
-                    coda_recv_seriale.pop();
-                    cout << "MODE SIMPLE SUP" << endl;
-                    break;
-                case MODE_SPORT:
-                    mode_msg = SPORT;
-                    coda_recv_seriale.pop();
-                    cout << "MODE SPORT" << endl;
-                    break;
-                case MODE_STABILIZE:
-                    mode_msg = STABILIZE;
-                    coda_recv_seriale.pop();
-                    cout << "MODE STABILIZE" << endl;
-                    break;
+                coda_recv_seriale.pop();
+                //in coda_recv_seriale ho 5 bytes , il primo mi dice il tipo di parametri
+                //i successivi 4 devono essere convertiti in un intero
+                switch(coda_recv_seriale.front())
+                {
+                    case PARAM_ALT_TAKEOFF:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = ALT_TAKEOFF;
+                        break;
+                    /*parametri dei pid: ROLL**********************************************************/
+                    case PARAM_KP_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KP_ROLL;
+                        break;
+                    case PARAM_B_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = B_ROLL;
+                        break;
+                    case PARAM_KI_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KI_ROLL;
+                        break;
+                    case PARAM_KY_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KY_ROLL;
+                        break;
+                    case PARAM_TD_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = TD_ROLL;
+                        break;
+                    case PARAM_ND_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = ND_ROLL;
+                        break;
+                    case PARAM_LUP_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LUP_ROLL;
+                        break;
+                    case PARAM_LDOWN_ROLL:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LDOWN_ROLL;
+                        break;
+                    /*parametri dei pid:_PITCH*********************************************************/
+                    case PARAM_KP_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KP_PITCH;
+                        break;
+                    case PARAM_B_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = B_PITCH;
+                        break;
+                    case PARAM_KI_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KI_PITCH;
+                        break;
+                    case PARAM_KY_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KY_PITCH;
+                        break;
+                    case PARAM_TD_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = TD_PITCH;
+                        break;
+                    case PARAM_ND_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = ND_PITCH;
+                        break;
+                    case PARAM_LUP_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LUP_PITCH;
+                        break;
+                    case PARAM_LDOWN_PITCH:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LDOWN_PITCH;
+                        break;
+                        /*parametri dei pid: YAW**********************************************************/
+                    case PARAM_KP_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KP_YAW;
+                        break;
+                    case PARAM_B_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = B_YAW;
+                        break;
+                    case PARAM_KI_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KI_YAW;
+                        break;
+                    case PARAM_KY_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KY_YAW;
+                        break;
+                    case PARAM_TD_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = TD_YAW;
+                        break;
+                    case PARAM_ND_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = ND_YAW;
+                        break;
+                    case PARAM_LUP_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LUP_YAW;
+                        break;
+                    case PARAM_LDOWN_YAW:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LDOWN_YAW;
+                        break;
+                    /*parametri dei pid: ALT******************************************************************/
+                    case PARAM_KP_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KP_ALT;
+                        break;
+                    case PARAM_B_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = B_ALT;
+                        break;
+                    case PARAM_KI_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KI_ALT;
+                        break;
+                    case PARAM_KY_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = KY_ALT;
+                        break;
+                    case PARAM_TD_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = TD_ALT;
+                        break;
+                    case PARAM_ND_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = ND_ALT;
+                        break;
+                    case PARAM_LUP_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LUP_ALT;
+                        break;
+                    case PARAM_LDOWN_ALT:
+                        coda_recv_seriale.pop();
+                        param = decode_payload();
+                        param_msg = LDOWN_ALT;
+                        break;
 
+                    /*****************pacchetto non riconosciuto****/
+                    default:
+                        cout << "PKT PARAM NON RICONOSCIUTO" << endl;
+                        //5 bytes da scartare
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        break;
+                }//fine switch
+                //pacchetto è stato analizzato: resetto new_packet
+                new_packet--;
+            }//fine if param
+            break;
+                    
+        
+
+
+        case PAYLOAD_WAYPOINT:
+            if(coda_recv_seriale.size() >= NBYTES_PAYLOAD_WAYPOINT)
+            {
+                coda_recv_seriale.pop();
+                //devo decodificare il pacchetto
+                double x_waypoint = decode_payload();
+                double y_waypoint = decode_payload();
+                double z_waypoint = decode_payload();
+                double rz_waypoint = decode_payload();
+
+                /*salvo nella variabile gloable*/
+                waypoint_recv.position.x = x_waypoint;
+                waypoint_recv.position.y = y_waypoint;
+                waypoint_recv.position.z = z_waypoint;
+
+                waypoint_recv.orientation.x = 0;
+                waypoint_recv.orientation.y = 0;
+                waypoint_recv.orientation.z = rz_waypoint / 180 * PI;
+                waypoint_recv.orientation.w = 0;
+
+                new_waypoint = 1;
+                cout << "NEW WAYPOINT X:" << x_waypoint << " Y:" << y_waypoint << " Z:" << z_waypoint << " RZ:" << rz_waypoint << endl;
+                //pacchetto è stato analizzato: resetto new_packet
+                new_packet--;
             }
-            goto label;
+            break;
+        
 
-        }
-        if(coda_recv_seriale.size() > 0  )
-        {
-            cout << "PACCHETTO NON RICONOSCIUTO " << (int)coda_recv_seriale.front() << " " << (int)coda_recv_seriale.size() <<endl;
+        case PAYLOAD_MODE:
+            if(coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
+            {
+                coda_recv_seriale.pop();
+                
+                switch(coda_recv_seriale.front())
+                {
+                    case MODE_ACRO:
+                        mode_msg = ACRO;
+                        coda_recv_seriale.pop();
+                        cout << "MODE ACRO" << endl;
+                        break;
+                    case MODE_ALT_HOLD:
+                        mode_msg = ALT_HOLD;
+                        coda_recv_seriale.pop();
+                        cout << "MODE ALT HOLD" << endl;
+                        break;
+                    case MODE_AUTO:
+                        mode_msg = AUTO;
+                        coda_recv_seriale.pop();
+                        cout << "MODE AUTO" << endl;
+                        break;
+                    case MODE_BRAKE:
+                        mode_msg = BRAKE;
+                        coda_recv_seriale.pop();
+                        cout << "MODE BRAKE" << endl;
+                        break;
+                    case MODE_CIRCLE:
+                        mode_msg = CIRCLE;
+                        coda_recv_seriale.pop();
+                        cout << "MODE CIRCLE" << endl;
+                        break;
+                    case MODE_DRIFT:
+                        mode_msg = DRIFT;
+                        coda_recv_seriale.pop();
+                        cout << "MODE DRIFT" << endl;
+                        break;
+                    case MODE_FOLLOW_ME:
+                        mode_msg = FOLLOW_ME;
+                        coda_recv_seriale.pop();
+                        cout << "MODE FOLLOW ME" << endl;
+                        break;
+                    case MODE_GUIDED:
+                        mode_msg = GUIDED;
+                        coda_recv_seriale.pop();
+                        cout << "MODE GUIDED" << endl;
+                        break;
+                    case MODE_LOITER:
+                        mode_msg = LOITER;
+                        coda_recv_seriale.pop();
+                        cout << "MODE LOITER" << endl;
+                        break;
+                    case MODE_POS_HOLD:
+                        mode_msg = POS_HOLD;
+                        coda_recv_seriale.pop();
+                        cout << "MODE POS HOLD" << endl;
+                        break;
+                    case MODE_SIMPLE_SUPER:
+                        mode_msg = SIMPLE_SUPER;
+                        coda_recv_seriale.pop();
+                        cout << "MODE SIMPLE SUP" << endl;
+                        break;
+                    case MODE_SPORT:
+                        mode_msg = SPORT;
+                        coda_recv_seriale.pop();
+                        cout << "MODE SPORT" << endl;
+                        break;
+                    case MODE_STABILIZE:
+                        mode_msg = STABILIZE;
+                        coda_recv_seriale.pop();
+                        cout << "MODE STABILIZE" << endl;
+                        break;
+                    default:
+                        cout << "PKT MODE NON RICONOSCIUTO" << endl;
+                        coda_recv_seriale.pop();
+                        break;
+
+                } //fine switch
+                //pacchetto è stato analizzato: resetto new_packet
+                new_packet--;
+            }//fine mode
+            break;
+
+
+        default:
+            //header non riconociuto
+            cout << "HEADER NON RICONOSCIUTO" << endl;
             coda_recv_seriale.pop();
-        }
+            break;
+
+    } //fine switch rpincipale
+        
 
 
-
-
-
-
-    }
-
-
-    //pacchetto è stato analizzato: resetto new_packet
-    new_packet = 0;
+//}//fine while  
 }
 /*****************************************************************/
 /*                                                               */
@@ -642,14 +671,19 @@ void read_from_serial(int* serial)
     for(int a = 0 ; a < bytes ; a++)
     {
         parser_mess(buf[a]);
+        
+    }
+    //prova con for...
+    /*if(coda_recv_seriale.size() > 0)
+    {   cout << "dimensione coda: " << coda_recv_seriale.size() << endl;
+        decode_packet();
+    }*/
+    while(new_packet)
+    {
+        cout << "pacchetti da elaborare: " << new_packet << endl;
+        decode_packet();
     }
 
-    if(new_packet == 1)
-    {
-        decode_packet();
-        //aggiorno il tempo
-        gettimeofday(&new_pkt_time, NULL);
-    }
 
 
 }
@@ -660,7 +694,8 @@ void read_from_serial(int* serial)
 void check_send_request()
 {
     /*COMANDI*********************************************/
-    if(cmd_msg != NO_REQ && cmd_msg != cmd_msg_last)
+    //if(cmd_msg != NO_REQ && cmd_msg != cmd_msg_last)
+    if(cmd_msg != NO_REQ )
     {
         cout << "COMANDO RICEVUTO" << endl;
         //preparo la struttura dati

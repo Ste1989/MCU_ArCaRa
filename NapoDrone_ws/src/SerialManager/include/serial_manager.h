@@ -315,7 +315,7 @@ ros::Publisher waypoint_topic;
 /******************GLOBAL VAR***********************************************************************/
 int count = 0;
 double param = 0.0;
-char new_packet = 0;
+int new_packet = 0;
 char new_packet_pose = 0;
 int pose_el_time, ack_el_time;
 double PI = 3.14159;
