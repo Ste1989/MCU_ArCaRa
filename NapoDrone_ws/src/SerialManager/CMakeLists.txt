@@ -44,8 +44,7 @@ generate_messages()
 
 
 
-#add_executable(SerialManager src/rs232.cpp)
-#target_link_libraries(SerialManager ${catkin_LIBRARIES})
+
 
 add_library(SerialManagerFunction  src/serial_manager_function.cpp)
 target_link_libraries(SerialManagerFunction  ${OpenCV_LIBS} ${catkin_LIBRARIES})

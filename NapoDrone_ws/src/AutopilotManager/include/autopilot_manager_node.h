@@ -142,37 +142,37 @@ typedef enum{
     NO_PARAM,
     ALT_TAKEOFF, 
 
-    K_ROLL,
+    KP_ROLL,
     B_ROLL,
-    TI_ROLL, 
-    TS_ROLL, 
+    KI_ROLL, 
+    KY_ROLL, 
     TD_ROLL, 
     ND_ROLL, 
     LUP_ROLL,  
     LDOWN_ROLL, 
 
-    K_PITCH,
+    KP_PITCH,
     B_PITCH,
-    TI_PITCH, 
-    TS_PITCH, 
+    KI_PITCH, 
+    KY_PITCH, 
     TD_PITCH, 
     ND_PITCH, 
     LUP_PITCH,  
     LDOWN_PITCH, 
 
-    K_YAW,
+    KP_YAW,
     B_YAW,
-    TI_YAW, 
-    TS_YAW, 
+    KI_YAW, 
+    KY_YAW, 
     TD_YAW, 
     ND_YAW, 
     LUP_YAW,  
     LDOWN_YAW, 
 
-    K_ALT,
+    KP_ALT,
     B_ALT,
-    TI_ALT, 
-    TS_ALT, 
+    KI_ALT, 
+    KY_ALT, 
     TD_ALT, 
     ND_ALT, 
     LUP_ALT,  
@@ -188,11 +188,11 @@ typedef enum{
 class PIDController {
   private:
     //parametri del controllore
-    double K;
+    double Kp;
     double b;
-    double Ti;
+    double Ki;
     double Td;
-    double Ts;
+    double Ky;
     double Nd;
     double saturazione_max;
     double saturazione_min;
@@ -206,19 +206,19 @@ class PIDController {
     void init_PID();
     double update_PID(double y, double y_des);
     double map_control_2_radio(double u);
-    void set_K(double param);
+    void set_Kp(double param);
     void set_b(double param);
-    void set_Ti(double param);
+    void set_Ki(double param);
     void set_Td(double param);
-    void set_Ts(double param);
+    void set_Ky(double param);
     void set_Nd(double param);
     void set_saturazione_max(double param);
     void set_saturazione_min(double param);
-    double get_K();
+    double get_Kp();
     double get_b();
-    double get_Ti();
+    double get_Ki();
     double get_Td();
-    double get_Ts();
+    double get_Ky();
     double get_Nd();
     double get_saturazione_max();
     double get_saturazione_min();

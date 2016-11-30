@@ -237,6 +237,7 @@ void decode_packet()
  label:
     while(!coda_recv_seriale.empty())
     {
+        cout <<(int)coda_recv_seriale.front() << endl;
 
         if(coda_recv_seriale.front() == PAYLOAD_CMD && coda_recv_seriale.size() >= NBYTES_PAYLOAD_CMD)
         {   
@@ -293,25 +294,25 @@ void decode_packet()
                     param_msg = ALT_TAKEOFF;
                     break;
                 /*parametri dei pid: ROLL**********************************************************/
-                case PARAM_K_ROLL:
+                case PARAM_KP_ROLL:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = K_ROLL;
+                    param_msg = KP_ROLL;
                     break;
                 case PARAM_B_ROLL:
                     coda_recv_seriale.pop();
                     param = decode_payload();
                     param_msg = B_ROLL;
                     break;
-                case PARAM_TI_ROLL:
+                case PARAM_KI_ROLL:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TI_ROLL;
+                    param_msg = KI_ROLL;
                     break;
-                case PARAM_TS_ROLL:
+                case PARAM_KY_ROLL:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TS_ROLL;
+                    param_msg = KY_ROLL;
                     break;
                 case PARAM_TD_ROLL:
                     coda_recv_seriale.pop();
@@ -334,25 +335,25 @@ void decode_packet()
                     param_msg = LDOWN_ROLL;
                     break;
                 /*parametri dei pid:_PITCH*********************************************************/
-                case PARAM_K_PITCH:
+                case PARAM_KP_PITCH:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = K_PITCH;
+                    param_msg = KP_PITCH;
                     break;
                 case PARAM_B_PITCH:
                     coda_recv_seriale.pop();
                     param = decode_payload();
                     param_msg = B_PITCH;
                     break;
-                case PARAM_TI_PITCH:
+                case PARAM_KI_PITCH:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TI_PITCH;
+                    param_msg = KI_PITCH;
                     break;
-                case PARAM_TS_PITCH:
+                case PARAM_KY_PITCH:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TS_PITCH;
+                    param_msg = KY_PITCH;
                     break;
                 case PARAM_TD_PITCH:
                     coda_recv_seriale.pop();
@@ -375,25 +376,25 @@ void decode_packet()
                     param_msg = LDOWN_PITCH;
                     break;
                     /*parametri dei pid: YAW**********************************************************/
-                case PARAM_K_YAW:
+                case PARAM_KP_YAW:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = K_YAW;
+                    param_msg = KP_YAW;
                     break;
                 case PARAM_B_YAW:
                     coda_recv_seriale.pop();
                     param = decode_payload();
                     param_msg = B_YAW;
                     break;
-                case PARAM_TI_YAW:
+                case PARAM_KI_YAW:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TI_YAW;
+                    param_msg = KI_YAW;
                     break;
-                case PARAM_TS_YAW:
+                case PARAM_KY_YAW:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TS_YAW;
+                    param_msg = KY_YAW;
                     break;
                 case PARAM_TD_YAW:
                     coda_recv_seriale.pop();
@@ -416,25 +417,25 @@ void decode_packet()
                     param_msg = LDOWN_YAW;
                     break;
                 /*parametri dei pid: ALT******************************************************************/
-                case PARAM_K_ALT:
+                case PARAM_KP_ALT:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = K_ALT;
+                    param_msg = KP_ALT;
                     break;
                 case PARAM_B_ALT:
                     coda_recv_seriale.pop();
                     param = decode_payload();
                     param_msg = B_ALT;
                     break;
-                case PARAM_TI_ALT:
+                case PARAM_KI_ALT:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TI_ALT;
+                    param_msg = KI_ALT;
                     break;
-                case PARAM_TS_ALT:
+                case PARAM_KY_ALT:
                     coda_recv_seriale.pop();
                     param = decode_payload();
-                    param_msg = TS_ALT;
+                    param_msg = KY_ALT;
                     break;
                 case PARAM_TD_ALT:
                     coda_recv_seriale.pop();
@@ -567,9 +568,9 @@ void decode_packet()
             goto label;
 
         }
-        if(coda_recv_seriale.size() > 0)
+        if(coda_recv_seriale.size() > 0  )
         {
-            cout << "PACCHETTO NON RICONOSCIUTO" << endl;
+            cout << "PACCHETTO NON RICONOSCIUTO " << (int)coda_recv_seriale.front() << " " << (int)coda_recv_seriale.size() <<endl;
             coda_recv_seriale.pop();
         }
 

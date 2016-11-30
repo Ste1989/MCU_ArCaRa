@@ -261,6 +261,14 @@ int main(int argc, char **argv)
     /*******************************************************************************************/
     if(waypoint_recv)
     {
+        if(waypoint_recv == 1)
+        {
+            pid_controllers.roll.init_PID();
+            pid_controllers.pitch.init_PID();
+            pid_controllers.yaw.init_PID();
+            pid_controllers.altitude.init_PID();
+            waypoint_recv = 2;
+        }
         gettimeofday(&current_time, NULL);
         elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
         elapsed_time_control += (current_time.tv_usec - control_time.tv_usec) / 1000;
