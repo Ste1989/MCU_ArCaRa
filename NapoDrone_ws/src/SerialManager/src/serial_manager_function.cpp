@@ -247,17 +247,14 @@ void decode_packet()
                     case CMD_NO_REQ:
                         cmd_msg = NO_REQ;
                         coda_recv_seriale.pop();
-                        cout << "sono qui n" << endl;
                         break;
                     case CMD_ARM:
                         cmd_msg = ARM;
                         coda_recv_seriale.pop();
-                        cout << "sono qui a" << endl;
                         break;
                     case CMD_DISARM:
                         cmd_msg = DISARM;
                         coda_recv_seriale.pop();
-                        cout << "sono qui d" << endl;
                         break;
                     case CMD_TAKEOFF:
                         cmd_msg = TAKEOFF;
@@ -277,7 +274,10 @@ void decode_packet()
                         break;
                     case CMD_CLEAR_RADIO_OVERRIDE:
                         cmd_msg = CLEARRADIOOVERRIDE;
-                        cout << "sono qui" << endl;
+                        coda_recv_seriale.pop();
+                        break;
+                    case CMD_HOLD_POSITION:
+                        cmd_msg = HOLD_POSITION;
                         coda_recv_seriale.pop();
                         break;
                     default:

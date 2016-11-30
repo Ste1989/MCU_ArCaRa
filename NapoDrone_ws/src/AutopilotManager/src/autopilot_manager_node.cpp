@@ -191,6 +191,12 @@ int main(int argc, char **argv)
                     clear_radio_override();
                     current_cmd_req = NO_REQ;
                     break;
+
+                case HOLD_POSITION:
+                    ROS_INFO("COMANDO : HOLD POSITION");
+                    hold_position();
+                    current_cmd_req = NO_REQ;
+                    break;
                
             } 
 
@@ -259,24 +265,50 @@ int main(int argc, char **argv)
     /*                     CICLO PRINCIPALE CONTROLLO                                          */
     /*                                                                                         */
     /*******************************************************************************************/
-    if(waypoint_recv)
+    if(waypoint_recv && !manual_mode)
     {
         if(waypoint_recv == 1)
-        {
+        {   
+            //se è un nuovo waypoint rinizializzo i controllori
             pid_controllers.roll.init_PID();
             pid_controllers.pitch.init_PID();
             pid_controllers.yaw.init_PID();
-            pid_controllers.altitude.init_PID();
+            //pid_controllers.altitude.init_PID();
             waypoint_recv = 2;
         }
+
+        //calolo tempo attuale
         gettimeofday(&current_time, NULL);
+        //calcolo tempo di controllo
         elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
         elapsed_time_control += (current_time.tv_usec - control_time.tv_usec) / 1000;
+        //calcolo tempo dall'ultima posa ricevuta
+        elapsed_time_pose = (current_time.tv_sec - pose_time.tv_sec) * 1000;
+        elapsed_time_pose += (current_time.tv_usec - pose_time.tv_usec) / 1000;
+
+
+        /******************CALOCLO DELL'AZIONE DI CONTROLLO*****************************************/
+        //il ciclo di controllo lo eseguo a loop_rate Hz
         if(elapsed_time_control  >= (1000/loop_rate)) //30Hz
-        {   cout << "elapsed time control: " << elapsed_time_control << endl;
-            update_control();
-            gettimeofday(&control_time, NULL);  
+        {   
+            //verifico che ho dati di stima di posizione validi da almeno 1 secondd
+            if(elapsed_time_pose <= 1000/1)
+            {
+                update_control();
+                
+            }
+            else
+            {
+                ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                //imposto i valori di pwm di yaw, pitch e roll al minimo
+                //todo: per l'altezza?
+                double pwm_throttle = 1500;
+                warning_stop(pwm_throttle);
+                
+            }
+            gettimeofday(&control_time, NULL); 
         }
+        /************************************************************************************************/
         
 
     }

@@ -30,8 +30,8 @@ double current_pressure;
 double alt_from_barometer; 
 
 //cvarianili per la gestione del tempo
-timeval  current_time, control_time;
-double elapsed_time_control;
+timeval  current_time, control_time, pose_time;
+double elapsed_time_control, elapsed_time_pose;
 char waypoint_recv;
 std::string PID_file;
 bool init_takeoff;
@@ -39,6 +39,8 @@ std::string init_flight_mode;
 int loop_rate;
 int stream_rate;
 bool marker_visibile;
+bool manual_mode;
+
 //altezza di takeoff da raggiungere
 double alt_takeoff_target;
 //struttura per la memorizzazione della posa della camera nel frame world
@@ -48,10 +50,10 @@ struct global_pose
     geometry_msgs::Point orientation;
 
 };
-global_pose global_camera_pose;
+global_pose camera_pose_world;
 
 //memorizzo waypoint
-geometry_msgs::Pose current_waypoint;
+geometry_msgs::Pose current_waypoint_world;
 
 //ros topic subscriber
 ros::Subscriber state_sub;
@@ -134,6 +136,7 @@ typedef enum{
     RTL,
     EMERGENCY_STOP,
     CLEAR_RADIO_OVERRIDE,
+    HOLD_POSITION,
 } cmd_request;
 
 cmd_request current_cmd_req;
@@ -254,4 +257,6 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 void update_control();
 bool leggi_PID_file(std::string PID_file);
 bool scrivi_PID_file(std::string PID_file);
+void warning_stop(double pwm_throttle);
+void hold_position();
 

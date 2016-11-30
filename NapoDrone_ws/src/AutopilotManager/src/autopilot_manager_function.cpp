@@ -46,33 +46,32 @@ void cmd_cb(const std_msgs::Int32::ConstPtr& msg)
     {
             
     	case ARM:
-         	current_cmd_req = ARM;          
-			break;
+        current_cmd_req = ARM;          
+			  break;
 		case DISARM:
-         	current_cmd_req = DISARM;          
-			break;
-
+        current_cmd_req = DISARM;          
+			  break;
 		case TAKEOFF:
-         	current_cmd_req = TAKEOFF;          
-			break;
-
+        current_cmd_req = TAKEOFF;          
+			  break;
 		case LAND:
-         	current_cmd_req = LAND;          
-			break;
-
+        current_cmd_req = LAND;          
+			  break;
 		case RTL:
-         	current_cmd_req = RTL;          
-			break;
-
+        current_cmd_req = RTL;          
+			  break;
 		case EMERGENCY_STOP:
-         	current_cmd_req = EMERGENCY_STOP;          
-			break;
+        current_cmd_req = EMERGENCY_STOP;          
+			  break;
 		case CLEAR_RADIO_OVERRIDE:
-			current_cmd_req = CLEAR_RADIO_OVERRIDE;
-			break;
+			  current_cmd_req = CLEAR_RADIO_OVERRIDE;
+			  break;
+    case HOLD_POSITION:
+        current_cmd_req = HOLD_POSITION;
+        break;
 		default:
-			current_cmd_req = NO_REQ;          
-			break;
+			  current_cmd_req = NO_REQ;          
+			  break;
      }         
 }
 /********************************************************************************************/
@@ -338,15 +337,16 @@ void param_cb(const serial_manager::Param::ConstPtr& msg)
 	}
 }/********************************************************************************************/
 /*                                                                                         */
-/*    CALBACK PER RWAYPOINT                                                                */
+/*    CALBACK PER WAYPOINT                                                                */
 /*                                                                                         */
 /*******************************************************************************************/
 void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg)
 {
   //ricevuto un nuovo waypoint
-  current_waypoint = *msg;
+  current_waypoint_world = *msg;
   ROS_INFO("RICEVUTO NUOVO WAYPOINT"); 
   waypoint_recv = 1;
+  manual_mode = false;
 
 
 }
@@ -361,14 +361,15 @@ void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
 	if(marker_visibile)
 	{
 		//ho una stima buona della posizione della camera
-		global_camera_pose.position.x = msg->global_camera_pose.position.x;
-		global_camera_pose.position.y = msg->global_camera_pose.position.y;
-		global_camera_pose.position.z = msg->global_camera_pose.position.z;
+		camera_pose_world.position.x = msg->global_camera_pose.position.x;
+		camera_pose_world.position.y = msg->global_camera_pose.position.y;
+	   camera_pose_world.position.z = msg->global_camera_pose.position.z;
 		//transformo il quaternione in un angoli di eulero
 		quaternion_2_euler(msg->global_camera_pose.orientation.x,msg->global_camera_pose.orientation.y,
 			msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
-			global_camera_pose.orientation.x,global_camera_pose.orientation.y,global_camera_pose.orientation.z);
-
+			camera_pose_world.orientation.x,camera_pose_world.orientation.y,camera_pose_world.orientation.z);
+    //prendo il tempo 
+    gettimeofday(&pose_time, NULL); 
 		
 	}
 	else
@@ -512,7 +513,8 @@ bool takeoff_vehicle()
 /*******************************************************************************************/
 void clear_radio_override()
 {
-
+  //setto manual mode 
+  manual_mode = true;
 	//devo impostare il pwm del throttle al valore minimo.
 	mavros_msgs::OverrideRCIn radio_pwm;
 	radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
@@ -569,8 +571,22 @@ double PIDController::update_PID(double y, double y_des)
   y_k = y; 
   D_k = D_k_1;
 
+  //aziobne di contorllo 
+  double u = (P + I_k_1 + D_k_1);
 
-  return (P + I_k_1 + D_k_1);
+  //mappo l'azione di controllo nel pwm
+  double m = (saturazione_min - saturazione_max)/2;
+  double q = PWM_MEDIUM;
+  double pwm = m*u + q;
+
+  if(pwm < saturazione_min)
+    pwm = saturazione_min;
+  if(pwm > saturazione_max)
+    pwm = saturazione_max;
+
+  cout << "PWM CALCOLATO: " << pwm << endl; 
+  
+  return pwm;
 }
 double PIDController::map_control_2_radio(double u)
 {
@@ -675,20 +691,23 @@ void init_global_variables()
   pid_controllers.yaw.init_PID();
   pid_controllers.altitude.init_PID();
 
+  //manual mode all'inizio abilitata
+  manual_mode = true;
+
   marker_visibile = false;
-	//Pose global_camera_pose;
+	//Pose camera_pose_world;
    //..
 	//altezza da raggiungere in takeoff
 	alt_takeoff_target = 1.0;
 
   //inizializzo waypoint
-  current_waypoint.position.x = 0;
-  current_waypoint.position.y = 0;
-  current_waypoint.position.z = 0;
-  current_waypoint.orientation.x = 0;
-  current_waypoint.orientation.y = 0;
-  current_waypoint.orientation.z = 0;
-  current_waypoint.orientation.w = 0;
+  current_waypoint_world.position.x = 0;
+  current_waypoint_world.position.y = 0;
+  current_waypoint_world.position.z = 0;
+  current_waypoint_world.orientation.x = 0;
+  current_waypoint_world.orientation.y = 0;
+  current_waypoint_world.orientation.z = 0;
+  current_waypoint_world.orientation.w = 0;
       
 }
 /********************************************************************************************/
@@ -732,23 +751,35 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 void update_control()
 {
   
+  //1)-2)controllo di X-Y
+  //devo ruotare [x_des_w, y_des_w] in body con RZ(yaw)
+  double yaw = camera_pose_world.orientation.z;
+  double x_des_b = cos(yaw)*current_waypoint_world.position.x + sin(yaw)*current_waypoint_world.position.y;
+  double y_des_b = -sin(yaw)*current_waypoint_world.position.x + cos(yaw)*current_waypoint_world.position.y; 
+  double x_b = camera_pose_world.position.x;
+  double y_b = camera_pose_world.position.y;
+  //1A) CONTROLLO DI ROLL
+  double roll_command = pid_controllers.roll.update_PID(x_b, x_des_b);
+  //2A)CONTROLLO DI YAW
+  double pitch_command = pid_controllers.pitch.update_PID(y_b, y_des_b);
+
 
   //3)controllo di HEADING
-  double rz = global_camera_pose.orientation.z;
-  double rz_des = current_waypoint.orientation.z;
+  double rz = camera_pose_world.orientation.z;
+  double rz_des = current_waypoint_world.orientation.z;
   //calcolo il controllo da attuare
-  double u_rz = pid_controllers.yaw.update_PID(rz, rz_des);
+  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des);
   //devo mappare l'ingresso in un comando ai servo
-  double yaw_commad = pid_controllers.yaw.map_control_2_radio(u_rz);
-  cout << yaw_commad << endl;
+  //double yaw_commad = pid_controllers.yaw.map_control_2_radio(u_rz);
+  cout << yaw_command << endl;
 
- //publish control to radio
+  //END)publish control to radio
   mavros_msgs::OverrideRCIn radio_pwm;
   radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
   radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
   radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
   radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-  radio_pwm.channels[RC_YAW] = yaw_commad;
+  radio_pwm.channels[RC_YAW] = yaw_command;
   rc_pub.publish(radio_pwm);
   
  /* if (current_waypoint.position.z == 0) 
@@ -932,4 +963,30 @@ bool scrivi_PID_file(std::string PID_file)
   ROS_INFO_STREAM("File pid saved successfully");
   return true;
 
+}
+ /********************************************************************************************/
+/*                                                                                         */
+/*    ROLL PITCH YAW PWM MEDIUM                                                            */
+/*                                                                                         */
+/*******************************************************************************************/
+void warning_stop(double pwm_throttle)
+{
+    //rilascia gli stick di roll e pitch e yaw
+    mavros_msgs::OverrideRCIn radio_pwm;
+    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM;
+    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM;
+    radio_pwm.channels[RC_THROTTLE] = pwm_throttle; //TODO METTERE UN VALORE QUA
+    radio_pwm.channels[RC_YAW] = PWM_MEDIUM;
+    rc_pub.publish(radio_pwm);
+
+}
+ /********************************************************************************************/
+/*                                                                                         */
+/*    HOLD POSITION                                                                        */
+/*                                                                                         */
+/*******************************************************************************************/
+void hold_position()
+{
+  cout << "hol position" << endl;
+  return;
 }
