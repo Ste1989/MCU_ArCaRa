@@ -3,7 +3,7 @@
  <include file="$(find realsense_camera)/launch/autec_test.launch"/>
  <include file="$(find aruco_mapping)/launch/aruco_mapping_AUTEC.launch"/>
  <include file="$(find serial_manager)/launch/SerialManager.launch"/>
- <include file="$(find autopilot_manager)/launch/autopilot_mavros.launch"/>
+<!-- <include file="$(find autopilot_manager)/launch/autopilot_mavros.launch"/> -->
  <include file="$(find mavros)/launch/iris.launch"/>
 
 </launch>

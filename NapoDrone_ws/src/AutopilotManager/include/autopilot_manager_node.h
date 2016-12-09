@@ -76,15 +76,24 @@ ros::ServiceClient set_stream_rate_client;
 //[0] : ROOL
 //[1] : PITCH
 //[2] : THRLOTTE
-//[3] : ALT
+//[3] : YAW
 //[4]
 #define RC_YAW 3
 #define RC_ROLL 0
 #define RC_PITCH 1
 #define RC_THROTTLE 2
-#define PWM_LOW_LIMIT 1000
-#define PWM_HIGH_LIMIT 2000
-#define PWM_MEDIUM 1500
+#define PWM_LOW_LIMIT_ROLL 1118
+#define PWM_HIGH_LIMIT_ROLL 1918
+#define PWM_MEDIUM_ROLL 1522
+#define PWM_LOW_LIMIT_PITCH 1118
+#define PWM_HIGH_LIMIT_PITCH 1918
+#define PWM_MEDIUM_PITCH 1518
+#define PWM_LOW_LIMIT_YAW 1118
+#define PWM_HIGH_LIMIT_YAW 1918
+#define PWM_MEDIUM_YAW 1514
+#define PWM_LOW_LIMIT_THROTTLE 1118
+#define PWM_HIGH_LIMIT_THROTTLE 1918
+#define PWM_MEDIUM_THROTTLE 1516
 #define NO_OVERRIDE 0
 
 
@@ -207,8 +216,8 @@ class PIDController {
   public:
     PIDController();
     void init_PID();
-    double update_PID(double y, double y_des);
-    double map_control_2_radio(double u);
+    double update_PID(double y, double y_des, double pwm_medium);
+    double map_control_2_radio(double u, double pwm_medium);
     void set_Kp(double param);
     void set_b(double param);
     void set_Ki(double param);
@@ -259,4 +268,5 @@ bool leggi_PID_file(std::string PID_file);
 bool scrivi_PID_file(std::string PID_file);
 void warning_stop(double pwm_throttle);
 void hold_position();
+void step_test();
 

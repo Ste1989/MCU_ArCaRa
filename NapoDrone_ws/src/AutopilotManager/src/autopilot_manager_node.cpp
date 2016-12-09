@@ -269,11 +269,13 @@ int main(int argc, char **argv)
     {
         if(waypoint_recv == 1)
         {   
+            ROS_INFO("NUOVO WAYPOINT");
             //se è un nuovo waypoint rinizializzo i controllori
             pid_controllers.roll.init_PID();
             pid_controllers.pitch.init_PID();
             pid_controllers.yaw.init_PID();
             //pid_controllers.altitude.init_PID();
+
             waypoint_recv = 2;
         }
 
@@ -289,8 +291,11 @@ int main(int argc, char **argv)
 
         /******************CALOCLO DELL'AZIONE DI CONTROLLO*****************************************/
         //il ciclo di controllo lo eseguo a loop_rate Hz
+
         if(elapsed_time_control  >= (1000/loop_rate)) //30Hz
         {   
+            ROS_INFO("CICLO CONTROLLO");
+            cout << "FREQUENZA CONTROLLO" << 1000/elapsed_time_control <<endl;
             //verifico che ho dati di stima di posizione validi da almeno 1 secondd
             if(elapsed_time_pose <= 1000/1)
             {
@@ -308,6 +313,9 @@ int main(int argc, char **argv)
             }
             gettimeofday(&control_time, NULL); 
         }
+
+        //test gradino per identificazione 
+        //step_test();
         /************************************************************************************************/
         
 

@@ -418,7 +418,7 @@ bool arm_vehicle()
 	mavros_msgs::OverrideRCIn radio_pwm;
 	radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
 	radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
-	radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT;
+	radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT_THROTTLE;
 	radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
 	rc_pub.publish(radio_pwm);
 	//funzione richiamata per armare il veicolo
@@ -433,7 +433,7 @@ bool arm_vehicle()
     //imposto il valore di thtrolle piu del minimo per non farlo disarmare
     radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
     radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
-    radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT + 100;
+    radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT_THROTTLE + 100;
     radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
     rc_pub.publish(radio_pwm);
   }
@@ -453,7 +453,7 @@ bool disarm_vehicle()
 	mavros_msgs::OverrideRCIn radio_pwm;
 	radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
 	radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
-	radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT;
+	radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT_THROTTLE;
 	radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
 	rc_pub.publish(radio_pwm);
 	//funzione richiamata per disarmare il veicolo
@@ -546,7 +546,7 @@ void PIDController::init_PID()
   cout << "PID INIT "<< "KP: " << Kp << " KI: " << Ki << " KD: " << Td/(Nd*Ts+Td) << " KY: "<< (Ky*Td*Nd)/(Nd*Ts+Td)<< endl;
 }
 
-double PIDController::update_PID(double y, double y_des)
+double PIDController::update_PID(double y, double y_des, double pwm_medium)
 {
   //calcolo dell'errore
   double e = y_des - y;
@@ -561,6 +561,7 @@ double PIDController::update_PID(double y, double y_des)
   I_k = I_k_1;
 
   //D
+  cout << (y - y_k) << endl;
   double Ts = 1.0/double(loop_rate);
   double D_k_1 = 0;
   if((Nd*Ts+Td) == 0)
@@ -570,13 +571,16 @@ double PIDController::update_PID(double y, double y_des)
   //memorizzo derivativo
   y_k = y; 
   D_k = D_k_1;
+  cout << Td/(Nd*Ts+Td) << endl;
+  cout << (Ky*Td*Nd)/(Nd*Ts+Td) << endl;
+  cout << "D_k_1: " << D_k_1 << endl;
 
   //aziobne di contorllo 
   double u = (P + I_k_1 + D_k_1);
 
   //mappo l'azione di controllo nel pwm
   double m = (saturazione_min - saturazione_max)/2;
-  double q = PWM_MEDIUM;
+  double q = pwm_medium;
   double pwm = m*u + q;
 
   if(pwm < saturazione_min)
@@ -584,15 +588,29 @@ double PIDController::update_PID(double y, double y_des)
   if(pwm > saturazione_max)
     pwm = saturazione_max;
 
-  cout << "PWM CALCOLATO: " << pwm << endl; 
+  //se ho saturazione devo scaricare l'integrale (Tecnica AntiWindUp)
+  //double u_att = (pwm-q)/m;
+  //double e_t = u_att - u;
+  //double Tt = 1; //costante di tempo per scarico intefgrale
+  //double AntiWindUp = e_t / Tt ;
+  //I_k = I_k + e_t;
+
+
+
+
+  //cout << "PWM CALCOLATO: " << pwm << endl; 
+  //cout << "u : " << u << endl;
+  //cout << "u_att: " << u_att << endl;
+  //cout << "e_t: " << e_t << endl;
+  //cout << "I_k: " << I_k << endl;
   
   return pwm;
 }
-double PIDController::map_control_2_radio(double u)
+double PIDController::map_control_2_radio(double u, double pwm_medium)
 {
 
   double m = (saturazione_min - saturazione_max)/2;
-  double q = PWM_MEDIUM;
+  double q = pwm_medium;
   double y = m*u + q;
 
   if(y < saturazione_min)
@@ -751,99 +769,56 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 void update_control()
 {
   
+
   //1)-2)controllo di X-Y
   //devo ruotare [x_des_w, y_des_w] in body con RZ(yaw)
   double yaw = camera_pose_world.orientation.z;
   double x_des_b = cos(yaw)*current_waypoint_world.position.x + sin(yaw)*current_waypoint_world.position.y;
   double y_des_b = -sin(yaw)*current_waypoint_world.position.x + cos(yaw)*current_waypoint_world.position.y; 
-  double x_b = camera_pose_world.position.x;
-  double y_b = camera_pose_world.position.y;
+  double x_b = cos(yaw)*camera_pose_world.position.x + sin(yaw)*camera_pose_world.position.y;
+  double y_b = -sin(yaw)*camera_pose_world.position.x + cos(yaw)*camera_pose_world.position.y;
+
+  //compenso per gli angoli di pitch e roll
+  //double x_off = camera_pose_world.position.z * tan(camera_pose_world.orientation.y);
+  //double y_off = camera_pose_world.position.z * tan(camera_pose_world.orientation.x);
+  //x_b  = x_b + x_off;
+  //y_b  = y_b - y_off;
+
+
   //1A) CONTROLLO DI ROLL
-  double roll_command = pid_controllers.roll.update_PID(x_b, x_des_b);
-  //2A)CONTROLLO DI YAW
-  double pitch_command = pid_controllers.pitch.update_PID(y_b, y_des_b);
+  cout << "PID ROLL" << endl;
+  double roll_command = pid_controllers.roll.update_PID(y_b, y_des_b, PWM_MEDIUM_ROLL);
+  //2A)CONTROLLO DI PITCH
+  cout << "PID PITCH" << endl;
+  double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH);
 
 
   //3)controllo di HEADING
   double rz = camera_pose_world.orientation.z;
   double rz_des = current_waypoint_world.orientation.z;
   //calcolo il controllo da attuare
-  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des);
+  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
   //devo mappare l'ingresso in un comando ai servo
   //double yaw_commad = pid_controllers.yaw.map_control_2_radio(u_rz);
-  cout << yaw_command << endl;
+  //cout << yaw_command << endl;
+
 
   //END)publish control to radio
   mavros_msgs::OverrideRCIn radio_pwm;
-  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
-  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_ROLL] = roll_command;
+  radio_pwm.channels[RC_PITCH] = pitch_command;
   radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
-  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
   radio_pwm.channels[RC_YAW] = yaw_command;
   rc_pub.publish(radio_pwm);
   
- /* if (current_waypoint.position.z == 0) 
-  {
-    cout << "no gradino" << endl;
-    //publish control to radio
-    mavros_msgs::OverrideRCIn radio_pwm;
-    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM;
-    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM;
-    radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    rc_pub.publish(radio_pwm);
-  }
-  if (current_waypoint.position.z == 1) 
-  {
-    cout << "gradino roll " << endl;
-    //publish control to radio
-    mavros_msgs::OverrideRCIn radio_pwm;
-    radio_pwm.channels[RC_ROLL] = 1700;
-    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM;
-    radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    rc_pub.publish(radio_pwm);
-  }
-  if (current_waypoint.position.z == 2) 
-  {
-    cout << "gradino -roll " << endl;
-    //publish control to radio
-    mavros_msgs::OverrideRCIn radio_pwm;
-    radio_pwm.channels[RC_ROLL] = 1300;
-    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM;
-    radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    rc_pub.publish(radio_pwm);
-  }
-   if (current_waypoint.position.z == 3) 
-  {
-    cout << "gradino picth " << endl;
-    //publish control to radio
-    mavros_msgs::OverrideRCIn radio_pwm;
-    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM;
-    radio_pwm.channels[RC_PITCH] = 1700;
-    radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    rc_pub.publish(radio_pwm);
-  }
-  if (current_waypoint.position.z == 4) 
-  {
-    cout << "gradino -picth " << endl;
-    //publish control to radio
-    mavros_msgs::OverrideRCIn radio_pwm;
-    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM;
-    radio_pwm.channels[RC_PITCH] = 1300;
-    radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-    rc_pub.publish(radio_pwm);
-  }
 
-*/
+  cout << "X_DES: " << x_des_b  << " " << x_b<< endl;
+  cout << "pitch Command " <<  pitch_command << endl;
+
+    cout << "Y_DES: " << y_des_b  << " " << y_b<< endl;
+  cout << "roll Command " <<  roll_command << endl;
+  //cout << "Y_DES: " << y_des_b  << " " << y_b << endl; ;
+  //cout << "RZ_DES: " << rz_des << " " << rz << endl;
 
 }
  /********************************************************************************************/
@@ -973,10 +948,10 @@ void warning_stop(double pwm_throttle)
 {
     //rilascia gli stick di roll e pitch e yaw
     mavros_msgs::OverrideRCIn radio_pwm;
-    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM;
-    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM;
+    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM_ROLL;
+    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM_PITCH;
     radio_pwm.channels[RC_THROTTLE] = pwm_throttle; //TODO METTERE UN VALORE QUA
-    radio_pwm.channels[RC_YAW] = PWM_MEDIUM;
+    radio_pwm.channels[RC_YAW] = PWM_MEDIUM_YAW;
     rc_pub.publish(radio_pwm);
 
 }
@@ -987,6 +962,108 @@ void warning_stop(double pwm_throttle)
 /*******************************************************************************************/
 void hold_position()
 {
-  cout << "hol position" << endl;
+  cout << "HOLD POSITION" << endl;
+  //il waypoint sarà la posizione corrente
+  current_waypoint_world.position.x = camera_pose_world.position.x;
+  current_waypoint_world.position.y = camera_pose_world.position.y;
+  //current_waypoint_world.position.z = camera_pose_world.position.x;
+  current_waypoint_world.orientation.z = camera_pose_world.orientation.z;
+
+  waypoint_recv = 1;
+  manual_mode = false;
+
+  return;
+}
+ /********************************************************************************************/
+/*                                                                                         */
+/*    STEP TEST                                                                            */
+/*                                                                                         */
+/*******************************************************************************************/
+void step_test()
+{
+  mavros_msgs::OverrideRCIn radio_pwm;
+
+  //gradino di Pitch
+  cout << "Gradino di -Pitch" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = PWM_MEDIUM_PITCH - 50;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+
+  cout << "No Step" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE ;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+
+  //gradino di Pitch
+  cout << "Gradino di +Pitch" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = PWM_MEDIUM_PITCH + 50;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+
+  cout << "No Step" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE ;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+/****************************************************************************/
+  //gradino di Roll
+  cout << "Gradino di -Roll" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+  radio_pwm.channels[RC_PITCH] = PWM_MEDIUM_ROLL - 50;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+
+  cout << "No Step" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE ;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+
+  //gradino di Roll
+  cout << "Gradino di +Roll" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+  radio_pwm.channels[RC_PITCH] = PWM_MEDIUM_ROLL + 50;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+
+  cout << "No Step" << endl;
+  //publish control to radio
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE ;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  sleep(5);
+
+
+
+
+
+
+
   return;
 }
