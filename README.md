@@ -18,7 +18,26 @@
     cmake ..
     sudo make install
 -installato libreria mraa scaricandola da git
-
+-installato MAVROS da http://dev.px4.io/ros-mavros-installation.html:
+	$ mkdir -p ~/catkin_ws/src
+	$ cd ~/catkin_ws
+	$ catkin_init_workspace
+	$ sudo apt-get install python-wstool python-rosinstall-generator python-catkin-tools
+	$ wstool init ~/catkin_ws/src
+	$ rosinstall_generator --upstream mavros | tee /tmp/mavros.rosinstall
+	$ rosinstall_generator --upstream-development mavros | tee /tmp/mavros.rosinstall
+	$ rosinstall_generator mavlink | tee -a /tmp/mavros.rosinstall
+	$ wstool merge -t src /tmp/mavros.rosinstall
+	$ wstool update -t src
+	$ sudo apt-get update
+	$ rosdep install --from-paths src --ignore-src --rosdistro indigo -y
+	$ catkin build
+- nel .bashrc:
+	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/sistema/catkin_ws
+	source /home/sistema/catkin_ws/devel/setup.bash
+	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/sistema/MCU_ArCaRa/NapoDrone_ws
+	source /home/sistema/MCU_ArCaRa/NapoDrone_ws/devel/setup.bash
+- la prima volta commentare nei CMakeLists.s.txt di SerialManager, AutopilotMAnager, ObjectDetction e Object3Detection gli eseguibili
 # Cosa installare sull'Odroid
 
 - Ubuntu 14.04 LTS
