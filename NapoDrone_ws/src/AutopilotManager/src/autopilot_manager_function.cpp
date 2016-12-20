@@ -17,6 +17,16 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg)
            msg.data = CONNECTED;
            state_pub.publish(msg);
            ROS_INFO("SONO CONNESSO ALL'AUTOPILOTA");
+
+          //una volta connesso avvio lo stream dati dal drone
+          mavros_msgs::StreamRate srv_rate;
+          srv_rate.request.stream_id = 0;
+          srv_rate.request.message_rate = stream_rate;
+          srv_rate.request.on_off = 1;
+
+          set_stream_rate_client.call(srv_rate);
+          ROS_INFO("STREAM DATI AVVIATO");
+    
         }   
         else
         {

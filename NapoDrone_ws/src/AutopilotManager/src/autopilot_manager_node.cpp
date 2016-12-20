@@ -73,7 +73,7 @@ int main(int argc, char **argv)
     state_pub.publish(msg);
     ROS_INFO("SONO CONNESSO ALL'AUTOPILOTA");
 
-   
+    /*
     //una volta connesso avvio lo stream dati dal drone
     mavros_msgs::StreamRate srv_rate;
     srv_rate.request.stream_id = 0;
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 
     set_stream_rate_client.call(srv_rate);
     ROS_INFO("STREAM DATI AVVIATO");
-
+    */
     bool res = false;
     gettimeofday(&control_time, NULL);
     waypoint_recv = 0;
@@ -210,7 +210,7 @@ int main(int argc, char **argv)
                 case ALT_HOLD:
                     ROS_INFO("FM : ALT HOLD ");
                     
-                    offb_set_mode.request.custom_mode = "ALT HOLD";
+                    offb_set_mode.request.custom_mode = "ALT_HOLD";
                     set_mode_client.call(offb_set_mode);
                     
                     if(offb_set_mode.response.success)

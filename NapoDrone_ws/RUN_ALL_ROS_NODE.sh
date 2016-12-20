@@ -2,7 +2,7 @@
 
 ps ax | grep "ros" | awk '{print $1}' | xargs kill -9
 
-sudo chmod 777 /dev/tty4
+sudo chmod 777 /dev/ttyS4
 
 sudo chmod 777 /dev/ttyUSB0
 
@@ -28,9 +28,14 @@ sleep 5
 
 xterm -T "MAVROS" -n "MAVROS" -hold -e "roslaunch mavros dji550_autec.launch" &
 
-sleep 10
+sleep 30
+
+xterm -T "MAVROS SYSID" -n "MAVROS SYSID" -hold -e "rosrun mavros mavparam set SYSID_MYGCS 1" &
+
+sleep 1
 
 xterm -T "IMAGE_VIEW" -n "IMAGE_VIEW" -hold -e "rosrun image_view image_view image:=/camera/color/image_raw" &
+
 
 
 
