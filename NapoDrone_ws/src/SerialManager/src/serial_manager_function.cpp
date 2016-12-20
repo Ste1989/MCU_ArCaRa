@@ -80,6 +80,8 @@ void parser_mess(unsigned char buffer){
                 state_msg = PAYLOAD_3_2;
             else if(buffer == PAYLOAD_WAYPOINT)
                 state_msg = PAYLOAD_4_2;
+            else if(buffer == PAYLOAD_GRIPPER)
+                state_msg = PAYLOAD_5_2;
             break;
 
 
@@ -199,6 +201,15 @@ void parser_mess(unsigned char buffer){
             new_packet++;
             break;
 
+        /*********************************************************/
+            //PACCHETTO CONTENTENTE UN COMANDO PER LA PINZA
+        case PAYLOAD_5_2:
+            coda_recv_seriale.push(buffer);
+            //notifico che c'è un nuovo pacchetto da decodificare
+            new_packet++;
+            state_msg=HEADER_1;
+            break;
+
     }
 
     return;
@@ -291,7 +302,7 @@ void decode_packet()
             }//fine payload cmd
             break;
         
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case PAYLOAD_PARAM: 
             //vedo se il pacchetto è completo
             if( coda_recv_seriale.size() >= NBYTES_PAYLOAD_PARAM )
@@ -489,7 +500,7 @@ void decode_packet()
                     
         
 
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case PAYLOAD_WAYPOINT:
             if(coda_recv_seriale.size() >= NBYTES_PAYLOAD_WAYPOINT)
             {
@@ -517,7 +528,7 @@ void decode_packet()
             }
             break;
         
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case PAYLOAD_MODE:
             if(coda_recv_seriale.size() >= NBYTES_PAYLOAD_MODE)
             {
@@ -600,8 +611,39 @@ void decode_packet()
                 new_packet--;
             }//fine mode
             break;
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_GRIPPER:
+            //verifico che abbia tutto il pacchetto 
+            if(coda_recv_seriale.size() >= NBYTES_PAYLOAD_GRIPPER)
+            {
+                coda_recv_seriale.pop();
+                //è un pacchetto di comando, vedo che tipo di comando
+                switch(coda_recv_seriale.front())
+                {
+                    case GRIPPER_NO_REQ:
+                        gripper_msg = NO_GRIPPER_REQ;
+                        coda_recv_seriale.pop();
+                        break;
+                    case GRIPPER_CLOSE:
+                        gripper_msg = CLOSE;
+                        coda_recv_seriale.pop();
+                        break;
+                    case GRIPPER_OPEN:
+                        gripper_msg = OPEN;
+                        coda_recv_seriale.pop();
+                        break;
+                    default:
+                    //pacchetto non riconosciuto
+                    coda_recv_seriale.pop();
+                    cout << "PKT GRIPPER NON RICONOSCIUTO" << endl;
 
-
+                }//fine switch
+                //pacchetto è stato analizzato: resetto new_packet
+                new_packet--;
+            }//fine payload cmd
+            break;
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         default:
             //header non riconociuto
             cout << "HEADER NON RICONOSCIUTO" << endl;
@@ -715,6 +757,30 @@ void check_send_request()
         cmd_msg_last = cmd_msg;
         //resetto cmd_msg
         cmd_msg = NO_REQ;
+
+    }
+
+   /*GRIPPER*********************************************/
+    if(gripper_msg != NO_GRIPPER_REQ )
+    {
+        cout << "COMANDO PINZA RICEVUTO" << endl;
+        //preparo la struttura dati
+        std_msgs::Int32 msg;
+        //riempio la struttura dati
+        msg.data = gripper_msg;
+        //pubblico sul topc
+        gripper_topic.publish(msg);
+
+        //invio ack
+        coda_send_seriale.push(HEADER_A);
+        coda_send_seriale.push(HEADER_B);
+        coda_send_seriale.push(PAYLOAD_GRIPPER);
+        coda_send_seriale.push(PAYLOAD_ACK);
+  
+
+        
+        //resetto gripper_msg
+        gripper_msg = NO_GRIPPER_REQ;
 
     }
 
@@ -967,6 +1033,10 @@ int serial_init(int* fd,const char* seriale_dev)
     cmd_msg_last = NO_REQ;
     //nessun parametro da inviare
     param_msg = NO_PARAM;
+    //inizializzazione gripper_msg
+    gripper_msg = NO_GRIPPER_REQ;
+    //inizializzazione mode_msg
+    mode_msg = NO_MODE;
 
     return 1;
 }

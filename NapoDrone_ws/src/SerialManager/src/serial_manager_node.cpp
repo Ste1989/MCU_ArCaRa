@@ -25,6 +25,7 @@ int main(int argc, char **argv)
    */
     ros::NodeHandle n;
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
+    gripper_topic = n.advertise<std_msgs::Int32>("napodrone/gripper_request", 1);
     param_topic = n.advertise<serial_manager::Param>("napodrone/param_request", 1);
     mode_topic = n.advertise<std_msgs::Int32>("napodrone/mode_request", 1);
     waypoint_topic = n.advertise<geometry_msgs::Pose>("napodrone/waypoint", 1);

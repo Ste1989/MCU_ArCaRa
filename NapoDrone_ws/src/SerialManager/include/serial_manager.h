@@ -108,6 +108,8 @@ typedef enum{
     PAYLOAD_4_15,
     PAYLOAD_4_16,
     PAYLOAD_4_17,
+
+    PAYLOAD_5_2,
 } waiting_msg;
 
 //variabile per la memorizzazione dello stato della macchina a stati
@@ -117,6 +119,25 @@ waiting_msg state_msg;
 /**************************************************************************************************/
 #define NBYTES_PAYLOAD_WAYPOINT 17
 #define PAYLOAD_WAYPOINT  (int)0xF0
+
+/**************************************************************************************************/
+/******************PACCHETTO DI COMANDO PINZA******************************************************/
+/**************************************************************************************************/
+#define NBYTES_PAYLOAD_GRIPPER 2
+#define PAYLOAD_GRIPPER  (int)0xF4
+//lista dei comandi
+#define GRIPPER_CLOSE (int)0x80
+#define GRIPPER_OPEN (int)0x81
+#define GRIPPER_NO_REQ (int)0xFF
+/*possibili richiesta di comandi**********************************/
+typedef enum{
+    NO_GRIPPER_REQ,
+    CLOSE,
+    OPEN,
+} gripper_request;
+//variabile per la memorizzazione della richiesta effettuata
+gripper_request gripper_msg;
+
 /**************************************************************************************************/
 /******************PACCHETTO DI COMANDO************************************************************/
 /**************************************************************************************************/
@@ -313,6 +334,7 @@ ros::Publisher req_topic;
 ros::Publisher param_topic;
 ros::Publisher mode_topic;
 ros::Publisher waypoint_topic;
+ros::Publisher gripper_topic;
 
 /******************GLOBAL VAR***********************************************************************/
 int count = 0;
