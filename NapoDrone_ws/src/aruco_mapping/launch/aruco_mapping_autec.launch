@@ -1,10 +1,20 @@
 <?xml version="1.0"?>
 <launch> 
+  <!-- RVIZ -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find aruco_mapping)/launch/aruco_config.rviz" />
+
+
+
+  <!-- Image filtering for aruco -->
+  <node pkg="aruco_mapping_filter" type="aruco_mapping_filter" name="aruco_mapping_filter" output="screen">
+    <remap from="/camera/image_raw" to="/camera/color/image_raw"/>
+    <param name="/aruco_mapping_filter/threshold" type="int" value="105"/>
+  </node>
 
 
   <!-- ArUco mapping -->
   <node pkg="aruco_mapping" type="aruco_mapping" name="aruco_mapping">
-    <remap from="/image_raw" to="/camera/color/image_raw"/>
+    <remap from="/image_raw" to="/camera/image_raw_filtered"/>
 
     <param name="calibration_file" type="string" value="$(find aruco_mapping)/data/R200.ini" /> 
     <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_SIMAC.map" /> 

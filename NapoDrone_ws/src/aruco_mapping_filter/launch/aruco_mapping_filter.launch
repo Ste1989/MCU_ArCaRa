@@ -3,8 +3,8 @@
  
   <!-- Image filtering for aruco -->
   <node pkg="aruco_mapping_filter" type="aruco_mapping_filter" name="aruco_mapping_filter" output="screen">
-    <remap from="/camera/image_raw" to="/camera/image_raw"/>
-    <param name="threshold" type="int" value="240"/>
+    <remap from="/camera/image_raw" to="/camera/color/image_raw"/>
+    <param name="threshold" type="int" value="105"/>
   </node>
  
 </launch>

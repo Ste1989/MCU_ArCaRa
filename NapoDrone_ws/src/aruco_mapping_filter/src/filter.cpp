@@ -43,8 +43,7 @@ namespace image_filtering_for_aruco
 
 Filter::Filter(ros::NodeHandle* nh, image_transport::ImageTransport *it_nh)
 {
-  nh->getParam("threshold",user_threshold);
-  
+  nh->getParam("/aruco_mapping_filter/threshold",user_threshold);
   // If threshold value greater than limit, make it zero 
   if(user_threshold > 255)
     user_threshold = 0;
@@ -67,19 +66,30 @@ Filter::ImageCallback(const sensor_msgs::ImageConstPtr &original_image)
     
   // OpenCV to MAT structure
   I = cv_ptr->image;
-
+  //imshow( "originale", I );
+  //cv::waitKey(10);
+  I_filtered = I;
+  
   // Gaussian Blur sharpen filter
-  cv::GaussianBlur(I, I_filtered, cv::Size(0,0),2);
+  //cv::GaussianBlur(I_filtered, I_filtered, cv::Size(0,0),2);
+  //imshow( "GaussianBlur", I_filtered);
+  //cv::waitKey(10);
   
   // Weights
-  cv::addWeighted(I, 2.5, I_filtered, -1.5, 0, I_filtered);
+  //cv::addWeighted(I, 2.5, I_filtered, -1.5, 0, I_filtered);
+  //imshow( "addWeighted", I_filtered );
+  //cv::waitKey(10);
   
   // Equalize histogram
-  cv::equalizeHist(I_filtered,I_filtered);
+  //cv::equalizeHist(I_filtered,I_filtered);
+  //imshow( "equalizeHist", I_filtered );
+  //cv::waitKey(10);
 
   // Treshold
-  cv::threshold(I_filtered,I_filtered,user_threshold,0,3);
-
+  //cv::threshold(I_filtered,I_filtered,user_threshold,0,3);
+  cv::threshold(I_filtered,I_filtered,user_threshold,255,0);
+  //imshow( "filter", I_filtered );
+  //cv::waitKey(10);
   // Creating filtered image_raw and publishing
   cv_bridge::CvImagePtr in_msg;
   in_msg = cv_ptr;

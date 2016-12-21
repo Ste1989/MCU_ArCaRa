@@ -88,7 +88,7 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   //ROS publishers
   marker_msg_pub_           = nh->advertise<aruco_mapping::ArucoMarker>("aruco_poses",1);
   marker_visualization_pub_ = nh->advertise<visualization_msgs::Marker>("aruco_markers",1);
-          
+  pose_staped_pub =  nh->advertise<geometry_msgs::PoseStamped>("aruco_pose_stamped",1);       
   //Parse data from calibration file
   parseCalibrationFile(calib_filename_);
 
@@ -381,6 +381,10 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     world_position_geometry_msg_.orientation.y = camera_quaternion.getY();
     world_position_geometry_msg_.orientation.z = camera_quaternion.getZ();
     world_position_geometry_msg_.orientation.w = camera_quaternion.getW();
+
+    world_position_geometry_msg_stamped.pose = world_position_geometry_msg_;
+    world_position_geometry_msg_stamped.header.frame_id = "world";
+    pose_staped_pub.publish(world_position_geometry_msg_stamped);
   }
 
   //------------------------------------------------------
@@ -505,6 +509,7 @@ ArucoMapping::publishMarker(geometry_msgs::Pose marker_pose, int marker_id, int 
  
 
   vis_marker.header.stamp = ros::Time::now();
+  //visMarker.header = transformMsg.header;
   vis_marker.ns = "basic_shapes";
   vis_marker.id = marker_id;
   vis_marker.type = visualization_msgs::Marker::CUBE;
@@ -519,7 +524,6 @@ ArucoMapping::publishMarker(geometry_msgs::Pose marker_pose, int marker_id, int 
   vis_marker.color.g = RVIZ_MARKER_COLOR_G;
   vis_marker.color.b = RVIZ_MARKER_COLOR_B;
   vis_marker.color.a = RVIZ_MARKER_COLOR_A;
-
   vis_marker.lifetime = ros::Duration(RVIZ_MARKER_LIFETIME);
 
   marker_visualization_pub_.publish(vis_marker);

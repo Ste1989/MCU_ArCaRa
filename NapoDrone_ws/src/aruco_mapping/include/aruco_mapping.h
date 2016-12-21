@@ -59,7 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Custom message
 #include <aruco_mapping/ArucoMarker.h>
-
+#include <geometry_msgs/PoseStamped.h>
 /** \brief Aruco mapping namespace */
 namespace aruco_mapping
 {
@@ -114,6 +114,8 @@ private:
   /** \brief Publisher of aruco_mapping::ArucoMarker custom message*/
   ros::Publisher marker_msg_pub_;
 
+  /**pubblica la posa stimata */
+  ros::Publisher pose_staped_pub;
   /** \brief Compute TF from marker detector result*/
   tf::Transform arucoMarker2Tf(const aruco::Marker &marker);
 
@@ -140,7 +142,7 @@ private:
   
   /** \brief Actual Pose of camera with respect to world's origin */
   geometry_msgs::Pose world_position_geometry_msg_;
-
+  geometry_msgs::PoseStamped world_position_geometry_msg_stamped;
   aruco::CameraParameters aruco_calib_params_;
 
   int marker_counter_;
@@ -161,7 +163,7 @@ private:
    static const double INIT_MIN_SIZE_VALUE = 1000000;
 
    static const double RVIZ_MARKER_HEIGHT = 0.01;
-   static const double RVIZ_MARKER_LIFETIME = 0.2;
+   static const double RVIZ_MARKER_LIFETIME = 3;
    static const double RVIZ_MARKER_COLOR_R = 1.0;
    static const double RVIZ_MARKER_COLOR_G = 1.0;
    static const double RVIZ_MARKER_COLOR_B = 1.0;
