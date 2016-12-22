@@ -60,11 +60,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Custom message
 #include <aruco_mapping/ArucoMarker.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <sensor_msgs/Imu.h>
 /** \brief Aruco mapping namespace */
 namespace aruco_mapping
 {
 
 /** \brief Client class for Aruco mapping */  
+
+
 class ArucoMapping
 {
 public:
@@ -85,7 +88,8 @@ public:
   };
 
 public:
-  
+
+
   /** \brief Construct a client for EZN64 USB control*/  
   ArucoMapping(ros::NodeHandle *nh);
     
@@ -116,6 +120,10 @@ private:
 
   /**pubblica la posa stimata */
   ros::Publisher pose_staped_pub;
+
+  /*sottoscrizione al topic di IMU*/
+  ros::Subscriber imu_topic_sub;
+
   /** \brief Compute TF from marker detector result*/
   tf::Transform arucoMarker2Tf(const aruco::Marker &marker);
 
@@ -174,4 +182,6 @@ private:
 }; //ArucoMapping class
 }  //aruco_mapping namespace
 
+
+void imu_cb(const sensor_msgs::Imu::ConstPtr& imu);
 #endif //ARUCO_MAPPING_H

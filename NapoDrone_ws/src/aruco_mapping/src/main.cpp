@@ -48,6 +48,8 @@ main(int argc, char **argv)
   image_transport::ImageTransport it(nh);
   image_transport::Subscriber img_sub = it.subscribe("/image_raw", 1, &aruco_mapping::ArucoMapping::imageCallback, &obj);
 
+  ros::Subscriber imu_topic_sub = nh.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 1, imu_cb);
+
   ros::spin();
 
   return(EXIT_SUCCESS);

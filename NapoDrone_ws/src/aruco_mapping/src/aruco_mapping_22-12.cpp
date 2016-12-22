@@ -36,54 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <aruco_mapping.h>
 #include <fstream>
-double roll_imu, pitch_imu, yaw_imu;
-/********************************************************************************************/
-/*                                                                                         */
-/*    QUATERNION_2_EULER                                                                    */
-/*                                                                                         */
-/*******************************************************************************************/
-void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw)
-{
-  //Trasformo le corrdinate SVO in coordinate frame camera.
-  double r11 = wquat*wquat + xquat*xquat - yquat*yquat - zquat*zquat;
-  double r12 = 2*(xquat*yquat - wquat*zquat);
-  double r13 = 2*(zquat*xquat + wquat*yquat);
-  double r21 =  2*(xquat*yquat + wquat*zquat);
-  double r22 = wquat*wquat - xquat*xquat + yquat*yquat - zquat*zquat;
-  double r23 = 2*(yquat*zquat - wquat*xquat);
-  double r31 = 2*(zquat*xquat - wquat*yquat);
-  double r32 = 2*(yquat*zquat + wquat*xquat);
-  double r33 = wquat*wquat - xquat*xquat - yquat*yquat + zquat*zquat;
-  //Scrivo la trasposta:
-  double rt11,rt12,rt13,rt21,rt22,rt23,rt31,rt32,rt33;
-  rt11 = r11;
-  rt12 = r21;
-  rt13 = r31;
-  rt21 = r12;
-  rt22 = r22;
-  rt23 = r32;
-  rt31 = r13;
-  rt32 = r23;
-  rt33 = r33;
-  //calcolo angoli di eulero
-  roll = atan2(rt23,rt33);
-  pitch = -asin(rt13);
-  yaw = atan2(rt12,rt11);
-}
-/********************************************************************************************/
-/*                                                                                         */
-/*    CALBACK IMU                                                                           */
-/*                                                                                         */
-/*******************************************************************************************/
-void imu_cb(const sensor_msgs::Imu::ConstPtr& imu)
-{
-    double roll, pitch, yaw;
-    quaternion_2_euler(imu->orientation.x, imu->orientation.y, imu->orientation.z, imu->orientation.w, roll, pitch, yaw);
-    roll_imu = roll;
-    pitch_imu = pitch;
-    yaw_imu = yaw;
-}
-
 
 namespace aruco_mapping
 {
@@ -272,8 +224,8 @@ ArucoMapping::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
   processImage(I,I);
   
   // Show image
-  cv::imshow("Mono8", I);
-  cv::waitKey(10);  
+  //cv::imshow("Mono8", I);
+  //cv::waitKey(10);  
 }
 
 
@@ -430,7 +382,9 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     world_position_geometry_msg_.orientation.z = camera_quaternion.getZ();
     world_position_geometry_msg_.orientation.w = camera_quaternion.getW();
 
-
+    world_position_geometry_msg_stamped.pose = world_position_geometry_msg_;
+    world_position_geometry_msg_stamped.header.frame_id = "world";
+    pose_staped_pub.publish(world_position_geometry_msg_stamped);
   }
 
   //------------------------------------------------------
@@ -454,30 +408,23 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     marker_msg.marker_ids.clear();
     marker_msg.global_marker_poses.clear();
 
-    //stampo su file la differenza di stima tra rool e pitch 
-    double roll, pitch, yaw;
-    quaternion_2_euler(world_position_geometry_msg_.orientation.x,world_position_geometry_msg_.orientation.y,
-        world_position_geometry_msg_.orientation.z,world_position_geometry_msg_.orientation.w, 
-        roll, pitch, yaw);
-    if(roll > 0)
-      roll = roll - 3.141593;
-    else
-      roll = roll + 3.141593;
-
-    FILE* fd;
-    fd = fopen("/home/sistema/log.txt", "a");
-    fprintf(fd, "%f", roll - roll_imu);
+    //stampo su file la posizione della camera stimata nel fram world
+    /*FILE* fd;
+    fd = fopen("/home/robot/camera_pose.txt", "a");
+    fprintf(fd, "%f", world_position_geometry_msg_.position.x);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", pitch - pitch_imu);
+    fprintf(fd, "%f", world_position_geometry_msg_.position.y);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", yaw - yaw_imu);
+    fprintf(fd, "%f", world_position_geometry_msg_.position.z);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", roll_imu);
+    fprintf(fd, "%f", world_position_geometry_msg_.orientation.x);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", pitch_imu);
+    fprintf(fd, "%f", world_position_geometry_msg_.orientation.y);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f\n", yaw_imu);
-    fclose(fd);
+    fprintf(fd, "%f", world_position_geometry_msg_.orientation.z);
+    fprintf(fd, "%s", " ");
+    fprintf(fd, "%f\n", world_position_geometry_msg_.orientation.w);
+    fclose(fd);*/	
 
     for(size_t j = 0; j < num_of_markers_; j++)
     {
@@ -500,9 +447,6 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
   // Publish custom marker msg
   marker_msg_pub_.publish(marker_msg);
-  world_position_geometry_msg_stamped.pose = world_position_geometry_msg_;
-  world_position_geometry_msg_stamped.header.frame_id = "world";
-  pose_staped_pub.publish(world_position_geometry_msg_stamped);
 
   return true;
 }

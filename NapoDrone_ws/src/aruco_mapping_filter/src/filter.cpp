@@ -88,8 +88,8 @@ Filter::ImageCallback(const sensor_msgs::ImageConstPtr &original_image)
   // Treshold
   //cv::threshold(I_filtered,I_filtered,user_threshold,0,3);
   cv::threshold(I_filtered,I_filtered,user_threshold,255,0);
-  //imshow( "filter", I_filtered );
-  //cv::waitKey(10);
+  imshow( "filter", I_filtered );
+  cv::waitKey(10);
   // Creating filtered image_raw and publishing
   cv_bridge::CvImagePtr in_msg;
   in_msg = cv_ptr;
