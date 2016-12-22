@@ -268,6 +268,7 @@ ArucoMapping::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
   if(roi_allowed_==true)
     I = cv_ptr->image(cv::Rect(roi_x_,roi_y_,roi_w_,roi_h_));
 
+  
   //Marker detection
   processImage(I,I);
   
@@ -363,14 +364,13 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     //------------------------------------------------------
 
   }
-
   //------------------------------------------------------
   // Compute which of visible markers is the closest to the camera
   //------------------------------------------------------
   bool any_markers_visible=false;
   int num_of_visible_markers=0;
 
-
+/*
   double minimal_distance = INIT_MIN_SIZE_VALUE;
   for(int k = 0; k < num_of_markers_; k++)
   {
@@ -393,8 +393,63 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
       num_of_visible_markers++;
     }
   }
-  
+  */
 
+  
+  for(int k = 0; k < num_of_markers_; k++)
+  {
+    double a,b,c,size;
+    // If marker is visible, estimate position and attitude is calculated
+    if(markers_[k].visible==true)
+    {
+
+      tf::Vector3 camera_origin_k = markers_[k].current_camera_tf.getOrigin();
+      geometry_msgs::Pose marker_origin_k = markers_[k].geometry_msg_to_world;
+      //supponendo di aver scelto come in questo caso i sistemi current_camera_tf e world allineati 
+      //e supponendo di aver montato i marker allineati non si deve ruotare il sistema di riferimento
+      tf::Quaternion camera_quaternion_k = markers_[k].current_camera_tf.getRotation();
+      geometry_msgs::Pose world_position_geometry_k_;
+      // Saving TF to Pose
+      world_position_geometry_k_.position.x = camera_origin_k.getX() + marker_origin_k.position.x;
+      world_position_geometry_k_.position.y = camera_origin_k.getY() + marker_origin_k.position.y;
+      world_position_geometry_k_.position.z = camera_origin_k.getZ() + marker_origin_k.position.z;
+
+      //da controllare che non si sia bisogno di nessuna rotazione
+      world_position_geometry_k_.orientation.x = camera_quaternion_k.getX();
+      world_position_geometry_k_.orientation.y = camera_quaternion_k.getY();
+      world_position_geometry_k_.orientation.z = camera_quaternion_k.getZ();
+      world_position_geometry_k_.orientation.w = camera_quaternion_k.getW();
+      double roll, pitch, yaw;
+      quaternion_2_euler(world_position_geometry_k_.orientation.x,world_position_geometry_k_.orientation.y,
+        world_position_geometry_k_.orientation.z,world_position_geometry_k_.orientation.w, 
+        roll, pitch, yaw);
+      if(roll > 0)
+        roll = roll - 3.141593;
+      else
+        roll = roll + 3.141593;
+      std::cout << "roll " << abs(roll_imu - roll ) << std::endl;
+      std::cout <<"pitch " << abs(pitch_imu - pitch ) << std::endl;
+      if(abs(roll_imu - roll ) < 0.05 && abs(pitch_imu - pitch ) < 0.05)
+      {
+
+        //misura valida
+        ROS_INFO_STREAM("MISURA VALIDA");
+        world_position_geometry_msg_ = world_position_geometry_k_;
+
+      }
+
+
+
+
+
+
+
+
+      any_markers_visible = true;
+      num_of_visible_markers++;
+    }
+  }
+  
   //------------------------------------------------------
   // Publish all known markers
   //------------------------------------------------------
@@ -404,7 +459,7 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
   //------------------------------------------------------
   // Compute global camera pose
   //------------------------------------------------------
-  if(any_markers_visible == true)
+ /* if(any_markers_visible == true)
   {
     
 
@@ -432,7 +487,7 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
 
   }
-
+*/
   //------------------------------------------------------
   // Publish all known markers
   //------------------------------------------------------

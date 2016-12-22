@@ -73,7 +73,7 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Alpha: 1
-      Axes Length: 0.5
+      Axes Length: 0.2
       Axes Radius: 0.01
       Class: rviz/Pose
       Color: 255; 25; 0
@@ -123,10 +123,10 @@ Visualization Manager:
         Z: 0.38816
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.820201
+      Pitch: 0.755201
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.98221
+      Yaw: 4.37221
     Saved: ~
 Window Geometry:
   Displays:
