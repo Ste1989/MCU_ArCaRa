@@ -152,6 +152,7 @@ private:
   geometry_msgs::Pose world_position_geometry_msg_;
   geometry_msgs::PoseStamped world_position_geometry_msg_stamped;
   aruco::CameraParameters aruco_calib_params_;
+  int start_;
 
   int marker_counter_;
   int marker_counter_previous_;

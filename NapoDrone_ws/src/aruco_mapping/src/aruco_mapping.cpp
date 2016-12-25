@@ -157,6 +157,9 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   //parsing del file contenente lo scenrio
   parseScenarioFile(scenario_filename_);
   
+  //nessuna misura precedente disponibile
+  start_ = 0;
+
 
 }
 
@@ -369,8 +372,9 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
   //------------------------------------------------------
   bool any_markers_visible=false;
   int num_of_visible_markers=0;
+  if(start_ == 0 || start_ > 5)
+  {
 
-/*
   double minimal_distance = INIT_MIN_SIZE_VALUE;
   for(int k = 0; k < num_of_markers_; k++)
   {
@@ -391,11 +395,31 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
       any_markers_visible = true;
       num_of_visible_markers++;
+      start_ = 1;
     }
   }
-  */
+    //prendo la posizione della camera rispetto al marker piu vicino
+    tf::Vector3 camera_origin = markers_[closest_camera_index_].current_camera_tf.getOrigin();
+    geometry_msgs::Pose marker_origin = markers_[closest_camera_index_].geometry_msg_to_world;
+    //supponendo di aver scelto come in questo caso i sistemi current_camera_tf e world allineati 
+    //e supponendo di aver montato i marker allineati non si deve ruotare il sistema di riferimento
+    tf::Quaternion camera_quaternion = markers_[closest_camera_index_].current_camera_tf.getRotation();
 
-  
+
+
+    // Saving TF to Pose
+    world_position_geometry_msg_.position.x = camera_origin.getX() + marker_origin.position.x;
+    world_position_geometry_msg_.position.y = camera_origin.getY() + marker_origin.position.y;
+    world_position_geometry_msg_.position.z = camera_origin.getZ() + marker_origin.position.z;
+
+    //da controllare che non si sia bisogno di nessuna rotazione
+    world_position_geometry_msg_.orientation.x = camera_quaternion.getX();
+    world_position_geometry_msg_.orientation.y = camera_quaternion.getY();
+    world_position_geometry_msg_.orientation.z = camera_quaternion.getZ();
+    world_position_geometry_msg_.orientation.w = camera_quaternion.getW();
+
+  }else
+  {
   for(int k = 0; k < num_of_markers_; k++)
   {
     double a,b,c,size;
@@ -408,20 +432,40 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
       //supponendo di aver scelto come in questo caso i sistemi current_camera_tf e world allineati 
       //e supponendo di aver montato i marker allineati non si deve ruotare il sistema di riferimento
       tf::Quaternion camera_quaternion_k = markers_[k].current_camera_tf.getRotation();
-      geometry_msgs::Pose world_position_geometry_k_;
+      geometry_msgs::Pose cam_pose_world_k;
       // Saving TF to Pose
-      world_position_geometry_k_.position.x = camera_origin_k.getX() + marker_origin_k.position.x;
-      world_position_geometry_k_.position.y = camera_origin_k.getY() + marker_origin_k.position.y;
-      world_position_geometry_k_.position.z = camera_origin_k.getZ() + marker_origin_k.position.z;
+      cam_pose_world_k.position.x = camera_origin_k.getX() + marker_origin_k.position.x;
+      cam_pose_world_k.position.y = camera_origin_k.getY() + marker_origin_k.position.y;
+      cam_pose_world_k.position.z = camera_origin_k.getZ() + marker_origin_k.position.z;
 
       //da controllare che non si sia bisogno di nessuna rotazione
-      world_position_geometry_k_.orientation.x = camera_quaternion_k.getX();
-      world_position_geometry_k_.orientation.y = camera_quaternion_k.getY();
-      world_position_geometry_k_.orientation.z = camera_quaternion_k.getZ();
-      world_position_geometry_k_.orientation.w = camera_quaternion_k.getW();
-      double roll, pitch, yaw;
-      quaternion_2_euler(world_position_geometry_k_.orientation.x,world_position_geometry_k_.orientation.y,
-        world_position_geometry_k_.orientation.z,world_position_geometry_k_.orientation.w, 
+      cam_pose_world_k.orientation.x = camera_quaternion_k.getX();
+      cam_pose_world_k.orientation.y = camera_quaternion_k.getY();
+      cam_pose_world_k.orientation.z = camera_quaternion_k.getZ();
+      cam_pose_world_k.orientation.w = camera_quaternion_k.getW();
+
+
+      //calolo la distaza dalla vecchia misura di posizione, se minore di threshold allora è buona
+      a = cam_pose_world_k.position.x - world_position_geometry_msg_.position.x;
+      b = cam_pose_world_k.position.y - world_position_geometry_msg_.position.y;
+      c = cam_pose_world_k.position.z - world_position_geometry_msg_.position.z;
+      size = std::sqrt((a * a) + (b * b) + (c * c));
+      cout << "DISTANZA DA ULTIMA POSIZIONE : "<< size << endl;
+      double threshold_dist  = 0.1;
+
+      if(size <= threshold_dist)
+      {
+        //misura valida
+        ROS_INFO_STREAM("MISURA VALIDA");
+        world_position_geometry_msg_ = cam_pose_world_k;
+        any_markers_visible = true;
+        num_of_visible_markers++;
+        start_ = 1;
+        
+      }
+      /*double roll, pitch, yaw;
+      quaternion_2_euler(cam_pose_world_k.orientation.x,cam_pose_world_k.orientation.y,
+        cam_pose_world_k.orientation.z,cam_pose_world_k.orientation.w, 
         roll, pitch, yaw);
       if(roll > 0)
         roll = roll - 3.141593;
@@ -434,22 +478,23 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
         //misura valida
         ROS_INFO_STREAM("MISURA VALIDA");
-        world_position_geometry_msg_ = world_position_geometry_k_;
+        world_position_geometry_msg_ = cam_pose_world_k;
 
-      }
+        any_markers_visible = true;
+        num_of_visible_markers++;
 
+      }*/
 
-
-
-
-
-
-
-      any_markers_visible = true;
-      num_of_visible_markers++;
     }
   }
-  
+    //se non ho trovsato nessun maker buono devo rinizializzare la posizione (oppure mi fermo?)
+    if(!any_markers_visible)
+    {
+      start_++;
+    }
+      
+    
+  }
   //------------------------------------------------------
   // Publish all known markers
   //------------------------------------------------------
@@ -521,17 +566,17 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
     FILE* fd;
     fd = fopen("/home/sistema/log.txt", "a");
-    fprintf(fd, "%f", roll - roll_imu);
+    fprintf(fd, "%f", roll);// - roll_imu);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", pitch - pitch_imu);
+    fprintf(fd, "%f", pitch);// - pitch_imu);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", yaw - yaw_imu);
+    fprintf(fd, "%f", yaw);// - yaw_imu);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", roll_imu);
+    fprintf(fd, "%f", world_position_geometry_msg_.position.x);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", pitch_imu);
+    fprintf(fd, "%f", world_position_geometry_msg_.position.x);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f\n", yaw_imu);
+    fprintf(fd, "%f\n", world_position_geometry_msg_.position.x);
     fclose(fd);
 
     for(size_t j = 0; j < num_of_markers_; j++)
