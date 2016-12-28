@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch> 
   <!-- RVIZ -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find aruco_mapping)/launch/aruco_config.rviz" />
+ <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find aruco_mapping)/launch/aruco_config.rviz" />-->
 
 
 
@@ -16,7 +16,7 @@
   <node pkg="aruco_mapping" type="aruco_mapping" name="aruco_mapping" output="screen">
    <!--  <remap from="/image_raw" to="/camera/image_raw_filtered"/>-->
     <remap from="/image_raw" to="/camera/color/image_raw"/>
-    <param name="calibration_file" type="string" value="$(find aruco_mapping)/data/R200.ini" /> 
+    <param name="calibration_file" type="string" value="$(find aruco_mapping)/data/R200_1920x1080.ini" /> 
     <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_SIMAC.map" /> 
     <param name="num_of_markers" type="int" value="108" />
     <param name="marker_size" type="double" value="0.11"/>
@@ -24,8 +24,8 @@
     <param name="roi_allowed" type="bool" value="false" /> 
     <param name="roi_x" type="int" value="0" /> 
     <param name="roi_y" type="int" value="0" /> 
-    <param name="roi_width" type="int" value="640" /> 
-    <param name="roi_height" type="int" value="480" />  
+    <param name="roi_width" type="int" value="1920" /> 
+    <param name="roi_height" type="int" value="1080" />  
 
   </node> 
   

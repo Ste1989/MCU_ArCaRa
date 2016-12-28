@@ -139,8 +139,9 @@ private:
   bool roi_allowed_;
   int  roi_x_;                                      
   int  roi_y_;                                      
-  int  roi_w_;                                     
-  int  roi_h_;     
+  int  roi_w_;                                    
+  int  roi_h_;
+  int id_img;
   
   /** \brief Container holding MarkerInfo data about all detected markers */
   std::vector<MarkerInfo> markers_;

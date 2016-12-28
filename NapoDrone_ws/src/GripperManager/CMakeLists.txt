@@ -1,40 +1,25 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(gripper_manager)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  roscpp
-)
+## Find catkin and any catkin packages
+find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs)
+
+set (mraa_INCLUDE_DIRS "/usr/local/include/mraa")
+set (mraa_LIBRARIES "/usr/local/lib/x86_64-linux-gnu/libmraa.so")
 
 
 
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 
-
-
+## Declare a catkin package
 catkin_package()
 
-###########
-## Build ##
-###########
+## Build 
+include_directories(include ${catkin_INCLUDE_DIRS}  ${mraa_INCLUDE_DIRS})
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-# include_directories(include)
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
+add_executable(gripper_manager src/main.cpp)
+target_link_libraries(gripper_manager ${catkin_LIBRARIES} ${mraa_LIBRARIES})
 
-#add_library(AutopilotManagerFunction  src/autopilot_manager_function.cpp)
-#target_link_libraries(AutopilotManagerFunction ${catkin_LIBRARIES})
 
-#add_executable(AutopilotManager_Node src/autopilot_manager_node.cpp)
-#target_link_libraries(AutopilotManager_Node AutopilotManagerFunction ${catkin_LIBRARIES})
+
 
 

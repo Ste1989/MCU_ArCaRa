@@ -112,8 +112,8 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   nh->getParam("/aruco_mapping/roi_allowed",roi_allowed_);
   nh->getParam("/aruco_mapping/roi_x",roi_x_);
   nh->getParam("/aruco_mapping/roi_y",roi_y_);
-  nh->getParam("/aruco_mapping/roi_w",roi_w_);
-  nh->getParam("/aruco_mapping/roi_h",roi_h_);
+  nh->getParam("/aruco_mapping/roi_width",roi_w_);
+  nh->getParam("/aruco_mapping/roi_height",roi_h_);
      
   // Double to float conversion
   marker_size_ = float(temp_marker_size);
@@ -160,6 +160,8 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   //nessuna misura precedente disponibile
   start_ = 0;
 
+  //id_imgh
+  id_img = 0;
 
 }
 
@@ -274,7 +276,28 @@ ArucoMapping::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
   
   //Marker detection
   processImage(I,I);
-  
+/*
+    stringstream s_idx;
+    s_idx << id_img;
+    string str_path  = s_idx.str();
+
+    if(id_img < 10)
+      str_path  = "/home/robot/camera000"+ str_path + ".jpg";
+    if(id_img>=10 && id_img < 100)
+      str_path  = "/home/robot/camera00"+ str_path + ".jpg";
+    if(id_img>=100 && id_img < 1000)
+      str_path  = "/home/robot/camera0"+ str_path + ".jpg";
+    if(id_img>=1000 && id_img < 10000)
+      str_path  = "/home/robot/camera"+ str_path + ".jpg";
+    if(id_img > 10000)
+      str_path  = "/home/robot/camera"+ str_path + ".jpg";
+
+    //salvo su disco l'immagine
+    imwrite( str_path, I );
+
+
+    id_img++;
+  */
   // Show image
   cv::imshow("Mono8", I);
   cv::waitKey(10);  
