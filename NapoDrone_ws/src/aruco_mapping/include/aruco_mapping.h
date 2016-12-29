@@ -142,7 +142,7 @@ private:
   int  roi_w_;                                    
   int  roi_h_;
   int id_img;
-  
+  double secs_0;
   /** \brief Container holding MarkerInfo data about all detected markers */
   std::vector<MarkerInfo> markers_;
    
