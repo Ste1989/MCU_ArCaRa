@@ -27,6 +27,7 @@ sudo chmod 777 /sys/class/pwm/pwmchip0/pwm0/enable
 sudo chmod 777 /sys/class/pwm/pwmchip0/pwm0/duty_cycle
 sudo chmod 777 /sys/class/pwm/pwmchip0/pwm0/period
 
+echo "DONE"
 
 
 
