@@ -1,64 +1,11 @@
-#include "ros/ros.h"
+#include "gripper_manager.h"
 
-#include <sstream>
-#include "std_msgs/String.h"
-#include <unistd.h>
-#include <signal.h>
-#include "mraa.hpp"
-#include "mraa/pwm.h"
-#include <geometry_msgs/Vector3.h>
 
-//sudo chmod 777 /sys/class/gpio/export
-//sudo chmod 777 /sys/class/gpio/unexport
-//sudo chmod 777 value 
-//sudo chmod 777 direction
-//sudo chmod 777 /sys/class/pwm/pwmchip0/export ecc..
-
-//mraa::Pwm* pwm;
-mraa::Pwm* pwm;
-mraa::Gpio* gpio;
-
-int running;
-/****************************************************************************/
-/*                                                                          */
-/*             SIG HANDLER                                                  */
-/***************************************************************************/
-/*void sig_handler(int signo)
-{
-    if (signo == SIGINT) {
-        printf("closing PWM nicely\n");
-        running = -1;
-    }
-}
-// Callback for gripper: opening or closing 
-*/
-/****************************************************************************/
-/*                                                                          */
-/*             COMMAND GRIPPPER                                             */
-/***************************************************************************/
-void cmdgripperCallback(const geometry_msgs::Vector3::ConstPtr& msg)
-{   
-    double speed = 0.0f;
-    int us = 0;
-    int dir = 0;
-    // Parsing data
-    speed = msg->x;
-    us = msg->y;
-    dir = msg->z;
- 
-    // Set the output duty-cycle percentage, as a float
-    // Values above or below this range will be set at either 0.0f or 1.0f
-    speed = speed > 1.0f ? 1.0f : speed;
-    speed = speed < 0.0f ? 0.0f : speed;
-    pwm->write(speed);
- 
-    // Set direction : 0 o 1
-    gpio->write(dir);
- 
-    //delete pwm;
- 
-    //return MRAA_SUCCESS;*/
-}
+/***********************************************************************************************/
+/*                                                                                             */
+/*                      MAIN                                                                   */
+/*                                                                                             */
+/***********************************************************************************************/
 int main(int argc, char **argv)
 {
 
@@ -72,43 +19,36 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
 
   //leggi launch file
-  int pwm_pin;
-  n.param<int>("/gripper_manager/pwm_pin", pwm_pin, 0);
-  //TOPIC SUBSCRIBE OR PUBLISH
-  ros::Subscriber cmd_gripper_sub = n.subscribe("cmdgripper", 1000, cmdgripperCallback);
+  int pwm_pin, dir_pin;
+  n.param<int>("/gripper_manager/pwm_pin", pwm_pin, 32);
+  n.param<int>("/gripper_manager/dir_pin", dir_pin, 37);
+  n.param<double>("/gripper_manager/time_grip", time_open2close, 2.5);
 
-  ros::Rate loop_rate(100);
+  //topic subscribe
+  gripper_sub = n.subscribe("napodrone/gripper_request", 1, cmdgripperCallback);
+  gripper_pub = n.advertise<std_msgs::Int32>("napodrone/gripper_status", 1);
 
-  /*********Init*************************/
-  //signal(SIGINT, sig_handler);
-  // Init PWM pin and ENABLE
-  pwm = new mraa::Pwm(pwm_pin);
-  if (pwm == NULL) 
-    ROS_ERROR("non sono riusciuto a aprire il in 3");
-  //periodo 2ms
-  pwm->period(2000);
-  pwm->enable(true);
-  pwm->write(1);
-  ROS_INFO("PWM CONFIGURATO");
+  /*********Init*******************************************************************************/
+  signal(SIGINT, sig_handler);
 
-     
-  // Init GPIO pin for direction
-  gpio = new mraa::Gpio(37);
-  if (gpio == NULL) 
-    ROS_ERROR("non sono riusciuto a aprire il in 37");
-  mraa::Result response = gpio->dir(mraa::DIR_OUT);
-  ROS_INFO("PIN IN USCITA");
-  gpio->write(1);
-  /*******Ciclo******************************/
+  init_pwm_gpio(pwm_pin, dir_pin);
+  
+
+  ros::Rate loop_rate(100); 
+  //apro la pinza e notifico che è aperta
+  //ROS_INFO("APRO LA PINZA");
+  //cmd_gripper(0, 1);
+  //std_msgs::Int32 msg;
+  //msg.data = 0;
+  //gripper_pub.publish(msg);
+  /*******Ciclo***************************************************************************/
   while (ros::ok())
   {
 
-    gpio->write(1);
     ros::spin();
 
     loop_rate.sleep();
   }
-
-
+  
   return 0;
 }

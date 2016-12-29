@@ -16,8 +16,11 @@ catkin_package()
 ## Build 
 include_directories(include ${catkin_INCLUDE_DIRS}  ${mraa_INCLUDE_DIRS})
 
+add_library(GripperFunction  src/gripper_function.cpp)
+target_link_libraries(GripperFunction  ${catkin_LIBRARIES} ${mraa_LIBRARIES})
+
 add_executable(gripper_manager src/main.cpp)
-target_link_libraries(gripper_manager ${catkin_LIBRARIES} ${mraa_LIBRARIES})
+target_link_libraries(gripper_manager GripperFunction ${catkin_LIBRARIES} ${mraa_LIBRARIES})
 
 
 
