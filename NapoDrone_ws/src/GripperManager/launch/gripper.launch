@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch> 
+  <node pkg="gripper_manager" type="gripper_manager" name="gripper_manager" output="screen">
+    	<param name="pwm_pin" type="int" value="32" />  
+
+  </node> 
+  
+</launch>
