@@ -270,8 +270,8 @@ ArucoMapping::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
   processImage(I,I);
   
   // Show image
-  //cv::imshow("Mono8", I);
-  //cv::waitKey(10);  
+  cv::imshow("Mono8", I);
+  cv::waitKey(10);  
 }
 
 
@@ -291,7 +291,8 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
   // Detect markers
   Detector.detect(input_image,temp_markers,aruco_calib_params_,marker_size_);
-    
+  //BoardDetector the_board_detector.detect(temp_markers, the_board_config, the_board_detected, aruco_calib_params_,marker_size_);
+
   // If no marker found, print statement
   if(temp_markers.size() == 0)
     ROS_DEBUG("No marker found!");
@@ -391,17 +392,28 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
       num_of_visible_markers++;
     }
   }
-  
+  //stima di posizione da tutti i marker visibili
+  /*for(int k = 0; k < num_of_markers_; k++)
+  {
+    if(markers_[k].visible == true)
+    {
 
-  //------------------------------------------------------
-  // Publish all known markers
-  //------------------------------------------------------
- 
-  //publishTfs(true);
+      tf::Vector3 camera_origin = markers_[k].current_camera_tf.getOrigin();
+      geometry_msgs::Pose marker_origin = markers_[k].geometry_msg_to_world;
+      tf::Quaternion camera_quaternion = markers_[k].current_camera_tf.getRotation();
+      cout << "MARKER ID: " << markers_[k].marker_id << endl;
+      cout << "CAMERA ORIGIN: " <<  camera_origin.getX() << " " << camera_origin.getY() << " " << camera_origin.getZ() << endl;
+      cout << "MARKER ORIGIN: " <<  marker_origin.position.x << " " << marker_origin.position.y << " " << marker_origin.position.z << endl;
 
-  //------------------------------------------------------
-  // Compute global camera pose
-  //------------------------------------------------------
+
+
+    }
+
+  }*/
+
+
+
+
   if(any_markers_visible == true)
   {
     
@@ -415,7 +427,9 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     //e supponendo di aver montato i marker allineati non si deve ruotare il sistema di riferimento
     tf::Quaternion camera_quaternion = markers_[closest_camera_index_].current_camera_tf.getRotation();
 
-
+    cout << "MARKER ID: " << markers_[closest_camera_index_].marker_id << endl;
+    cout << "CAMERA ORIGIN: " <<  camera_origin.getX() << " " << camera_origin.getY() << " " << camera_origin.getZ() << endl;
+    cout << "MARKER ORIGIN: " <<  marker_origin.position.x << " " << marker_origin.position.y << " " << marker_origin.position.z << endl;
 
     // Saving TF to Pose
     world_position_geometry_msg_.position.x = camera_origin.getX() + marker_origin.position.x;

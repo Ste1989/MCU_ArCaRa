@@ -50,6 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <aruco/cameraparameters.h>
 #include <aruco/cvdrawingutils.h>
 #include <aruco/arucofidmarkers.h>
+#include <aruco/boarddetector.h>
 
 // OpenCV libraries
 #include <opencv2/opencv.hpp>
@@ -143,6 +144,9 @@ private:
   int  roi_h_;
   int id_img;
   double secs_0;
+  aruco::BoardConfiguration the_board_config;
+  aruco::BoardDetector the_board_detector;
+  aruco::Board the_board_detected;
   /** \brief Container holding MarkerInfo data about all detected markers */
   std::vector<MarkerInfo> markers_;
    
