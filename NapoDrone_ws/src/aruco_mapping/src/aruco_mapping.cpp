@@ -37,6 +37,41 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <aruco_mapping.h>
 #include <fstream>
 double roll_imu, pitch_imu, yaw_imu;
+tf::Transform getTf(const cv::Mat &Rvec, const cv::Mat &Tvec)
+{
+  cv::Mat rot(3, 3, CV_32FC1);
+  cv::Rodrigues(Rvec, rot);
+
+  cv::Mat rotate_to_sys(3, 3, CV_32FC1);
+  /**
+  /* Fixed the rotation to meet the ROS system
+  /* Doing a basic rotation around X with theta=PI
+  /* By Sahloul
+  /* See http://en.wikipedia.org/wiki/Rotation_matrix for details
+  */
+
+  //  1 0 0
+  //  0 -1  0
+  //  0 0 -1
+  rotate_to_sys.at<float>(0,0) = 1.0;
+  rotate_to_sys.at<float>(0,1) = 0.0;
+  rotate_to_sys.at<float>(0,2) = 0.0;
+  rotate_to_sys.at<float>(1,0) = 0.0;
+  rotate_to_sys.at<float>(1,1) = -1.0;
+  rotate_to_sys.at<float>(1,2) = 0.0;
+  rotate_to_sys.at<float>(2,0) = 0.0;
+  rotate_to_sys.at<float>(2,1) = 0.0;
+  rotate_to_sys.at<float>(2,2) = -1.0;
+  rot = rot*rotate_to_sys.t();
+
+  tf::Matrix3x3 tf_rot(rot.at<float>(0,0), rot.at<float>(0,1), rot.at<float>(0,2),
+    rot.at<float>(1,0), rot.at<float>(1,1), rot.at<float>(1,2),
+    rot.at<float>(2,0), rot.at<float>(2,1), rot.at<float>(2,2));
+
+  tf::Vector3 tf_orig(Tvec.at<float>(0,0), Tvec.at<float>(1,0), Tvec.at<float>(2,0));
+
+  return tf::Transform(tf_rot, tf_orig);
+}
 /********************************************************************************************/
 /*                                                                                         */
 /*    QUATERNION_2_EULER                                                                    */
@@ -112,6 +147,7 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   nh->getParam("/aruco_mapping/roi_y",roi_y_);
   nh->getParam("/aruco_mapping/roi_w",roi_w_);
   nh->getParam("/aruco_mapping/roi_h",roi_h_);
+  nh->param<std::string>("/aruco_mapping/board_config", board_config, "boardConfiguration.yml");
      
   // Double to float conversion
   marker_size_ = float(temp_marker_size);
@@ -155,6 +191,11 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   //parsing del file contenente lo scenrio
   parseScenarioFile(scenario_filename_);
   
+
+  //board config
+  the_board_config.readFromFile(board_config.c_str());
+  ROS_INFO("Letta configurazione board %s", board_config.c_str());
+
   secs_0 =ros::Time::now().toSec();
 }
 
@@ -279,6 +320,7 @@ bool
 
 ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 {
+  cv::Mat resultImg = input_image;
   aruco::MarkerDetector Detector;
   std::vector<aruco::Marker> temp_markers;
 
@@ -291,8 +333,14 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
   // Detect markers
   Detector.detect(input_image,temp_markers,aruco_calib_params_,marker_size_);
-  //BoardDetector the_board_detector.detect(temp_markers, the_board_config, the_board_detected, aruco_calib_params_,marker_size_);
-
+  float probDetect = the_board_detector.detect(temp_markers, the_board_config, the_board_detected, aruco_calib_params_,marker_size_);
+  if (probDetect > 0.0)
+  {
+    
+    tf::Transform transform = getTf(the_board_detected.Rvec, the_board_detected.Tvec);
+    cout << "BOARD: " << the_board_detected.Rvec << " " << the_board_detected.Tvec << endl;
+  }
+  
   // If no marker found, print statement
   if(temp_markers.size() == 0)
     ROS_DEBUG("No marker found!");

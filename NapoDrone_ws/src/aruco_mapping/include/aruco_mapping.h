@@ -145,6 +145,7 @@ private:
   int id_img;
   double secs_0;
   aruco::BoardConfiguration the_board_config;
+  std::string board_config;
   aruco::BoardDetector the_board_detector;
   aruco::Board the_board_detected;
   /** \brief Container holding MarkerInfo data about all detected markers */
