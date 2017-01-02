@@ -522,11 +522,14 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     fd = fopen("/home/sistema/camera_pose.txt", "a");
     fprintf(fd, "%f", secs -  secs_0);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", world_position_geometry_msg_.position.x);
+    //fprintf(fd, "%f", world_position_geometry_msg_.position.x);
+    fprintf(fd, "%f", the_board_detected.Tvec.at<float>(0,0));
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", world_position_geometry_msg_.position.y);
+    //fprintf(fd, "%f", world_position_geometry_msg_.position.y);
+    fprintf(fd, "%f", the_board_detected.Tvec.at<float>(1,0));
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", world_position_geometry_msg_.position.z);
+    //fprintf(fd, "%f", world_position_geometry_msg_.position.z);
+    fprintf(fd, "%f", the_board_detected.Tvec.at<float>(2,0));
     fprintf(fd, "%s", " ");
     fprintf(fd, "%f", world_position_geometry_msg_.orientation.x);
     fprintf(fd, "%s", " ");
