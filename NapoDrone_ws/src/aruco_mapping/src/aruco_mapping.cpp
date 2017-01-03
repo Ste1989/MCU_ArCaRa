@@ -197,6 +197,12 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   ROS_INFO("Letta configurazione board %s", board_config.c_str());
 
   secs_0 =ros::Time::now().toSec();
+  image_transport::ImageTransport it(*nh);
+  image_pub = it.advertise("/aruco/result", 1);
+  debug_pub = it.advertise("/aruco/debug", 1);
+  pose_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose", 100);
+  transform_pub = nh->advertise<geometry_msgs::TransformStamped>("/aruco/transform", 100);
+  position_pub = nh->advertise<geometry_msgs::Vector3Stamped>("/aruco/position", 100);
 }
 
 ArucoMapping::~ArucoMapping()
@@ -308,7 +314,7 @@ ArucoMapping::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
     I = cv_ptr->image(cv::Rect(roi_x_,roi_y_,roi_w_,roi_h_));
 
   //Marker detection
-  processImage(I,I);
+  processImage(I,I,original_image->header);
   
   // Show image
   cv::imshow("Mono8", I);
@@ -318,8 +324,9 @@ ArucoMapping::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
 
 bool
 
-ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
+ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::Header header)
 {
+  static tf::TransformBroadcaster br;
   cv::Mat resultImg = input_image;
   aruco::MarkerDetector Detector;
   std::vector<aruco::Marker> temp_markers;
@@ -333,13 +340,71 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
 
   // Detect markers
   Detector.detect(input_image,temp_markers,aruco_calib_params_,marker_size_);
+  //Detect board
   float probDetect = the_board_detector.detect(temp_markers, the_board_config, the_board_detected, aruco_calib_params_,marker_size_);
   if (probDetect > 0.0)
   {
-    
+    //trasformazione
     tf::Transform transform = getTf(the_board_detected.Rvec, the_board_detected.Tvec);
     cout << "BOARD: " << the_board_detected.Rvec << " " << the_board_detected.Tvec << endl;
-  }
+
+    tf::StampedTransform stampedTransform(transform, header.stamp, header.frame_id, "world");
+
+    br.sendTransform(stampedTransform);
+
+    geometry_msgs::PoseStamped poseMsg;
+    tf::poseTFToMsg(transform, poseMsg.pose);
+    poseMsg.header.frame_id = header.frame_id;
+    poseMsg.header.stamp = header.stamp;
+    pose_pub.publish(poseMsg);
+
+    geometry_msgs::TransformStamped transformMsg;
+    tf::transformStampedTFToMsg(stampedTransform, transformMsg);
+    transform_pub.publish(transformMsg);
+
+    geometry_msgs::Vector3Stamped positionMsg;
+    positionMsg.header = transformMsg.header;
+    positionMsg.vector = transformMsg.transform.translation;
+    position_pub.publish(positionMsg);
+
+    if(temp_markers.size() > 0)
+    {
+      //draw a 3d cube in each marker if there is 3d info
+      for(size_t i=0; i<temp_markers.size(); ++i)
+      {
+        aruco::CvDrawingUtils::draw3dCube(resultImg, temp_markers[i], aruco_calib_params_);
+        aruco::CvDrawingUtils::draw3dAxis(resultImg, temp_markers[i], aruco_calib_params_);
+      }
+      //draw board axis
+      if (probDetect > 0.0) aruco::CvDrawingUtils::draw3dAxis(resultImg, the_board_detected, aruco_calib_params_);
+    }
+
+    //if(image_pub.getNumSubscribers() > 0)
+    if(true)
+    {
+      //show input with augmented information
+      cv_bridge::CvImage out_msg;
+      out_msg.header.frame_id = header.frame_id;
+      out_msg.header.stamp = header.stamp;
+      out_msg.encoding = sensor_msgs::image_encodings::RGB8;
+      out_msg.image = resultImg;
+      cv::imshow("result", resultImg);
+      cv::waitKey(10);
+      //image_pub.publish(out_msg.toImageMsg());
+    }
+
+    if(debug_pub.getNumSubscribers() > 0)
+    {
+      //show also the internal image resulting from the threshold operation
+      cv_bridge::CvImage debug_msg;
+      debug_msg.header.frame_id = header.frame_id;
+      debug_msg.header.stamp = header.stamp;
+      debug_msg.encoding = sensor_msgs::image_encodings::MONO8;
+      debug_msg.image = Detector.getThresholdedImage();
+      debug_pub.publish(debug_msg.toImageMsg());
+    }
+
+  }//fine if board detect
   
   // If no marker found, print statement
   if(temp_markers.size() == 0)
@@ -522,22 +587,17 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image)
     fd = fopen("/home/sistema/camera_pose.txt", "a");
     fprintf(fd, "%f", secs -  secs_0);
     fprintf(fd, "%s", " ");
-    //fprintf(fd, "%f", world_position_geometry_msg_.position.x);
-    fprintf(fd, "%f", the_board_detected.Tvec.at<float>(0,0));
+    fprintf(fd, "%f", -the_board_detected.Tvec.at<float>(0,0));
     fprintf(fd, "%s", " ");
-    //fprintf(fd, "%f", world_position_geometry_msg_.position.y);
     fprintf(fd, "%f", the_board_detected.Tvec.at<float>(1,0));
     fprintf(fd, "%s", " ");
-    //fprintf(fd, "%f", world_position_geometry_msg_.position.z);
     fprintf(fd, "%f", the_board_detected.Tvec.at<float>(2,0));
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", world_position_geometry_msg_.orientation.x);
+    fprintf(fd, "%f", world_position_geometry_msg_.position.x);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", world_position_geometry_msg_.orientation.y);
+    fprintf(fd, "%f", world_position_geometry_msg_.position.y);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", world_position_geometry_msg_.orientation.z);
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f\n", world_position_geometry_msg_.orientation.w);
+    fprintf(fd, "%f\n", world_position_geometry_msg_.position.z);
     fclose(fd);	
 
     for(size_t j = 0; j < num_of_markers_; j++)

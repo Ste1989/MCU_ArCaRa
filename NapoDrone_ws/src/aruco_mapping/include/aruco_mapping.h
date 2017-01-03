@@ -62,6 +62,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <aruco_mapping/ArucoMarker.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Imu.h>
+#include <std_msgs/Header.h>
+#include <geometry_msgs/Vector3Stamped.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/PoseStamped.h>
 /** \brief Aruco mapping namespace */
 namespace aruco_mapping
 {
@@ -129,7 +133,7 @@ private:
   tf::Transform arucoMarker2Tf(const aruco::Marker &marker);
 
   /** \brief Process actual image, detect markers and compute poses */
-  bool processImage(cv::Mat input_image,cv::Mat output_image);
+  bool processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::Header header);
 
   //Launch file params
   std::string calib_filename_; 
@@ -142,12 +146,20 @@ private:
   int  roi_y_;                                      
   int  roi_w_;                                    
   int  roi_h_;
+  //cose aggiunte
   int id_img;
   double secs_0;
   aruco::BoardConfiguration the_board_config;
   std::string board_config;
   aruco::BoardDetector the_board_detector;
   aruco::Board the_board_detected;
+  image_transport::Publisher image_pub;
+  image_transport::Publisher debug_pub;
+  ros::Publisher pose_pub;
+  ros::Publisher transform_pub; 
+  ros::Publisher position_pub;
+  int start_;
+
   /** \brief Container holding MarkerInfo data about all detected markers */
   std::vector<MarkerInfo> markers_;
    
@@ -158,7 +170,7 @@ private:
   geometry_msgs::Pose world_position_geometry_msg_;
   geometry_msgs::PoseStamped world_position_geometry_msg_stamped;
   aruco::CameraParameters aruco_calib_params_;
-  int start_;
+  
 
   int marker_counter_;
   int marker_counter_previous_;
