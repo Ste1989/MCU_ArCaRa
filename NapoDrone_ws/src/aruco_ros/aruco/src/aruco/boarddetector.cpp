@@ -148,6 +148,8 @@ namespace aruco
 
       cv::Mat rvec,tvec;
       cv::solvePnP(objPoints,imagePoints,camMatrix,distCoeff,rvec,tvec );
+      cout << "tvec" << tvec << endl;
+      cout << "rvec" << rvec << endl;
       rvec.convertTo(Bdetected.Rvec,CV_32FC1);
       tvec.convertTo(Bdetected.Tvec,CV_32FC1);
       //now, rotate 90 deg in X so that Y axis points up

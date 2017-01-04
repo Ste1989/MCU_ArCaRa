@@ -346,7 +346,7 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
   if (probDetect > 0.0)
   {
     //trasformazione
-    
+    cout << "TVEC: " << the_board_detected.Tvec << " RVEC:" << the_board_detected.Rvec.at<float>(0,0)*180/3.14159 << " " << the_board_detected.Rvec.at<float>(1,0)*180/3.14159 << " " << the_board_detected.Rvec.at<float>(2,0)*180/3.14159 << endl;
     tf::Transform transform = getTf(the_board_detected.Rvec, the_board_detected.Tvec);
 
 
@@ -586,8 +586,8 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
 
     //stampo su file la posizione della camera stimata nel fram world
     double roll_v, pitch_v, yaw_v;
-    quaternion_2_euler(poseMsg.pose.orientation.x, poseMsg.pose.orientation.y, poseMsg.pose.orientation.z, poseMsg.pose.orientation.w, roll_v, pitch_v, yaw_v);
-    
+    //quaternion_2_euler(poseMsg.pose.orientation.x, poseMsg.pose.orientation.y, poseMsg.pose.orientation.z, poseMsg.pose.orientation.w, roll_v, pitch_v, yaw_v);
+    quaternion_2_euler(world_position_geometry_msg_.orientation.x, world_position_geometry_msg_.orientation.y, world_position_geometry_msg_.orientation.z, world_position_geometry_msg_.orientation.w, roll_v, pitch_v, yaw_v);
     double secs =ros::Time::now().toSec();
     FILE* fd;
     fd = fopen("/home/sistema/camera_pose.txt", "a");
