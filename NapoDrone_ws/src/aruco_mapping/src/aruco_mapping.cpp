@@ -53,7 +53,7 @@ tf::Transform getTf(const cv::Mat &Rvec, const cv::Mat &Tvec)
   //  1 0 0
   //  0 -1  0
   //  0 0 -1
-  rotate_to_sys.at<float>(0,0) = 1.0;
+  /*rotate_to_sys.at<float>(0,0) = 1.0;
   rotate_to_sys.at<float>(0,1) = 0.0;
   rotate_to_sys.at<float>(0,2) = 0.0;
   rotate_to_sys.at<float>(1,0) = 0.0;
@@ -61,8 +61,12 @@ tf::Transform getTf(const cv::Mat &Rvec, const cv::Mat &Tvec)
   rotate_to_sys.at<float>(1,2) = 0.0;
   rotate_to_sys.at<float>(2,0) = 0.0;
   rotate_to_sys.at<float>(2,1) = 0.0;
-  rotate_to_sys.at<float>(2,2) = -1.0;
-  rot = rot*rotate_to_sys.t();
+  rotate_to_sys.at<float>(2,2) = -1.0;*/
+
+  //MODIFICATO, LEVATO LA ROTAZONE DI 180 SU X
+  //rot = rot*rotate_to_sys.t();
+
+  
 
   tf::Matrix3x3 tf_rot(rot.at<float>(0,0), rot.at<float>(0,1), rot.at<float>(0,2),
     rot.at<float>(1,0), rot.at<float>(1,1), rot.at<float>(1,2),
@@ -350,6 +354,7 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
     tf::Transform transform = getTf(the_board_detected.Rvec, the_board_detected.Tvec);
 
 
+
     tf::StampedTransform stampedTransform(transform, header.stamp, header.frame_id, "world");
 
     br.sendTransform(stampedTransform);
@@ -359,6 +364,12 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
     poseMsg.header.frame_id = header.frame_id;
     poseMsg.header.stamp = header.stamp;
     pose_pub.publish(poseMsg);
+
+    cout << "BOARD T_BOARD: " << poseMsg.pose.position.x << " " << poseMsg.pose.position.y << " " << poseMsg.pose.position.z << endl;
+    double roll_v, pitch_v, yaw_v;
+    quaternion_2_euler(poseMsg.pose.orientation.x, poseMsg.pose.orientation.y, poseMsg.pose.orientation.z, poseMsg.pose.orientation.w, roll_v, pitch_v, yaw_v);
+    cout << "BOARD R_BOARD : " << roll_v*180/3.14159 << " " << pitch_v*180/3.14159 << " " << yaw_v*180/3.14159 << endl;
+
 
 
     geometry_msgs::TransformStamped transformMsg;
@@ -383,7 +394,7 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
     }
 
     //if(image_pub.getNumSubscribers() > 0)
-    if(true)
+    /*if(true)
     {
       //show input with augmented information
       cv_bridge::CvImage out_msg;
@@ -394,7 +405,7 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
       cv::imshow("result", resultImg);
       cv::waitKey(10);
       //image_pub.publish(out_msg.toImageMsg());
-    }
+    }*/
 
     if(debug_pub.getNumSubscribers() > 0)
     {
@@ -586,14 +597,16 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
 
     //stampo su file la posizione della camera stimata nel fram world
     double roll_v, pitch_v, yaw_v;
-    //quaternion_2_euler(poseMsg.pose.orientation.x, poseMsg.pose.orientation.y, poseMsg.pose.orientation.z, poseMsg.pose.orientation.w, roll_v, pitch_v, yaw_v);
+    double roll_vb, pitch_vb, yaw_vb;
+    quaternion_2_euler(poseMsg.pose.orientation.x, poseMsg.pose.orientation.y, poseMsg.pose.orientation.z, poseMsg.pose.orientation.w, roll_vb, pitch_vb, yaw_vb);
     quaternion_2_euler(world_position_geometry_msg_.orientation.x, world_position_geometry_msg_.orientation.y, world_position_geometry_msg_.orientation.z, world_position_geometry_msg_.orientation.w, roll_v, pitch_v, yaw_v);
+    cout << "MARKER R_ : " << roll_v*180/3.14159 << " " << pitch_v*180/3.14159 << " " << yaw_v*180/3.14159 << endl;
     double secs =ros::Time::now().toSec();
     FILE* fd;
     fd = fopen("/home/sistema/camera_pose.txt", "a");
     fprintf(fd, "%f", secs -  secs_0);
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", poseMsg.pose.position.x); //2
+    fprintf(fd, "%f", -poseMsg.pose.position.x); //2
     fprintf(fd, "%s", " ");
     fprintf(fd, "%f", poseMsg.pose.position.y); //3
     fprintf(fd, "%s", " ");
@@ -615,10 +628,15 @@ ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::H
     fprintf(fd, "%s", " ");
     fprintf(fd, "%f", pitch_v); //12
     fprintf(fd, "%s", " ");
-    fprintf(fd, "%f\n", yaw_v); //13
+    fprintf(fd, "%f", yaw_v); //13
+    fprintf(fd, "%s", " ");
+    fprintf(fd, "%f", roll_vb); //14
+    fprintf(fd, "%s", " ");
+    fprintf(fd, "%f", pitch_vb); //15
+    fprintf(fd, "%s", " ");
+    fprintf(fd, "%f\n", yaw_vb); //16
     fclose(fd);	
-    cout << "BOARD T: " << poseMsg.pose.position.x << " " << poseMsg.pose.position.y << " " << poseMsg.pose.position.z << endl;
-    cout << "BOARD R : " << roll_v*180/3.14159 << " " << pitch_v*180/3.14159 << " " << yaw_v*180/3.14159 << endl;
+
 
     for(size_t j = 0; j < num_of_markers_; j++)
     {
