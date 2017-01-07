@@ -103,6 +103,11 @@ public:
   /** \brief Callback function to handle image processing*/
   void imageCallback(const sensor_msgs::ImageConstPtr &original_image);
 
+  /** Callback per IMU data*/
+  void imu_cb(const sensor_msgs::Imu::ConstPtr& imu);
+
+
+
 private:
   
   /** \brief Function to parse data from calibration file*/
@@ -129,11 +134,29 @@ private:
   /*sottoscrizione al topic di IMU*/
   ros::Subscriber imu_topic_sub;
 
+  /*publisher immagine di debug*/
+  image_transport::Publisher debug_pub;
+
+  /*publisher posa*/
+  ros::Publisher pose_pub;
+
+  /*publisher */
+  ros::Publisher transform_pub; 
+
+  /*publisher position*/
+  ros::Publisher position_pub;
+
   /** \brief Compute TF from marker detector result*/
   tf::Transform arucoMarker2Tf(const aruco::Marker &marker);
 
   /** \brief Process actual image, detect markers and compute poses */
   bool processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::Header header);
+
+  /**funzione di trasformazione di sistema di riferimento*/
+  tf::Transform getTf_camera_to_world(const cv::Mat &Rvec, const cv::Mat &Tvec);
+
+  /*funzione per passare da quaternione a angoli di eulero*/
+  void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
 
   //Launch file params
   std::string calib_filename_; 
@@ -153,11 +176,6 @@ private:
   std::string board_config;
   aruco::BoardDetector the_board_detector;
   aruco::Board the_board_detected;
-  image_transport::Publisher image_pub;
-  image_transport::Publisher debug_pub;
-  ros::Publisher pose_pub;
-  ros::Publisher transform_pub; 
-  ros::Publisher position_pub;
   int start_;
 
   /** \brief Container holding MarkerInfo data about all detected markers */
@@ -202,5 +220,5 @@ private:
 }  //aruco_mapping namespace
 
 
-void imu_cb(const sensor_msgs::Imu::ConstPtr& imu);
+
 #endif //ARUCO_MAPPING_H

@@ -47,8 +47,9 @@ main(int argc, char **argv)
   // Image node and subscriber
   image_transport::ImageTransport it(nh);
   image_transport::Subscriber img_sub = it.subscribe("/image_raw", 1, &aruco_mapping::ArucoMapping::imageCallback, &obj);
+  ros::Subscriber imu_topic_sub = nh.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 1, &aruco_mapping::ArucoMapping::imu_cb, &obj);
 
-  ros::Subscriber imu_topic_sub = nh.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 1, imu_cb);
+
 
   ros::spin();
 
