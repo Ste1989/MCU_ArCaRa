@@ -128,9 +128,6 @@ private:
   /** \brief Publisher of aruco_mapping::ArucoMarker custom message*/
   ros::Publisher marker_msg_pub_;
 
-  /**pubblica la posa stimata */
-  ros::Publisher pose_staped_pub;
-
   /*sottoscrizione al topic di IMU*/
   ros::Subscriber imu_topic_sub;
 
@@ -143,8 +140,6 @@ private:
   /*publisher */
   ros::Publisher transform_pub; 
 
-  /*publisher position*/
-  ros::Publisher position_pub;
 
   /** \brief Compute TF from marker detector result*/
   tf::Transform arucoMarker2Tf(const aruco::Marker &marker);
@@ -172,6 +167,14 @@ private:
   //cose aggiunte
   int id_img;
   double secs_0;
+
+  /*angoli di eulero stimati dal marker piu vicino*/
+  double roll_m, pitch_m, yaw_m;
+
+  /*angoli di eulero stimati dalla board*/
+  double roll_b, pitch_b, yaw_b;
+
+  /*strutture dati per la board detection*/
   aruco::BoardConfiguration the_board_config;
   std::string board_config;
   aruco::BoardDetector the_board_detector;
@@ -185,9 +188,12 @@ private:
   tf::StampedTransform world_position_transform_;
   
   /** \brief Actual Pose of camera with respect to world's origin */
-  geometry_msgs::Pose world_position_geometry_msg_;
-  geometry_msgs::PoseStamped world_position_geometry_msg_stamped;
+  geometry_msgs::Pose Pose_world_cam__w_Marker;
+  geometry_msgs::PoseStamped Pose_world_cam__w;
+
+  /*calibrazione camera*/
   aruco::CameraParameters aruco_calib_params_;
+
   
 
   int marker_counter_;
