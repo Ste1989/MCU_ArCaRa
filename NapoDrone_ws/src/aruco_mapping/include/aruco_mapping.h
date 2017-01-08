@@ -136,7 +136,8 @@ private:
   image_transport::Publisher debug_pub;
 
   /*publisher posa*/
-  ros::Publisher pose_pub;
+  ros::Publisher pose_cam_pub;
+  ros::Publisher pose_body_pub;
 
   /*publisher */
   ros::Publisher transform_pub; 
@@ -149,7 +150,10 @@ private:
   bool processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::Header header);
 
   /**funzione di trasformazione di sistema di riferimento*/
-  tf::Transform getTf_camera_to_world(const cv::Mat &Rvec, const cv::Mat &Tvec);
+  tf::Transform getTf_camera_world(const cv::Mat &Rvec, const cv::Mat &Tvec);
+
+  /**funzione di trasformazione di sistema di riferimento*/
+  tf::Transform getTf_body_world(const cv::Mat &Rvec, const cv::Mat &Tvec);
 
   /*funzione per passare da quaternione a angoli di eulero*/
   void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
@@ -181,6 +185,9 @@ private:
   /*angoli di eulero stimati dall 'IMU*/
   double roll_imu, pitch_imu, yaw_imu;
 
+  /*vettore P_cam_body__cam*/
+  tf::Vector3 P_cam_body__cam;
+
   /*strutture dati per la board detection*/
   aruco::BoardConfiguration the_board_config;
   std::string board_config;
@@ -197,6 +204,7 @@ private:
   /** \brief Actual Pose of camera with respect to world's origin */
   geometry_msgs::Pose Pose_world_cam__w_Marker;
   geometry_msgs::PoseStamped Pose_world_cam__w;
+  geometry_msgs::PoseStamped Pose_world_body__w;
 
   /*calibrazione camera*/
   aruco::CameraParameters aruco_calib_params_;

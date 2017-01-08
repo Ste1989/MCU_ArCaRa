@@ -76,6 +76,10 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   nh->param<std::string>("/aruco_mapping/board_config", board_config, "boardConfiguration.yml");
   nh->param<bool>("/aruco_mapping/save_data", save_data_on_file , false);
   nh->param<std::string>("/aruco_mapping/file_path_save",file_path_save , "");
+  nh->param<double>("/aruco_mapping/Px_cam_body_cam",P_cam_body__cam[0], 0);
+  nh->param<double>("/aruco_mapping/Py_cam_body_cam",P_cam_body__cam[1] , 0);
+  nh->param<double>("/aruco_mapping/Pz_cam_body_cam",P_cam_body__cam[2], 0);
+  
   
 
   if(save_data_on_file)
@@ -111,8 +115,10 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
     ROS_INFO_STREAM("ROI width: "  << roi_w_);
     ROS_INFO_STREAM("ROI height: " << roi_h_);      
     ROS_INFO_STREAM("Save data: " << save_data_on_file);      
-    ROS_INFO_STREAM("File path save: " << file_path_save);      
-    
+    ROS_INFO_STREAM("File path save: " << file_path_save); 
+    ROS_INFO_STREAM("Px_cam_body_cam: " << P_cam_body__cam[0]);
+    ROS_INFO_STREAM("Py_cam_body_cam: " << P_cam_body__cam[1]);
+    ROS_INFO_STREAM("Pz_cam_body_cam: " << P_cam_body__cam[2]);
   }
     
   //ROS publishers
@@ -120,7 +126,8 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   marker_msg_pub_           = nh->advertise<aruco_mapping::ArucoMarker>("/aruco/pose_cam_from_marker",1);
   marker_visualization_pub_ = nh->advertise<visualization_msgs::Marker>("/aruco/marker_detected",1);
   debug_pub = it.advertise("/aruco/img_detect_marker", 1);
-  pose_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose_cam_from_board", 100);
+  pose_cam_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose_cam_from_board", 100);
+  pose_body_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose_body_from_board", 100);
   transform_pub = nh->advertise<geometry_msgs::TransformStamped>("/aruco/transform", 100);
      
   //Parse data from calibration file
@@ -278,10 +285,10 @@ void ArucoMapping::quaternion_2_euler(double xquat, double yquat, double zquat, 
 }
 /********************************************************************************************/
 /*                                                                                         */
-/*    getTF CAMERA-->WORLD                                                                 */
+/*    getTF CAMERA in WORLD                                                                 */
 /*                                                                                         */
 /*******************************************************************************************/
-tf::Transform ArucoMapping::getTf_camera_to_world(const cv::Mat &Rvec, const cv::Mat &Tvec)
+tf::Transform ArucoMapping::getTf_camera_world(const cv::Mat &Rvec, const cv::Mat &Tvec)
 {
   cv::Mat rot(3, 3, CV_32FC1);
   cv::Rodrigues(Rvec, rot);
@@ -321,6 +328,32 @@ tf::Transform ArucoMapping::getTf_camera_to_world(const cv::Mat &Rvec, const cv:
   tf::Vector3 P_world_cam__world  = R_world__cam.transpose() * P_world_cam__cam;
 
   return tf::Transform(R_world__cam, P_world_cam__world);
+}
+/********************************************************************************************/
+/*                                                                                         */
+/*    getTF CAMERA in WORLD                                                                 */
+/*                                                                                         */
+/*******************************************************************************************/
+tf::Transform ArucoMapping::getTf_body_world(const cv::Mat &Rvec, const cv::Mat &Tvec)
+{
+  cv::Mat rot(3, 3, CV_32FC1);
+  cv::Rodrigues(Rvec, rot);
+
+
+  tf::Matrix3x3 R_world__cam(rot.at<float>(0,0), rot.at<float>(0,1), rot.at<float>(0,2),
+    rot.at<float>(1,0), rot.at<float>(1,1), rot.at<float>(1,2),
+    rot.at<float>(2,0), rot.at<float>(2,1), rot.at<float>(2,2));
+
+  tf::Vector3 P_cam_world__cam(Tvec.at<float>(0,0), Tvec.at<float>(1,0), Tvec.at<float>(2,0));
+  tf::Vector3 P_world_cam__cam = -P_cam_world__cam;
+
+  //devo sommarci il vettore tra cam e body
+  tf::Vector3 P_world_body__cam = P_world_cam__cam + P_cam_body__cam;
+ 
+  //rotazione del vettore nel sistema di riferiemento world
+  tf::Vector3 P_world_body__world  = R_world__cam.transpose() * P_world_body__cam;
+
+  return tf::Transform(R_world__cam, P_world_body__world);
 }
 /********************************************************************************************/
 /*                                                                                         */
@@ -428,25 +461,34 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
     //ROS_INFO("R_world__cam (RPY): %f  %f %f", the_board_detected.Rvec.at<float>(0,0)*180/M_PI , the_board_detected.Rvec.at<float>(1,0)*180/M_PI, the_board_detected.Rvec.at<float>(2,0)*180/M_PI  );
   
     //trasformazione da P_cam_world__CAM a P_cam_world__WORLD
-    tf::Transform P_R_world_cam__world = getTf_camera_to_world(the_board_detected.Rvec, the_board_detected.Tvec);
+    tf::Transform P_R_world_cam__world = getTf_camera_world(the_board_detected.Rvec, the_board_detected.Tvec);
+    //trasformazione da P_cam_world_CAM a P_body_world_WORLD
+    tf::Transform P_R_world_body__world = getTf_body_world(the_board_detected.Rvec, the_board_detected.Tvec);
 
     //creazione del messaggio "stamped"
     tf::StampedTransform P_R_world_cam__w_stamped(P_R_world_cam__world, header.stamp, header.frame_id, "world");
     br.sendTransform(P_R_world_cam__w_stamped);
 
     //B2)Pubblicazione su topic della posa ricavata dalla board
+    //camera
     tf::poseTFToMsg(P_R_world_cam__world, Pose_world_cam__w.pose);
-    Pose_world_cam__w.header.frame_id = header.frame_id;
+    Pose_world_cam__w.header.frame_id = "world";
     Pose_world_cam__w.header.stamp = header.stamp;
-    pose_pub.publish(Pose_world_cam__w);
-
+    pose_cam_pub.publish(Pose_world_cam__w);
+    //body
+    tf::poseTFToMsg(P_R_world_body__world, Pose_world_body__w.pose);
+    Pose_world_body__w.header.frame_id = "world";
+    Pose_world_body__w.header.stamp = header.stamp;
+    pose_body_pub.publish(Pose_world_body__w);
     
     quaternion_2_euler(Pose_world_cam__w.pose.orientation.x, Pose_world_cam__w.pose.orientation.y, Pose_world_cam__w.pose.orientation.z, Pose_world_cam__w.pose.orientation.w, roll_b, pitch_b, yaw_b);
-    ROS_INFO("BOARD POSE ESTIMATION:");
+    
+    ROS_INFO("BOARD CAMERA POSE ESTIMATION:");
     ROS_INFO("P_world_cam_w: %f  %f %f",  Pose_world_cam__w.pose.position.x,Pose_world_cam__w.pose.position.y,Pose_world_cam__w.pose.position.z);
     ROS_INFO("R_world__cam (RPY): %f  %f %f",roll_b*180/M_PI ,pitch_b*180/M_PI ,yaw_b*180/M_PI);
 
-   
+    ROS_INFO("BOARD BODY POSE ESTIMATION:");
+    ROS_INFO("P_world_body_w: %f  %f %f",  Pose_world_body__w.pose.position.x,Pose_world_body__w.pose.position.y,Pose_world_body__w.pose.position.z);
     
     geometry_msgs::TransformStamped transformMsg;
     tf::transformStampedTFToMsg(P_R_world_cam__w_stamped, transformMsg);
@@ -622,6 +664,12 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
       fprintf(fd, "%f", Pose_world_cam__w_Marker.position.y); //6
       fprintf(fd, "%s", " ");
       fprintf(fd, "%f", Pose_world_cam__w_Marker.position.z); //7
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_body__w.pose.position.x); //8
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_body__w.pose.position.y); //9
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_body__w.pose.position.z); //10 
       fprintf(fd, "%s", " ");
       fprintf(fd, "%f", roll_b); //11
       fprintf(fd, "%s", " ");

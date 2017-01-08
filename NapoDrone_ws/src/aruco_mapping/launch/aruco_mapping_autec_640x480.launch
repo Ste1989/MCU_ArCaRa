@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch> 
   <!-- RVIZ -->
-  <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find aruco_mapping)/launch/aruco_config.rviz" />-->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find aruco_mapping)/launch/aruco_config.rviz" />
 
 
 
@@ -28,7 +28,13 @@
     <param name="roi_width" type="int" value="640" /> 
     <param name="roi_height" type="int" value="480" />  
     <param name="save_data" type="bool" value="true" />  
-    <param name="file_path_save" type="string" value="/home/sistema/" />  
+    <param name="file_path_save" type="string" value="/home/sistema/" /> 
+    <!-- X NEGATIVA --> 
+    <param name="Px_cam_body_cam" type="double" value="-0.185" />
+    <!-- Y NEGATIVA --> 
+    <param name="Py_cam_body_cam" type="double" value="-0.001" />
+    <!-- Z NEGATIVA --> 
+    <param name="Pz_cam_body_cam" type="double" value="-0.1119" />
 
   </node> 
   
