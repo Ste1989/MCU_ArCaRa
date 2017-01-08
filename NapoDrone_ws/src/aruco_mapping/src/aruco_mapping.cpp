@@ -315,6 +315,23 @@ void ArucoMapping::imu_cb(const sensor_msgs::Imu::ConstPtr& imu)
     roll_imu = roll;
     pitch_imu = pitch;
     yaw_imu = yaw;
+    double secs = imu->header.stamp.sec;
+
+    if (secs_0 > secs) 
+      secs_0 = secs;
+    
+    secs = secs + (double(imu->header.stamp.nsec)/pow(10,9));
+    
+    FILE* fd;
+    fd = fopen("/home/sistema/imu_data.txt", "a");
+    fprintf(fd, "%f", secs -  secs_0);
+    fprintf(fd, "%s", " ");
+    fprintf(fd, "%f", roll_imu); //2
+    fprintf(fd, "%s", " ");
+    fprintf(fd, "%f", pitch_imu); //3
+    fprintf(fd, "%s", " ");
+    fprintf(fd, "%f\n", yaw_imu); //4 
+    fclose(fd);
 }
 /********************************************************************************************/
 /*                                                                                         */
@@ -528,6 +545,7 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
 
     
     quaternion_2_euler(Pose_world_cam__w_Marker.orientation.x, Pose_world_cam__w_Marker.orientation.y, Pose_world_cam__w_Marker.orientation.z, Pose_world_cam__w_Marker.orientation.w, roll_m, pitch_m, yaw_m);
+    ROS_INFO("MARKER POSE ESTIMATION:");
     ROS_INFO("P_world_cam_w MARKER: %f  %f %f",  Pose_world_cam__w_Marker.position.x, Pose_world_cam__w_Marker.position.y, Pose_world_cam__w_Marker.position.z);
     ROS_INFO("R_cam__world MARKER (RPY): %f  %f %f",roll_m*180/M_PI ,pitch_m*180/M_PI ,yaw_m*180/M_PI);
 
@@ -555,7 +573,10 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
     marker_msg.global_marker_poses.clear();
 
     //stampo su file la posizione della camera stimata nel fram world
-    double secs =ros::Time::now().toSec();
+    double secs = header.stamp.sec;
+    secs = secs + (double(header.stamp.nsec)/pow(10,9));
+    
+    
     FILE* fd;
     fd = fopen("/home/sistema/camera_pose.txt", "a");
     fprintf(fd, "%f", secs -  secs_0);
