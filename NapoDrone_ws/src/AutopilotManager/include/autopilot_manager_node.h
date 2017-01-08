@@ -8,7 +8,7 @@
 #include <mavros_msgs/StreamRate.h>
 #include <sensor_msgs/FluidPressure.h>
 #include <stdio.h>
-#include <aruco_mapping/ArucoMarker.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Pose.h>
 #include <serial_manager/Param.h>
 #include <sys/time.h>
@@ -44,13 +44,13 @@ bool manual_mode;
 //altezza di takeoff da raggiungere
 double alt_takeoff_target;
 //struttura per la memorizzazione della posa della camera nel frame world
-struct global_pose
+struct NapodronePose
 {
     geometry_msgs::Point position;
     geometry_msgs::Point orientation;
 
 };
-global_pose camera_pose_world;
+NapodronePose P_world_body_world;
 
 //memorizzo waypoint
 geometry_msgs::Pose current_waypoint_world;
@@ -257,7 +257,7 @@ void cmd_cb(const std_msgs::Int32::ConstPtr& msg);
 void mode_cb(const std_msgs::Int32::ConstPtr& msg);
 void param_cb(const serial_manager::Param::ConstPtr& msg);
 void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg);
-void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg);
+void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg);
 bool arm_vehicle();
 bool disarm_vehicle();
 bool takeoff_vehicle();

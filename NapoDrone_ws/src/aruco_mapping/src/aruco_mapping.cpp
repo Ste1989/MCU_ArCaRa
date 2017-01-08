@@ -35,9 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ARUCO_MAPPING_CPP
 
 #include <aruco_mapping.h>
-#include <fstream>
-double roll_imu, pitch_imu, yaw_imu;
-
 
 
 namespace aruco_mapping
@@ -77,7 +74,26 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   nh->getParam("/aruco_mapping/roi_w",roi_w_);
   nh->getParam("/aruco_mapping/roi_h",roi_h_);
   nh->param<std::string>("/aruco_mapping/board_config", board_config, "boardConfiguration.yml");
-     
+  nh->param<bool>("/aruco_mapping/save_data", save_data_on_file , false);
+  nh->param<std::string>("/aruco_mapping/file_path_save",file_path_save , "");
+  
+
+  if(save_data_on_file)
+  {
+    //initialize file
+
+    //imu data from callback
+    std::string str_path  = file_path_save + "imu_data.txt";
+    FILE* fd;
+    fd = fopen(str_path.c_str(), "w");
+    fclose(fd);
+    //camera pose from vision
+    str_path  = file_path_save + "camera_pose.txt";
+    fd = fopen(str_path.c_str(), "w");
+    fclose(fd);
+
+  }
+
   // Double to float conversion
   marker_size_ = float(temp_marker_size);
   
@@ -94,21 +110,24 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
     ROS_INFO_STREAM("ROI y-coor: " << roi_x_);
     ROS_INFO_STREAM("ROI width: "  << roi_w_);
     ROS_INFO_STREAM("ROI height: " << roi_h_);      
+    ROS_INFO_STREAM("Save data: " << save_data_on_file);      
+    ROS_INFO_STREAM("File path save: " << file_path_save);      
+    
   }
     
   //ROS publishers
   image_transport::ImageTransport it(*nh);
-  marker_msg_pub_           = nh->advertise<aruco_mapping::ArucoMarker>("aruco_poses",1);
-  marker_visualization_pub_ = nh->advertise<visualization_msgs::Marker>("aruco_markers",1);
-  debug_pub = it.advertise("/aruco/debug", 1);
-  pose_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose_stamped", 100);
+  marker_msg_pub_           = nh->advertise<aruco_mapping::ArucoMarker>("/aruco/pose_cam_from_marker",1);
+  marker_visualization_pub_ = nh->advertise<visualization_msgs::Marker>("/aruco/marker_detected",1);
+  debug_pub = it.advertise("/aruco/img_detect_marker", 1);
+  pose_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose_cam_from_board", 100);
   transform_pub = nh->advertise<geometry_msgs::TransformStamped>("/aruco/transform", 100);
      
   //Parse data from calibration file
   parseCalibrationFile(calib_filename_);
 
   //Initialize OpenCV window
-  //cv::namedWindow("Mono8", CV_WINDOW_AUTOSIZE);       
+  cv::namedWindow("Mono8", CV_WINDOW_AUTOSIZE);       
       
   //Resize marker container
   markers_.resize(num_of_markers_);
@@ -315,23 +334,31 @@ void ArucoMapping::imu_cb(const sensor_msgs::Imu::ConstPtr& imu)
     roll_imu = roll;
     pitch_imu = pitch;
     yaw_imu = yaw;
-    double secs = imu->header.stamp.sec;
+      
+    if(save_data_on_file)
+    {
 
-    if (secs_0 > secs) 
-      secs_0 = secs;
+      double secs = imu->header.stamp.sec;
+
+      if (secs_0 > secs) 
+        secs_0 = secs;
     
-    secs = secs + (double(imu->header.stamp.nsec)/pow(10,9));
-    
-    FILE* fd;
-    fd = fopen("/home/sistema/imu_data.txt", "a");
-    fprintf(fd, "%f", secs -  secs_0);
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", roll_imu); //2
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", pitch_imu); //3
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f\n", yaw_imu); //4 
-    fclose(fd);
+      secs = secs + (double(imu->header.stamp.nsec)/pow(10,9));
+      std::string str_path  = file_path_save + "imu_data.txt";
+      FILE* fd;
+      fd = fopen(str_path.c_str(), "a");
+      fprintf(fd, "%f", secs -  secs_0);
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", roll_imu); //2
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", pitch_imu); //3
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f\n", yaw_imu); //4 
+      fclose(fd);
+
+    }
+
+  
 }
 /********************************************************************************************/
 /*                                                                                         */
@@ -572,39 +599,44 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
     marker_msg.marker_ids.clear();
     marker_msg.global_marker_poses.clear();
 
-    //stampo su file la posizione della camera stimata nel fram world
-    double secs = header.stamp.sec;
-    secs = secs + (double(header.stamp.nsec)/pow(10,9));
+    if(save_data_on_file)
+    {
+
+      //stampo su file la posizione della camera stimata nel fram world
+      double secs = header.stamp.sec;
+      secs = secs + (double(header.stamp.nsec)/pow(10,9));
+      
+      std::string str_path  = file_path_save + "camera_pose.txt";
+      FILE* fd;
+      fd = fopen(str_path.c_str(), "a");
+      fprintf(fd, "%f", secs -  secs_0);
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w.pose.position.x); //2
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w.pose.position.y); //3
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w.pose.position.z); //4 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w_Marker.position.x);//5
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w_Marker.position.y); //6
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w_Marker.position.z); //7
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", roll_b); //11
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", pitch_b); //12
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", yaw_b); //13
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", roll_m); //14
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", pitch_m); //15
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f\n", yaw_m); //16
+      fclose(fd); 
+    }
     
-    
-    FILE* fd;
-    fd = fopen("/home/sistema/camera_pose.txt", "a");
-    fprintf(fd, "%f", secs -  secs_0);
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", Pose_world_cam__w.pose.position.x); //2
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", Pose_world_cam__w.pose.position.y); //3
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", Pose_world_cam__w.pose.position.z); //4 
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", Pose_world_cam__w_Marker.position.x);//5
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", Pose_world_cam__w_Marker.position.y); //6
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", Pose_world_cam__w_Marker.position.z); //7
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", roll_b); //11
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", pitch_b); //12
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", yaw_b); //13
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", roll_m); //14
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f", pitch_m); //15
-    fprintf(fd, "%s", " ");
-    fprintf(fd, "%f\n", yaw_m); //16
-    fclose(fd);	
 
     //pubblico informazioni sui marker
     for(size_t j = 0; j < num_of_markers_; j++)

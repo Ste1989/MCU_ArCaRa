@@ -18,21 +18,20 @@
 /*                                                               */
 /*                 CALLBACK LEGGI POSA                            */
 /*****************************************************************/
-void Pose_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
+void Pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
-    if(msg->marker_visibile)
-    {
-        //ho una stima buona della posizione della camera
-        global_camera_pose.position.x = msg->global_camera_pose.position.x;
-        global_camera_pose.position.y = msg->global_camera_pose.position.y;
-        global_camera_pose.position.z = msg->global_camera_pose.position.z;
-        //transformo il quaternione in un angoli di eulero
-        quaternion_2_euler(msg->global_camera_pose.orientation.x,msg->global_camera_pose.orientation.y,
-        msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
-        global_camera_pose.orientation.x,global_camera_pose.orientation.y,global_camera_pose.orientation.z);
-        new_packet_pose = 1;
+  
+    //ho una stima buona della posizione della camera
+    P_world_body_world.position.x = msg->pose.position.x;
+    P_world_body_world.position.y = msg->pose.position.y;
+    P_world_body_world.position.z = msg->pose.position.z;
+    //transformo il quaternione in un angoli di eulero
+    quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
+        msg->pose.orientation.z,msg->pose.orientation.w, 
+        P_world_body_world.orientation.x,P_world_body_world.orientation.y,P_world_body_world.orientation.z);
+    new_packet_pose = 1;
     
-    }
+
 }
 
 

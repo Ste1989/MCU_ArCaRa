@@ -20,9 +20,9 @@
 #include <iostream>
 #include <queue>
 #include <sys/time.h>
-#include <aruco_mapping/ArucoMarker.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 /*************************************************************/
 //
 //modulo che preposto alla ricezione e alla decodifica dei messaggi
@@ -349,13 +349,14 @@ using std::endl;
 timeval new_pkt_time, current_time, ping_time, stream_pose_time;
 double elapsed_time_pkt_received, elapsed_time_ping, elapsed_time_pose;
 //struttura per la memorizzazione della posa della camera nel frame world
-struct global_pose
+struct NapodronePose
 {
     geometry_msgs::Point position;
     geometry_msgs::Point orientation;
 
 };
-global_pose global_camera_pose;
+NapodronePose P_world_body_world;
+
 bool stream_pose;
 char new_waypoint = 0;
 geometry_msgs::Pose waypoint_recv;
@@ -371,7 +372,7 @@ void write_to_serial(int* serial);
 void read_from_serial(int* serial);
 void check_send_request();
 void Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg);
-void Pose_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg);
+void Pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg);
 int set_interface_attribs (int fd, int speed, int parity);
 void set_blocking (int fd, int should_block);
 int serial_init(int* fd,const char* seriale_dev);

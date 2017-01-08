@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     //waypoint
     waypoint_sub =  nh.subscribe<geometry_msgs::Pose>("/napodrone/waypoint", 1, waypoint_cb);
     //aruco poses
-    aruco_poses_sub =  nh.subscribe<aruco_mapping::ArucoMarker>("/aruco_poses", 1, poses_cb);
+    aruco_poses_sub =  nh.subscribe<geometry_msgs::PoseStamped>("/napodrone_pose", 1, poses_cb);
     //topic per override la radio
     rc_pub = nh.advertise<mavros_msgs::OverrideRCIn>("mavros/rc/override", 1);
     //topic per scrivere lo stato

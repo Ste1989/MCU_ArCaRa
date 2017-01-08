@@ -45,6 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cv_bridge/cv_bridge.h>
 #include <fstream>
 
+
 // Aruco libraries
 #include <aruco/aruco.h>
 #include <aruco/cameraparameters.h>
@@ -164,6 +165,9 @@ private:
   int  roi_y_;                                      
   int  roi_w_;                                    
   int  roi_h_;
+  bool save_data_on_file;
+  std::string file_path_save;
+  
   //cose aggiunte
   int id_img;
   double secs_0;
@@ -173,6 +177,9 @@ private:
 
   /*angoli di eulero stimati dalla board*/
   double roll_b, pitch_b, yaw_b;
+
+  /*angoli di eulero stimati dall 'IMU*/
+  double roll_imu, pitch_imu, yaw_imu;
 
   /*strutture dati per la board detection*/
   aruco::BoardConfiguration the_board_config;

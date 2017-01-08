@@ -365,29 +365,20 @@ void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg)
 /*    CALBACK STIMA DI POSIZIONE     	                                                    */
 /*                                                                                         */
 /*******************************************************************************************/
-void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
+void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
-	marker_visibile = msg->marker_visibile;
-	if(marker_visibile)
-	{
-		//ho una stima buona della posizione della camera
-		camera_pose_world.position.x = msg->global_camera_pose.position.x;
-		camera_pose_world.position.y = msg->global_camera_pose.position.y;
-	   camera_pose_world.position.z = msg->global_camera_pose.position.z;
+	
+		//ho una stima buona della posizione del drone
+		P_world_body_world.position.x = msg->pose.position.x;
+		P_world_body_world.position.y = msg->pose.position.y;
+	  P_world_body_world.position.z = msg->pose.position.z;
 		//transformo il quaternione in un angoli di eulero
-		quaternion_2_euler(msg->global_camera_pose.orientation.x,msg->global_camera_pose.orientation.y,
-			msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
-			camera_pose_world.orientation.x,camera_pose_world.orientation.y,camera_pose_world.orientation.z);
+		quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
+			msg->pose.orientation.z,msg->pose.orientation.w, 
+			P_world_body_world.orientation.x,P_world_body_world.orientation.y,P_world_body_world.orientation.z);
     //prendo il tempo 
     gettimeofday(&pose_time, NULL); 
 		
-	}
-	else
-	{
-		//non ho una stima della poszione del drone
-	}
-
-
 }
 /********************************************************************************************/
 /*                                                                                         */
@@ -723,7 +714,7 @@ void init_global_variables()
   manual_mode = true;
 
   marker_visibile = false;
-	//Pose camera_pose_world;
+	
    //..
 	//altezza da raggiungere in takeoff
 	alt_takeoff_target = 1.0;
@@ -782,15 +773,15 @@ void update_control()
 
   //1)-2)controllo di X-Y
   //devo ruotare [x_des_w, y_des_w] in body con RZ(yaw)
-  double yaw = camera_pose_world.orientation.z;
+  double yaw = P_world_body_world.orientation.z;
   double x_des_b = cos(yaw)*current_waypoint_world.position.x + sin(yaw)*current_waypoint_world.position.y;
   double y_des_b = -sin(yaw)*current_waypoint_world.position.x + cos(yaw)*current_waypoint_world.position.y; 
-  double x_b = cos(yaw)*camera_pose_world.position.x + sin(yaw)*camera_pose_world.position.y;
-  double y_b = -sin(yaw)*camera_pose_world.position.x + cos(yaw)*camera_pose_world.position.y;
+  double x_b = cos(yaw)*P_world_body_world.position.x + sin(yaw)*P_world_body_world.position.y;
+  double y_b = -sin(yaw)*P_world_body_world.position.x + cos(yaw)*P_world_body_world.position.y;
 
   //compenso per gli angoli di pitch e roll
-  //double x_off = camera_pose_world.position.z * tan(camera_pose_world.orientation.y);
-  //double y_off = camera_pose_world.position.z * tan(camera_pose_world.orientation.x);
+  //double x_off = P_world_body_world.position.z * tan(P_world_body_world.orientation.y);
+  //double y_off = P_world_body_world.position.z * tan(P_world_body_world.orientation.x);
   //x_b  = x_b + x_off;
   //y_b  = y_b - y_off;
 
@@ -804,7 +795,7 @@ void update_control()
 
 
   //3)controllo di HEADING
-  double rz = camera_pose_world.orientation.z;
+  double rz = P_world_body_world.orientation.z;
   double rz_des = current_waypoint_world.orientation.z;
   //calcolo il controllo da attuare
   double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
@@ -974,10 +965,10 @@ void hold_position()
 {
   cout << "HOLD POSITION" << endl;
   //il waypoint sarà la posizione corrente
-  current_waypoint_world.position.x = camera_pose_world.position.x;
-  current_waypoint_world.position.y = camera_pose_world.position.y;
-  //current_waypoint_world.position.z = camera_pose_world.position.x;
-  current_waypoint_world.orientation.z = camera_pose_world.orientation.z;
+  current_waypoint_world.position.x = P_world_body_world.position.x;
+  current_waypoint_world.position.y = P_world_body_world.position.y;
+  //current_waypoint_world.position.z = P_world_body_world.position.x;
+  current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
 
   waypoint_recv = 1;
   manual_mode = false;
