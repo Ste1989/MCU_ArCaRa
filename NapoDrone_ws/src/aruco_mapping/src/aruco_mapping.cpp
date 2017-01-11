@@ -157,6 +157,9 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
 
   secs_0 =ros::Time::now().toSec();
 
+  //initiliazer pose old
+  initialize_pose_old = 1;
+
 }
 
 ArucoMapping::~ArucoMapping()
@@ -469,18 +472,53 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
     tf::StampedTransform P_R_world_cam__w_stamped(P_R_world_cam__world, header.stamp, header.frame_id, "world");
     br.sendTransform(P_R_world_cam__w_stamped);
 
-    //B2)Pubblicazione su topic della posa ricavata dalla board
-    //camera
+    //cam
     tf::poseTFToMsg(P_R_world_cam__world, Pose_world_cam__w.pose);
     Pose_world_cam__w.header.frame_id = "world";
     Pose_world_cam__w.header.stamp = header.stamp;
-    pose_cam_pub.publish(Pose_world_cam__w);
     //body
     tf::poseTFToMsg(P_R_world_body__world, Pose_world_body__w.pose);
     Pose_world_body__w.header.frame_id = "world";
     Pose_world_body__w.header.stamp = header.stamp;
-    pose_body_pub.publish(Pose_world_body__w);
-    
+
+    //B1)validazione del dato prima di pubblicarlo
+    //se initialize_pose_old è a 1 devo inizializzare la posa old a quella vecchia e tornare
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if(initialize_pose_old)
+    {
+      Pose_world_body__w_old = Pose_world_body__w;
+      initialize_pose_old = 0;
+      pose_valid = true;
+    }
+    else
+    {
+      //qui devo controlloare se il dato è valido
+      if(abs(Pose_world_body__w.pose.position.x - Pose_world_body__w_old.pose.position.x) > 0.10 || abs(Pose_world_body__w.pose.position.y - Pose_world_body__w_old.pose.position.y) > 0.10)
+      {
+        ROS_WARN("POSA SCARTATA");
+        //al passo successivo devo riniziallizzare pose
+        initialize_pose_old = 1;
+        //ritorno false
+        pose_valid =  false;
+      }
+      else
+      {
+        Pose_world_body__w_old = Pose_world_body__w;
+        initialize_pose_old = 0;
+        pose_valid =  true;
+      }
+
+    } 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //B2)Pubblicazione su topic della posa ricavata dalla board
+    //camera
+    if(pose_valid)
+    {
+      //cam
+      pose_cam_pub.publish(Pose_world_cam__w);
+      //body
+      pose_body_pub.publish(Pose_world_body__w);
+    }
     quaternion_2_euler(Pose_world_cam__w.pose.orientation.x, Pose_world_cam__w.pose.orientation.y, Pose_world_cam__w.pose.orientation.z, Pose_world_cam__w.pose.orientation.w, roll_b, pitch_b, yaw_b);
     
     ROS_INFO("BOARD CAMERA POSE ESTIMATION:");
@@ -681,7 +719,9 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
       fprintf(fd, "%s", " ");
       fprintf(fd, "%f", pitch_m); //15
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f\n", yaw_m); //16
+      fprintf(fd, "%f", yaw_m); //16
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%i\n", pose_valid); //17
       fclose(fd); 
     }
     
@@ -832,6 +872,7 @@ tf::Transform ArucoMapping::arucoMarker2Tf(const aruco::Marker &marker)
 
   return tf::Transform(marker_tf_rot, marker_tf_tran);
 }
+
 
 
 

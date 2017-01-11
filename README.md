@@ -38,6 +38,10 @@
 	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/sistema/MCU_ArCaRa/NapoDrone_ws
 	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/sistema/catkin_ws/src
 - la prima volta commentare nei CMakeLists.s.txt di SerialManager, AutopilotMAnager, ObjectDetction e Object3Detection gli eseguibili
+
+#GNUPLOT
+sudo apt-get install gnuplot
+sudo apt-get install gnuplot-x11
 # Cosa installare sull'Odroid
 
 - Ubuntu 14.04 LTS

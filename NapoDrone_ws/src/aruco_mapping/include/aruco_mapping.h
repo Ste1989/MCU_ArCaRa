@@ -158,6 +158,8 @@ private:
   /*funzione per passare da quaternione a angoli di eulero*/
   void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
 
+
+
   //Launch file params
   std::string calib_filename_; 
   std::string scenario_filename_;                    
@@ -193,8 +195,8 @@ private:
   std::string board_config;
   aruco::BoardDetector the_board_detector;
   aruco::Board the_board_detected;
-  int start_;
-
+  char initialize_pose_old;
+  bool pose_valid;
   /** \brief Container holding MarkerInfo data about all detected markers */
   std::vector<MarkerInfo> markers_;
    
@@ -205,6 +207,8 @@ private:
   geometry_msgs::Pose Pose_world_cam__w_Marker;
   geometry_msgs::PoseStamped Pose_world_cam__w;
   geometry_msgs::PoseStamped Pose_world_body__w;
+  geometry_msgs::PoseStamped Pose_world_body__w_old;
+
 
   /*calibrazione camera*/
   aruco::CameraParameters aruco_calib_params_;
