@@ -223,6 +223,19 @@ namespace aruco {
     cv::rectangle( in,(*this)[0]-Point2f(2,2),(*this)[0]+Point2f(2,2),Scalar(0,0,255,255),lineWidth,CV_AA);
     cv::rectangle( in,(*this)[1]-Point2f(2,2),(*this)[1]+Point2f(2,2),Scalar(0,255,0,255),lineWidth,CV_AA);
     cv::rectangle( in,(*this)[2]-Point2f(2,2),(*this)[2]+Point2f(2,2),Scalar(255,0,0,255),lineWidth,CV_AA);
+    /*
+    cv::Point p;
+    p.x = (*this)[0].x;
+    p.y = (*this)[0].y;
+    cv::circle(in, p, 20, Scalar(100, 100, 100),1, 8, 0);
+    p.x = (*this)[1].x;
+    p.y = (*this)[1].y;
+    cv::circle(in, p, 20, Scalar(255, 0, 0),2, 8, 0);
+     p.x = (*this)[2].x;
+    p.y = (*this)[2].y;
+    cv::circle(in, p, 20, Scalar(255, 0, 0),3, 8, 0);
+    */
+
     if (writeId) {
       char cad[100];
       sprintf(cad,"id=%d",id);
@@ -278,6 +291,7 @@ namespace aruco {
     {
       ImagePoints.at<float>(c,0)=((*this)[c%4].x);
       ImagePoints.at<float>(c,1)=((*this)[c%4].y);
+
     }
     
     cv::Mat raux,taux;
@@ -287,8 +301,10 @@ namespace aruco {
     //rotate the X axis so that Y is perpendicular to the marker plane
     if (setYPerpendicular) rotateXAxis(Rvec);
     ssize=markerSizeMeters;
-    cout<<(*this)<<endl;
     
+    //STAMPA MARKER
+    //cout<<(*this)<<endl;
+
   }
 
   void Marker::rotateXAxis(Mat &rotation)

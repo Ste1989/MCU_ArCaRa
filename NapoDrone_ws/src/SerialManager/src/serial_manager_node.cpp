@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     waypoint_topic = n.advertise<geometry_msgs::Pose>("napodrone/waypoint", 1);
 
     status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",10, &Status_Pixhawk_Callback);
-    pose_topic = n.subscribe<aruco_mapping::ArucoMarker>("/aruco_poses", 1, &Pose_cb);
+    pose_topic = n.subscribe<geometry_msgs::PoseStamped>("/napodrone_pose", 1, &Pose_cb);
 
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
@@ -88,10 +88,10 @@ int main(int argc, char **argv)
             coda_send_seriale.push(HEADER_A);
             coda_send_seriale.push(HEADER_B);
             coda_send_seriale.push(PAYLOAD_POSE);
-            encode_payload(global_camera_pose.position.x );
-            encode_payload(global_camera_pose.position.y );
-            encode_payload(global_camera_pose.position.z );
-            encode_payload(global_camera_pose.orientation.z );
+            encode_payload(P_world_body_world.position.x );
+            encode_payload(P_world_body_world.position.y );
+            encode_payload(P_world_body_world.position.z );
+            encode_payload(P_world_body_world.orientation.z );
 
             new_packet_pose = 0;
 

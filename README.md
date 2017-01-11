@@ -57,6 +57,7 @@
 .....
 -------------
 # Avvio del software
+-GNUPLOT: pl 'file.txt' using 1:2 with lines
 -  collefarsi via ethernet all'odroid con ssh odroid@192.168.1.1 (password: odroid)
 - avviare roscore
 - avviare il nodo della seriale (controllare che sia su USB0) roslaunch serial_manager SerialManager

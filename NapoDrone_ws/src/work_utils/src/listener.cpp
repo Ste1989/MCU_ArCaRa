@@ -16,7 +16,7 @@
 #include <iostream>
 #include <queue>
 #include <sys/time.h>
-#include <aruco_mapping/ArucoMarker.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Imu.h>
 
 
@@ -61,37 +61,34 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 /*    CALBACK STIMA DI POSIZIONE                                                            */
 /*                                                                                         */
 /*******************************************************************************************/
-void poses_cb(const aruco_mapping::ArucoMarker::ConstPtr& msg)
+void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
 
 
-    //se ho marker visibili
-    if(msg->marker_visibile)
-    {
-        double roll, pitch, yaw;
-        quaternion_2_euler(msg->global_camera_pose.orientation.x,msg->global_camera_pose.orientation.y,
-        msg->global_camera_pose.orientation.z,msg->global_camera_pose.orientation.w, 
-        roll, pitch, yaw);
-        //ho una stima buona della posizione della camera
-        FILE* fd1;
-        fd1 = fopen("/home/sistema/aruco_data.txt","a");
-        fprintf(fd1, "%i", msg->header.stamp.sec);
-        fprintf(fd1, "%s", "  ");
-        fprintf(fd1, "%i", msg->header.stamp.nsec);
-        fprintf(fd1, "%s", "  ");
-        fprintf(fd1, "%f", msg->global_camera_pose.position.x);
-        fprintf(fd1, "%s", "  ");
-        fprintf(fd1, "%f", msg->global_camera_pose.position.y);
-        fprintf(fd1, "%s", "  ");
-        fprintf(fd1, "%f", msg->global_camera_pose.position.z);
-        fprintf(fd1, "%s", "  ");
-        fprintf(fd1, "%f", roll);
-        fprintf(fd1, "%s", "  ");
-        fprintf(fd1, "%f", pitch);
-        fprintf(fd1, "%s", "  ");
-        fprintf(fd1, "%f\n", yaw);
-        fclose(fd1);
-    }
+
+  double roll, pitch, yaw;
+  quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
+    msg->pose.orientation.z,msg->pose.orientation.w, 
+    roll, pitch, yaw);
+  //ho una stima buona della posizione della camera
+  FILE* fd1;
+  fd1 = fopen("/home/sistema/aruco_data.txt","a");
+  fprintf(fd1, "%i", msg->header.stamp.sec);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%i", msg->header.stamp.nsec);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%f", msg->pose.position.x);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%f", msg->pose.position.y);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%f", msg->pose.position.z);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%f", roll);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%f", pitch);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%f\n", yaw);
+  fclose(fd1);
 
 
 
@@ -157,7 +154,7 @@ int main(int argc, char **argv)
    */
     ros::NodeHandle n;
     ros::Subscriber imu_topic = n.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 10, imu_cb);
-    ros::Subscriber aruco_pose_topic = n.subscribe<aruco_mapping::ArucoMarker>("/aruco_poses", 10, poses_cb);
+    ros::Subscriber aruco_pose_topic = n.subscribe<geometry_msgs::PoseStamped>("/napodrone_pose", 10, poses_cb);
 
 
 

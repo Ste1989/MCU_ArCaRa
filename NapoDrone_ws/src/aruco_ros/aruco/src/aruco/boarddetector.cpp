@@ -136,25 +136,34 @@ namespace aruco
         {
           imagePoints.at<float> ( ( i*4 ) +p,0 ) =Bdetected[i][p].x;
           imagePoints.at<float> ( ( i*4 ) +p,1 ) =Bdetected[i][p].y;
+          //cout<<"image point "<<imagePoints.at<float> ( ( i*4 ) +p,0 )<<" "<<imagePoints.at<float> ( ( i*4 ) +p,1 )<<endl;
           const aruco::MarkerInfo &Minfo=Bdetected.conf.getMarkerInfo( Bdetected[i].id);
 
           objPoints.at<float> ( ( i*4 ) +p,0 ) = Minfo[p].x*marker_meter_per_pix;
           objPoints.at<float> ( ( i*4 ) +p,1 ) = Minfo[p].y*marker_meter_per_pix;
           objPoints.at<float> ( ( i*4 ) +p,2 ) = Minfo[p].z*marker_meter_per_pix;
-          // 		cout<<objPoints.at<float>( (i*4)+p,0)<<" "<<objPoints.at<float>( (i*4)+p,1)<<" "<<objPoints.at<float>( (i*4)+p,2)<<endl;
+          //cout<<"object point "<<objPoints.at<float>( (i*4)+p,0)<<" "<<objPoints.at<float>( (i*4)+p,1)<<" "<<objPoints.at<float>( (i*4)+p,2)<<endl;
         }
       }
       if (distCoeff.total()==0) distCoeff=cv::Mat::zeros(1,4,CV_32FC1 );
 
       cv::Mat rvec,tvec;
       cv::solvePnP(objPoints,imagePoints,camMatrix,distCoeff,rvec,tvec );
+      
       rvec.convertTo(Bdetected.Rvec,CV_32FC1);
       tvec.convertTo(Bdetected.Tvec,CV_32FC1);
+
+      //cout<<"BTVEC "<<Bdetected.Tvec.at<float>(0,0)<<" "<<Bdetected.Tvec.at<float>(1,0)<<" "<<Bdetected.Tvec.at<float>(2,0)<<endl;
+      //cout<<"BRVEC "<<Bdetected.Rvec.at<float>(0,0)*180/3.14159<<" "<<Bdetected.Rvec.at<float>(1,0)*180/3.14159<<" "<<Bdetected.Rvec.at<float>(2,0)*180/3.14159<<endl;
+      
+      //MODIFICATO: LEVATO LA ROTAZIONE DI 90 SU X
       //now, rotate 90 deg in X so that Y axis points up
-      if (_setYPerpendicular)
-        rotateXAxis ( Bdetected.Rvec );
+      //if (_setYPerpendicular )
+      //rotateXAxis ( Bdetected.Rvec );
       //         cout<<Bdetected.Rvec.at<float>(0,0)<<" "<<Bdetected.Rvec.at<float>(1,0)<<" "<<Bdetected.Rvec.at<float>(2,0)<<endl;
       //         cout<<Bdetected.Tvec.at<float>(0,0)<<" "<<Bdetected.Tvec.at<float>(1,0)<<" "<<Bdetected.Tvec.at<float>(2,0)<<endl;
+      //cout<<"BTVEC2 "<<Bdetected.Tvec.at<float>(0,0)<<" "<<Bdetected.Tvec.at<float>(1,0)<<" "<<Bdetected.Tvec.at<float>(2,0)<<endl;
+      //cout<<"BRVEC2 "<<Bdetected.Rvec.at<float>(0,0)*180/3.14159<<" "<<Bdetected.Rvec.at<float>(1,0)*180/3.14159<<" "<<Bdetected.Rvec.at<float>(2,0)*180/3.14159<<endl;
     }
 
     float prob=float( Bdetected.size() ) /double ( Bdetected.conf.size() );

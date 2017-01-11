@@ -45,11 +45,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cv_bridge/cv_bridge.h>
 #include <fstream>
 
+
 // Aruco libraries
 #include <aruco/aruco.h>
 #include <aruco/cameraparameters.h>
 #include <aruco/cvdrawingutils.h>
 #include <aruco/arucofidmarkers.h>
+#include <aruco/boarddetector.h>
 
 // OpenCV libraries
 #include <opencv2/opencv.hpp>
@@ -61,6 +63,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <aruco_mapping/ArucoMarker.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Imu.h>
+#include <std_msgs/Header.h>
+#include <geometry_msgs/Vector3Stamped.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/PoseStamped.h>
 /** \brief Aruco mapping namespace */
 namespace aruco_mapping
 {
@@ -98,6 +104,11 @@ public:
   /** \brief Callback function to handle image processing*/
   void imageCallback(const sensor_msgs::ImageConstPtr &original_image);
 
+  /** Callback per IMU data*/
+  void imu_cb(const sensor_msgs::Imu::ConstPtr& imu);
+
+
+
 private:
   
   /** \brief Function to parse data from calibration file*/
@@ -118,17 +129,34 @@ private:
   /** \brief Publisher of aruco_mapping::ArucoMarker custom message*/
   ros::Publisher marker_msg_pub_;
 
-  /**pubblica la posa stimata */
-  ros::Publisher pose_staped_pub;
-
   /*sottoscrizione al topic di IMU*/
   ros::Subscriber imu_topic_sub;
+
+  /*publisher immagine di debug*/
+  image_transport::Publisher debug_pub;
+
+  /*publisher posa*/
+  ros::Publisher pose_cam_pub;
+  ros::Publisher pose_body_pub;
+
+  /*publisher */
+  ros::Publisher transform_pub; 
+
 
   /** \brief Compute TF from marker detector result*/
   tf::Transform arucoMarker2Tf(const aruco::Marker &marker);
 
   /** \brief Process actual image, detect markers and compute poses */
-  bool processImage(cv::Mat input_image,cv::Mat output_image);
+  bool processImage(cv::Mat input_image,cv::Mat output_image, std_msgs::Header header);
+
+  /**funzione di trasformazione di sistema di riferimento*/
+  tf::Transform getTf_camera_world(const cv::Mat &Rvec, const cv::Mat &Tvec);
+
+  /**funzione di trasformazione di sistema di riferimento*/
+  tf::Transform getTf_body_world(const cv::Mat &Rvec, const cv::Mat &Tvec);
+
+  /*funzione per passare da quaternione a angoli di eulero*/
+  void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, double& roll, double& pitch, double& yaw);
 
   //Launch file params
   std::string calib_filename_; 
@@ -141,8 +169,32 @@ private:
   int  roi_y_;                                      
   int  roi_w_;                                    
   int  roi_h_;
-  int id_img;
+  bool save_data_on_file;
+  std::string file_path_save;
   
+  //cose aggiunte
+  int id_img;
+  double secs_0;
+
+  /*angoli di eulero stimati dal marker piu vicino*/
+  double roll_m, pitch_m, yaw_m;
+
+  /*angoli di eulero stimati dalla board*/
+  double roll_b, pitch_b, yaw_b;
+
+  /*angoli di eulero stimati dall 'IMU*/
+  double roll_imu, pitch_imu, yaw_imu;
+
+  /*vettore P_cam_body__cam*/
+  tf::Vector3 P_cam_body__cam;
+
+  /*strutture dati per la board detection*/
+  aruco::BoardConfiguration the_board_config;
+  std::string board_config;
+  aruco::BoardDetector the_board_detector;
+  aruco::Board the_board_detected;
+  int start_;
+
   /** \brief Container holding MarkerInfo data about all detected markers */
   std::vector<MarkerInfo> markers_;
    
@@ -150,10 +202,14 @@ private:
   tf::StampedTransform world_position_transform_;
   
   /** \brief Actual Pose of camera with respect to world's origin */
-  geometry_msgs::Pose world_position_geometry_msg_;
-  geometry_msgs::PoseStamped world_position_geometry_msg_stamped;
+  geometry_msgs::Pose Pose_world_cam__w_Marker;
+  geometry_msgs::PoseStamped Pose_world_cam__w;
+  geometry_msgs::PoseStamped Pose_world_body__w;
+
+  /*calibrazione camera*/
   aruco::CameraParameters aruco_calib_params_;
-  int start_;
+
+  
 
   int marker_counter_;
   int marker_counter_previous_;
@@ -185,5 +241,5 @@ private:
 }  //aruco_mapping namespace
 
 
-void imu_cb(const sensor_msgs::Imu::ConstPtr& imu);
+
 #endif //ARUCO_MAPPING_H
