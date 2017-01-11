@@ -29,7 +29,7 @@ void init_pwm_gpio(int pwm_pin, int gpio_pin)
   //pwm->period(2000);
   //pwm->enable(1);
   //pwm->write(0);
-  mraa_pwm_period_us(pwm2, 200);
+  mraa_pwm_period_us(pwm2, 2000);
   mraa_pwm_enable(pwm2, 1);
   mraa_pwm_write(pwm2, 0);
   ROS_INFO("PWM CONFIGURATO");
