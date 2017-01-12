@@ -309,6 +309,7 @@ void param_cb(const serial_manager::Param::ConstPtr& msg)
     case KI_ALT:
       pid_controllers.altitude.set_Ki(msg->param); 
       pid_controllers.altitude.init_PID();
+      scrivi_PID_file(PID_file); 
       ROS_INFO("RICEVUTO PARAMETRO KI_ALT");         
       break;
     case KY_ALT:
@@ -367,7 +368,8 @@ void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg)
 /*******************************************************************************************/
 void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
-	
+	 
+    
 		//ho una stima buona della posizione del drone
 		P_world_body_world.position.x = msg->pose.position.x;
 		P_world_body_world.position.y = msg->pose.position.y;
@@ -557,9 +559,15 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
 
   //I
   double I_k_1 = 0;
+
   I_k_1 = I_k + Ki * e;
   //memorizzo integrale
   I_k = I_k_1;
+  cout << "INTEGRLE" << endl;
+  cout << I_k << endl;
+  cout << I_k_1 << endl;
+  cout << e << endl;
+  cout << Ki << endl;
 
   //D
   cout << (y - y_k) << endl;
@@ -787,37 +795,49 @@ void update_control()
 
 
   //1A) CONTROLLO DI ROLL
-  cout << "PID ROLL" << endl;
-  double roll_command = pid_controllers.roll.update_PID(y_b, y_des_b, PWM_MEDIUM_ROLL);
+  //cout << "PID ROLL" << endl;
+  //double roll_command = pid_controllers.roll.update_PID(y_b, y_des_b, PWM_MEDIUM_ROLL);
   //2A)CONTROLLO DI PITCH
-  cout << "PID PITCH" << endl;
-  double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH);
+  //cout << "PID PITCH" << endl;
+  //double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH);
+
 
 
   //3)controllo di HEADING
   double rz = P_world_body_world.orientation.z;
   double rz_des = current_waypoint_world.orientation.z;
   //calcolo il controllo da attuare
-  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
+  //double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
   //devo mappare l'ingresso in un comando ai servo
   //double yaw_commad = pid_controllers.yaw.map_control_2_radio(u_rz);
   //cout << yaw_command << endl;
 
+  //4)controllo di quota
+  double alt_des = current_waypoint_world.position.z;
+  double alt_curr = P_world_body_world.position.z;
+  double throttle_command = pid_controllers.altitude.update_PID(alt_curr, alt_des, PWM_MEDIUM_THROTTLE);
+
+  ROS_INFO("altezza corrrente %f", alt_curr);
+  ROS_INFO("altezza desiderata %f", alt_des);
+  ROS_INFO("pwm di throttle %f", throttle_command);
 
   //END)publish control to radio
   mavros_msgs::OverrideRCIn radio_pwm;
-  radio_pwm.channels[RC_ROLL] = roll_command;
-  radio_pwm.channels[RC_PITCH] = pitch_command;
-  radio_pwm.channels[RC_THROTTLE] = NO_OVERRIDE;
-  radio_pwm.channels[RC_YAW] = yaw_command;
+  //radio_pwm.channels[RC_ROLL] = roll_command;
+  //radio_pwm.channels[RC_PITCH] = pitch_command;
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = throttle_command;
+  //radio_pwm.channels[RC_YAW] = yaw_command;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
   rc_pub.publish(radio_pwm);
   
 
-  cout << "X_DES: " << x_des_b  << " " << x_b<< endl;
+ /* cout << "X_DES: " << x_des_b  << " " << x_b<< endl;
   cout << "pitch Command " <<  pitch_command << endl;
 
     cout << "Y_DES: " << y_des_b  << " " << y_b<< endl;
-  cout << "roll Command " <<  roll_command << endl;
+  cout << "roll Command " <<  roll_command << endl;*/
   //cout << "Y_DES: " << y_des_b  << " " << y_b << endl; ;
   //cout << "RZ_DES: " << rz_des << " " << rz << endl;
 

@@ -14,7 +14,7 @@ xterm -T "R200" -n "R200" -hold -e "roslaunch realsense_camera r200_autec.launch
 
 sleep 1
 
-xterm -T "ARUCO MAPPING" -n "ARUCO MAPPING" -hold -e "roslaunch aruco_mapping aruco_mapping_autec.launch" &
+xterm -T "ARUCO MAPPING" -n "ARUCO MAPPING" -hold -e "roslaunch aruco_mapping aruco_mapping_autec_640x480.launch" &
 
 sleep 2
 
@@ -32,9 +32,7 @@ sleep 30
 
 xterm -T "MAVROS SYSID" -n "MAVROS SYSID" -hold -e "rosrun mavros mavparam set SYSID_MYGCS 1" &
 
-sleep 1
 
-xterm -T "IMAGE_VIEW" -n "IMAGE_VIEW" -hold -e "rosrun image_view image_view image:=/camera/color/image_raw" &
 
 
 

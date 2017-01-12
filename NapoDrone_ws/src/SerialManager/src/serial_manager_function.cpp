@@ -34,7 +34,17 @@ void Pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 
 }
 
-
+/*****************************************************************/
+/*                                                               */
+/*                 CALLBACK LEGGI BATTERIA                       */
+/*****************************************************************/
+void Battery_cb(const mavros_msgs::BatteryStatus::ConstPtr& msg)
+{
+        battery_status = *msg;
+        new_packet_battery = 1;
+        return;
+  
+}
 /*****************************************************************/
 /*                                                               */
 /*                 PARSING DEL PACKET                            */
@@ -130,7 +140,6 @@ void parser_mess(unsigned char buffer){
             break;
             /*********************************************************/
             //PCCHETTO CONTENTENTE UN  X Y Z RZ
-            //X
         case PAYLOAD_4_2:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_4_3;
@@ -150,56 +159,10 @@ void parser_mess(unsigned char buffer){
             //Y
         case PAYLOAD_4_6:
             coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_7;
-            break;
-        case PAYLOAD_4_7:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_8;
-            break;
-        case PAYLOAD_4_8:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_9;
-            break;
-        case PAYLOAD_4_9:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_10;
-            break;
-            //Z
-        case PAYLOAD_4_10:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_11;
-            break;
-        case PAYLOAD_4_11:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_12;
-            break;
-        case PAYLOAD_4_12:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_13;
-            break;
-        case PAYLOAD_4_13:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_14;
-            break;
-            //Z
-        case PAYLOAD_4_14:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_15;
-            break;
-        case PAYLOAD_4_15:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_16;
-            break;
-        case PAYLOAD_4_16:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_4_17;
-            break;
-        case PAYLOAD_4_17:
-            coda_recv_seriale.push(buffer);
             state_msg = HEADER_1;
             new_packet++;
             break;
-
+        
         /*********************************************************/
             //PACCHETTO CONTENTENTE UN COMANDO PER LA PINZA
         case PAYLOAD_5_2:
@@ -288,6 +251,11 @@ void decode_packet()
                         break;
                     case CMD_HOLD_POSITION:
                         cmd_msg = HOLD_POSITION;
+                        coda_recv_seriale.pop();
+                        break;
+                    case CMD_SEND_WAYPOINT:
+                        cmd_msg = NO_REQ;
+                        new_waypoint = 1;
                         coda_recv_seriale.pop();
                         break;
                     default:
@@ -504,26 +472,50 @@ void decode_packet()
             if(coda_recv_seriale.size() >= NBYTES_PAYLOAD_WAYPOINT)
             {
                 coda_recv_seriale.pop();
-                //devo decodificare il pacchetto
-                double x_waypoint = decode_payload();
-                double y_waypoint = decode_payload();
-                double z_waypoint = decode_payload();
-                double rz_waypoint = decode_payload();
+                switch(coda_recv_seriale.front())
+                {
+                    case X_POINT:
+                        coda_recv_seriale.pop();
+                        waypoint_data = decode_payload();
+                        waypoint_recv.position.x = waypoint_data;
+                        way_msg = X_WAYP;
+                        cout << "X WAYPOINT: " << waypoint_data << endl;
+                        break;
+                    case Y_POINT:
+                        coda_recv_seriale.pop();
+                        waypoint_data = decode_payload();
+                        waypoint_recv.position.y = waypoint_data;
+                        way_msg = Y_WAYP;
+                        cout << "Y WAYPOINT: " << waypoint_data << endl;
+                        break;
+                    case Z_POINT:
+                        coda_recv_seriale.pop();
+                        waypoint_data = decode_payload();
+                        waypoint_recv.position.z = waypoint_data;
+                        way_msg = Z_WAYP;
+                        cout << "Z WAYPOINT: " << waypoint_data << endl;
+                        break;
+                    case RZ_POINT:
+                        coda_recv_seriale.pop();
+                        waypoint_data = decode_payload();
+                        waypoint_recv.orientation.z = waypoint_data / 180 * PI;
+                        way_msg = RZ_WAYP;
+                        cout << "RZ WAYPOINT: " << waypoint_data << endl;
+                        break;
+                    /***default**/
+                    default:
+                        cout << "PKT WAY NON RICONOSCIUTO" << endl;
+                        //5 bytes da scartare
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        coda_recv_seriale.pop();
+                        break;
 
-                /*salvo nella variabile gloable*/
-                waypoint_recv.position.x = x_waypoint;
-                waypoint_recv.position.y = y_waypoint;
-                waypoint_recv.position.z = z_waypoint;
-
-                waypoint_recv.orientation.x = 0;
-                waypoint_recv.orientation.y = 0;
-                waypoint_recv.orientation.z = rz_waypoint / 180 * PI;
-                waypoint_recv.orientation.w = 0;
-
-                new_waypoint = 1;
-                cout << "NEW WAYPOINT X:" << x_waypoint << " Y:" << y_waypoint << " Z:" << z_waypoint << " RZ:" << rz_waypoint << endl;
-                //pacchetto è stato analizzato: resetto new_packet
+                }
                 new_packet--;
+                
             }
             break;
         
@@ -806,6 +798,22 @@ void check_send_request()
         param_msg = NO_PARAM;
 
     }
+    /********WAYPOINT**********************************************/
+    if(way_msg != NO_WAY)
+    {
+        cout << "WAYPOINT RICEVUTO" << endl;
+
+
+        //invio ack 
+        coda_send_seriale.push(HEADER_A);
+        coda_send_seriale.push(HEADER_B);
+        coda_send_seriale.push(PAYLOAD_WAYPOINT);
+        coda_send_seriale.push(PAYLOAD_ACK);
+
+
+        way_msg = NO_WAY;
+
+    }
      /********MODO GUIDA**********************************************/
     if(mode_msg != NO_MODE)
     {
@@ -828,11 +836,11 @@ void check_send_request()
     /**************NEW WAYPOINT****************************************/
     if(new_waypoint)
     {
-        cout << "WAYPOINT RICEVUTO" << endl;
+        cout << "WAYPOINT INVIATO A AUTOPILOTA" << endl;
         //invio ack 
         coda_send_seriale.push(HEADER_A);
         coda_send_seriale.push(HEADER_B);
-        coda_send_seriale.push(PAYLOAD_WAYPOINT);
+        coda_send_seriale.push(PAYLOAD_CMD);
         coda_send_seriale.push(PAYLOAD_ACK);
 
         //pubblico il waypoint sul topic
@@ -1036,7 +1044,14 @@ int serial_init(int* fd,const char* seriale_dev)
     gripper_msg = NO_GRIPPER_REQ;
     //inizializzazione mode_msg
     mode_msg = NO_MODE;
+    //inizializzazione way_msg
+    way_msg = NO_WAY;
 
+    //inizializzazzione struttura waypoint
+    waypoint_recv.position.x = 0;
+    waypoint_recv.position.y = 0;
+    waypoint_recv.position.z = 0;
+    waypoint_recv.orientation.z = 0;
     return 1;
 }
 /*****************************************************************/

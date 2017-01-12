@@ -3,10 +3,10 @@
 
 
     <node pkg="serial_manager" type="SerialManager" name="SerialManager" output="screen" >
-    <remap from="/napodrone_pose" to="/aruco/pose_cam_from_board"/>
+    <remap from="/napodrone_pose" to="/aruco/pose_body_from_board"/>
 	<param name="dev" type="string" value="/dev/ttyUSB0" />
 	<param name="stream_pose" type="bool" value="True" />
-	<param name="ack_el_time" type="int" value="250" />
+	<param name="ack_el_time" type="int" value="1000" />
 	<param name="pose_el_time" type="int" value="500" />
     </node>
 
