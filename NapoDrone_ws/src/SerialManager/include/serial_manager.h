@@ -355,6 +355,9 @@ char new_packet_pose = 0;
 char new_packet_battery = 0;
 int pose_el_time, ack_el_time,battery_el_time;
 double PI = 3.14159;
+
+double x_m_LimitMax, y_m_LimitMax, z_m_LimitMax;
+double x_m_LimitMin, y_m_LimitMin, z_m_LimitMin;
 using std::cout;
 using std::endl;
 //strutture dati emporali

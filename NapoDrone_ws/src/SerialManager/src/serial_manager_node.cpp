@@ -41,6 +41,20 @@ int main(int argc, char **argv)
     n.param<int>("/SerialManager/ack_el_time", ack_el_time, 500);
     n.param<int>("/SerialManager/pose_el_time", pose_el_time, 500);
     n.param<int>("/SerialManager/battery_el_time", battery_el_time, 500);
+    //limiti area di lavoro
+    n.param<double>("/SerialManager/x_m_LimitMax", x_m_LimitMax, 5);
+    n.param<double>("/SerialManager/y_m_LimitMax", y_m_LimitMax, 5);
+    n.param<double>("/SerialManager/z_m_LimitMax", z_m_LimitMax, 5);
+    n.param<double>("/SerialManager/x_m_LimitMin", x_m_LimitMin, 0);
+    n.param<double>("/SerialManager/y_m_LimitMin", y_m_LimitMin, 0);
+    n.param<double>("/SerialManager/z_m_LimitMin", z_m_LimitMin, 0);
+    //pubblico area di lavoro
+    ROS_INFO("valore X massimo: %f ", x_m_LimitMax);
+    ROS_INFO("valore X minimo: %f ", x_m_LimitMin);
+    ROS_INFO("valore Y massimo: %f ", y_m_LimitMax);
+    ROS_INFO("valore Y minimo: %f ", y_m_LimitMin);
+    ROS_INFO("valore Z massimo: %f ", z_m_LimitMax);
+    ROS_INFO("valore Z minimo: %f ", z_m_LimitMin);
 
     int serial;
     // init della seriale

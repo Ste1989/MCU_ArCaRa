@@ -477,24 +477,42 @@ void decode_packet()
                     case X_POINT:
                         coda_recv_seriale.pop();
                         waypoint_data = decode_payload();
-                        waypoint_recv.position.x = waypoint_data;
-                        way_msg = X_WAYP;
-                        cout << "X WAYPOINT: " << waypoint_data << endl;
+                        if(waypoint_data >= x_m_LimitMin && waypoint_data <= x_m_LimitMax)
+                        {
+                            waypoint_recv.position.x = waypoint_data;
+                            way_msg = X_WAYP;
+                            cout << "X WAYPOINT: " << waypoint_data << endl;
+                        }
+                        else
+                            way_msg = NO_WAY;
                         break;
+
                     case Y_POINT:
                         coda_recv_seriale.pop();
                         waypoint_data = decode_payload();
-                        waypoint_recv.position.y = waypoint_data;
-                        way_msg = Y_WAYP;
-                        cout << "Y WAYPOINT: " << waypoint_data << endl;
+                        if( waypoint_data >= y_m_LimitMin && waypoint_data <= y_m_LimitMax)
+                        {
+                            waypoint_recv.position.y = waypoint_data;
+                            way_msg = Y_WAYP;
+                            cout << "Y WAYPOINT: " << waypoint_data << endl;
+                        }
+                        else
+                            way_msg = NO_WAY;
                         break;
+
                     case Z_POINT:
                         coda_recv_seriale.pop();
                         waypoint_data = decode_payload();
-                        waypoint_recv.position.z = waypoint_data;
-                        way_msg = Z_WAYP;
-                        cout << "Z WAYPOINT: " << waypoint_data << endl;
+                        if( -waypoint_data >= z_m_LimitMin && -waypoint_data <= z_m_LimitMax  )
+                        {    
+                            waypoint_recv.position.z = waypoint_data;
+                            way_msg = Z_WAYP;
+                            cout << "Z WAYPOINT: " << waypoint_data << endl;
+                        }
+                        else
+                            way_msg = NO_WAY;
                         break;
+
                     case RZ_POINT:
                         coda_recv_seriale.pop();
                         waypoint_data = decode_payload();

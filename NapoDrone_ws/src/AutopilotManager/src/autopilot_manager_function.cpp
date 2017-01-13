@@ -378,8 +378,12 @@ void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 		quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
 			msg->pose.orientation.z,msg->pose.orientation.w, 
 			P_world_body_world.orientation.x,P_world_body_world.orientation.y,P_world_body_world.orientation.z);
+
     //prendo il tempo 
     gettimeofday(&pose_time, NULL); 
+
+    //alzo un flag che ho una nuova stima
+    new_pose_recv = 1;
 		
 }
 /********************************************************************************************/
@@ -711,7 +715,7 @@ void init_global_variables()
   init_takeoff = false;
   init_pressure = 0;
   alt_from_barometer = 0;
-
+  new_pose_recv = 0;
   //inizializzo i controllori
   pid_controllers.roll.init_PID();
   pid_controllers.pitch.init_PID();

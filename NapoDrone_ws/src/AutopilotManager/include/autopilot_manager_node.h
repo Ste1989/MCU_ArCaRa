@@ -40,7 +40,7 @@ int loop_rate;
 int stream_rate;
 bool marker_visibile;
 bool manual_mode;
-
+char new_pose_recv;
 //altezza di takeoff da raggiungere
 double alt_takeoff_target;
 //struttura per la memorizzazione della posa della camera nel frame world

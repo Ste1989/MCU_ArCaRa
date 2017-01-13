@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 
         /******************CALOCLO DELL'AZIONE DI CONTROLLO*****************************************/
         //il ciclo di controllo lo eseguo a loop_rate Hz
-
+        /*
         if(elapsed_time_control  >= (1000/loop_rate)) //30Hz
         {   
             ROS_INFO("CICLO CONTROLLO");
@@ -313,14 +313,42 @@ int main(int argc, char **argv)
                 
             }
             gettimeofday(&control_time, NULL); 
-        }
+        }else
+        {
+            //do nothing
+        }*/
 
+        if(new_pose_recv)
+        {
+            ROS_INFO("CICLO CONTROLLO");
+            cout << "FREQUENZA CONTROLLO" << 1000/elapsed_time_control <<endl;
+            update_control();
+            gettimeofday(&control_time, NULL);
+        }
+        else
+        {
+            //devo controllare che non sia passato più di un secondo dall'ultima posa ricevuta
+            if(elapsed_time_pose > 1000/1)
+            {
+                ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                //imposto i valori di pwm di yaw, pitch e roll al minimo
+                //todo: per l'altezza?
+                double pwm_throttle = 1500;
+                //warning_stop(pwm_throttle);
+                clear_radio_override();
+                
+            }
+            else
+            {
+                //do nothing
+            }
+
+        }
         //test gradino per identificazione 
         //step_test();
         /************************************************************************************************/
         
-
-    }
+    }//waypoint recv
 
 
 
