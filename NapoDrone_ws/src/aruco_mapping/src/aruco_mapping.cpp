@@ -679,7 +679,7 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
     marker_msg.marker_ids.clear();
     marker_msg.global_marker_poses.clear();
 
-    if(save_data_on_file)
+   if(save_data_on_file)
     {
 
       //stampo su file la posizione della camera stimata nel fram world
@@ -687,6 +687,51 @@ bool ArucoMapping::processImage(cv::Mat input_image,cv::Mat output_image, std_ms
       secs = secs + (double(header.stamp.nsec)/pow(10,9));
       
       std::string str_path  = file_path_save + "camera_pose.txt";
+      FILE* fd;
+      fd = fopen(str_path.c_str(), "a");
+      fprintf(fd, "%f", secs -  secs_0);
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w.pose.position.x); //2
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w.pose.position.y); //3
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w.pose.position.z); //4 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w_Marker.position.x);//5
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w_Marker.position.y); //6
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_cam__w_Marker.position.z); //7
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_body__w.pose.position.x); //8
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_body__w.pose.position.y); //9
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", Pose_world_body__w.pose.position.z); //10 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", roll_b); //11
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", pitch_b); //12
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", yaw_b); //13
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", roll_m); //14
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", pitch_m); //15
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", yaw_m); //16
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%i\n", pose_valid); //17
+      fclose(fd); 
+    }
+     if(save_data_on_file && pose_valid)
+    {
+
+      //stampo su file la posizione della camera stimata nel fram world
+      double secs = header.stamp.sec;
+      secs = secs + (double(header.stamp.nsec)/pow(10,9));
+      
+      std::string str_path  = file_path_save + "camera_pose_valid.txt";
       FILE* fd;
       fd = fopen(str_path.c_str(), "a");
       fprintf(fd, "%f", secs -  secs_0);

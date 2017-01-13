@@ -308,7 +308,8 @@ int main(int argc, char **argv)
                 //imposto i valori di pwm di yaw, pitch e roll al minimo
                 //todo: per l'altezza?
                 double pwm_throttle = 1500;
-                warning_stop(pwm_throttle);
+                //warning_stop(pwm_throttle);
+                clear_radio_override();
                 
             }
             gettimeofday(&control_time, NULL); 

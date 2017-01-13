@@ -23,6 +23,7 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <mavros_msgs/BatteryStatus.h>
 /*************************************************************/
 //
 //modulo che preposto alla ricezione e alla decodifica dei messaggi
@@ -97,17 +98,7 @@ typedef enum{
     PAYLOAD_4_4,
     PAYLOAD_4_5,
     PAYLOAD_4_6,
-    PAYLOAD_4_7,
-    PAYLOAD_4_8,
-    PAYLOAD_4_9,
-    PAYLOAD_4_10,
-    PAYLOAD_4_11,
-    PAYLOAD_4_12,
-    PAYLOAD_4_13,
-    PAYLOAD_4_14,
-    PAYLOAD_4_15,
-    PAYLOAD_4_16,
-    PAYLOAD_4_17,
+
 
     PAYLOAD_5_2,
 } waiting_msg;
@@ -117,8 +108,24 @@ waiting_msg state_msg;
 /**************************************************************************************************/
 /******************PACCHETTO DI WAYPOINT************************************************************/
 /**************************************************************************************************/
-#define NBYTES_PAYLOAD_WAYPOINT 17
+#define NBYTES_PAYLOAD_WAYPOINT 5 //17
 #define PAYLOAD_WAYPOINT  (int)0xF0
+//lista di waypoint
+#define X_POINT (int)0x10
+#define Y_POINT (int)0x11
+#define Z_POINT (int)0x12
+#define RZ_POINT (int)0x13
+/*possibili punti *************************************/
+typedef enum{
+    NO_WAY,
+    X_WAYP,
+    Y_WAYP,
+    Z_WAYP,
+    RZ_WAYP,
+} way_request;
+//variabile per la memorizzazione dello richiesta effettuata
+way_request way_msg;
+
 
 /**************************************************************************************************/
 /******************PACCHETTO DI COMANDO PINZA******************************************************/
@@ -152,6 +159,7 @@ gripper_request gripper_msg;
 #define CMD_EMERGENCYSTOP (int)0x85
 #define CMD_CLEAR_RADIO_OVERRIDE (int)0x86
 #define CMD_HOLD_POSITION (int)0x87
+#define CMD_SEND_WAYPOINT (int)0x88
 #define CMD_NO_REQ (int)0xFF
 /*possibili richiesta di comandi**********************************/
 typedef enum{
@@ -300,6 +308,7 @@ mode_request mode_msg;
 /**************************************************************************************************/
 #define PAYLOAD_PX4 (int)0xE0
 #define PAYLOAD_POSE (int)0xE1
+#define PAYLOAD_BATTERY (int)0xE2
 typedef enum{
     CONNECTING,
     CONNECTED,
@@ -329,6 +338,7 @@ std::queue<unsigned char> coda_send_seriale;
 //ros Subscriber
 ros::Subscriber status_topic;
 ros::Subscriber pose_topic;
+ros::Subscriber battery_topic;
 //ros topic request
 ros::Publisher req_topic;
 ros::Publisher param_topic;
@@ -339,15 +349,17 @@ ros::Publisher gripper_topic;
 /******************GLOBAL VAR***********************************************************************/
 int count = 0;
 double param = 0.0;
+double waypoint_data = 0.0;
 int new_packet = 0;
 char new_packet_pose = 0;
-int pose_el_time, ack_el_time;
+char new_packet_battery = 0;
+int pose_el_time, ack_el_time,battery_el_time;
 double PI = 3.14159;
 using std::cout;
 using std::endl;
 //strutture dati emporali
-timeval new_pkt_time, current_time, ping_time, stream_pose_time;
-double elapsed_time_pkt_received, elapsed_time_ping, elapsed_time_pose;
+timeval new_pkt_time, current_time, ping_time, stream_pose_time, stream_battery_time;
+double elapsed_time_pkt_received, elapsed_time_ping, elapsed_time_pose, elapsed_time_battery;
 //struttura per la memorizzazione della posa della camera nel frame world
 struct NapodronePose
 {
@@ -361,6 +373,9 @@ bool stream_pose;
 char new_waypoint = 0;
 geometry_msgs::Pose waypoint_recv;
 
+/*batteria*/
+mavros_msgs::BatteryStatus battery_status;
+
 
 
 /***************************FUNZIONI************************************************************************/
@@ -373,6 +388,7 @@ void read_from_serial(int* serial);
 void check_send_request();
 void Status_Pixhawk_Callback(const std_msgs::Int32::ConstPtr& msg);
 void Pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg);
+void Battery_cb(const mavros_msgs::BatteryStatus::ConstPtr& msg);
 int set_interface_attribs (int fd, int speed, int parity);
 void set_blocking (int fd, int should_block);
 int serial_init(int* fd,const char* seriale_dev);

@@ -32,13 +32,15 @@ int main(int argc, char **argv)
 
     status_topic = n.subscribe<std_msgs::Int32>("napodrone/px4_status",10, &Status_Pixhawk_Callback);
     pose_topic = n.subscribe<geometry_msgs::PoseStamped>("/napodrone_pose", 1, &Pose_cb);
+    battery_topic = n.subscribe<mavros_msgs::BatteryStatus>("/mavros/battery", 1, &Battery_cb);
 
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
     n.param<std::string>("/SerialManager/dev", seriale_dev, "/dev/ttyUSB0");
     n.param<bool>("/SerialManager/stream_pose", stream_pose, false);
-    n.param<int>("/SerialManager/ack_el_time", ack_el_time, 250);
+    n.param<int>("/SerialManager/ack_el_time", ack_el_time, 500);
     n.param<int>("/SerialManager/pose_el_time", pose_el_time, 500);
+    n.param<int>("/SerialManager/battery_el_time", battery_el_time, 500);
 
     int serial;
     // init della seriale
@@ -47,6 +49,7 @@ int main(int argc, char **argv)
     gettimeofday(&new_pkt_time, NULL);
     gettimeofday(&ping_time, NULL);
     gettimeofday(&stream_pose_time, NULL);
+    gettimeofday(&stream_battery_time, NULL);
     //ros::Rate loop_rate(100); // 100 Hz
     if (result == 1)
     {
@@ -67,6 +70,9 @@ int main(int argc, char **argv)
           //calcolo tempo per invio di una misura di poszione
           elapsed_time_pose = (current_time.tv_sec - stream_pose_time.tv_sec) * 1000;
           elapsed_time_pose += (current_time.tv_usec - stream_pose_time.tv_usec) / 1000;
+          //calcolo tempo per invio di una misura di batteria
+          elapsed_time_battery = (current_time.tv_sec - stream_battery_time.tv_sec) * 1000;
+          elapsed_time_battery += (current_time.tv_usec - stream_battery_time.tv_usec) / 1000;
           
           /********INVIO UN PING******************************************************************************/
           if(elapsed_time_ping > ack_el_time)
@@ -94,10 +100,25 @@ int main(int argc, char **argv)
             encode_payload(P_world_body_world.orientation.z );
 
             new_packet_pose = 0;
-
+            //aggiorno ping_time
+            gettimeofday(&stream_pose_time, NULL);
 
           }
+          /***************************INVIO BATERIA*******************************/
+          if(elapsed_time_battery > battery_el_time && new_packet_battery)
+          {
+            //invio lo stato della batteria
+            coda_send_seriale.push(HEADER_A);
+            coda_send_seriale.push(HEADER_B);
+            coda_send_seriale.push(PAYLOAD_BATTERY);
+            encode_payload(battery_status.voltage );
+            encode_payload(battery_status.current );
 
+            new_packet_battery = 0;
+            //aggiorno la variabile temporale
+            gettimeofday(&stream_battery_time, NULL);
+
+          }
  /*         
  /*        cout << elapsed_time_pkt_received << "ms.\n";
 
