@@ -274,7 +274,11 @@ int main(int argc, char **argv)
             pid_controllers.roll.init_PID();
             pid_controllers.pitch.init_PID();
             pid_controllers.yaw.init_PID();
-            //pid_controllers.altitude.init_PID();
+            pid_controllers.altitude.init_PID();
+            //std::string str_path  = "/home/robot/quota.txt";
+            //FILE* fd;
+            //fd = fopen(str_path.c_str(), "w");
+            //fclose(fd);
 
             waypoint_recv = 2;
         }
@@ -321,8 +325,9 @@ int main(int argc, char **argv)
         if(new_pose_recv)
         {
             ROS_INFO("CICLO CONTROLLO");
-            cout << "FREQUENZA CONTROLLO" << 1000/elapsed_time_control <<endl;
+            cout << "FREQUENZA CONTROLLO: " << 1000/elapsed_time_control <<endl;
             update_control();
+            new_pose_recv = 0;
             gettimeofday(&control_time, NULL);
         }
         else

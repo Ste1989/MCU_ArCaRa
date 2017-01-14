@@ -567,14 +567,14 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   I_k_1 = I_k + Ki * e;
   //memorizzo integrale
   I_k = I_k_1;
-  cout << "INTEGRLE" << endl;
+  /*cout << "INTEGRLE" << endl;
   cout << I_k << endl;
   cout << I_k_1 << endl;
   cout << e << endl;
-  cout << Ki << endl;
+  cout << Ki << endl;*/
 
   //D
-  cout << (y - y_k) << endl;
+  //cout << (y - y_k) << endl;
   double Ts = 1.0/double(loop_rate);
   double D_k_1 = 0;
   if((Nd*Ts+Td) == 0)
@@ -584,9 +584,9 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   //memorizzo derivativo
   y_k = y; 
   D_k = D_k_1;
-  cout << Td/(Nd*Ts+Td) << endl;
+  /*cout << Td/(Nd*Ts+Td) << endl;
   cout << (Ky*Td*Nd)/(Nd*Ts+Td) << endl;
-  cout << "D_k_1: " << D_k_1 << endl;
+  cout << "D_k_1: " << D_k_1 << endl;*/
 
   //aziobne di contorllo 
   double u = (P + I_k_1 + D_k_1);
@@ -716,6 +716,11 @@ void init_global_variables()
   init_pressure = 0;
   alt_from_barometer = 0;
   new_pose_recv = 0;
+  secs_0 =ros::Time::now().toSec();
+  std::string str_path  = "/home/robot/quota.txt";
+  FILE* fd;
+  fd = fopen(str_path.c_str(), "w");
+  fclose(fd);
   //inizializzo i controllori
   pid_controllers.roll.init_PID();
   pid_controllers.pitch.init_PID();
@@ -811,10 +816,11 @@ void update_control()
   double rz = P_world_body_world.orientation.z;
   double rz_des = current_waypoint_world.orientation.z;
   //calcolo il controllo da attuare
-  //double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
+  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
   //devo mappare l'ingresso in un comando ai servo
-  //double yaw_commad = pid_controllers.yaw.map_control_2_radio(u_rz);
-  //cout << yaw_command << endl;
+  ROS_INFO("heading corrrente %f", rz);
+  ROS_INFO("heading desiderato %f", rz_des);
+  ROS_INFO("pwm di yaw %f", yaw_command);
 
   //4)controllo di quota
   double alt_des = current_waypoint_world.position.z;
@@ -836,14 +842,28 @@ void update_control()
   radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
   rc_pub.publish(radio_pwm);
   
+  //scrittura su file
+  if(true)
+  {
+      //double secs = header.stamp.sec;
+      //secs = secs + (double(header.stamp.nsec)/pow(10,9));
+      double secs = ros::Time::now().toSec();
+      std::string str_path  = "/home/robot/quota.txt";
+      FILE* fd;
+      fd = fopen(str_path.c_str(), "a");
+      fprintf(fd, "%f", secs -  secs_0);
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", alt_curr); //2
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", alt_des); //3
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f\n", throttle_command); //4
+      fclose(fd);
 
- /* cout << "X_DES: " << x_des_b  << " " << x_b<< endl;
-  cout << "pitch Command " <<  pitch_command << endl;
 
-    cout << "Y_DES: " << y_des_b  << " " << y_b<< endl;
-  cout << "roll Command " <<  roll_command << endl;*/
-  //cout << "Y_DES: " << y_des_b  << " " << y_b << endl; ;
-  //cout << "RZ_DES: " << rz_des << " " << rz << endl;
+  }
+
+
 
 }
  /********************************************************************************************/
