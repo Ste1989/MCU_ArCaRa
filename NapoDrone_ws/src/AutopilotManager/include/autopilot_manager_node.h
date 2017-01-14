@@ -30,8 +30,8 @@ double current_pressure;
 double alt_from_barometer; 
 
 //cvarianili per la gestione del tempo
-timeval  current_time, control_time, pose_time;
-double elapsed_time_control, elapsed_time_pose;
+timeval  current_time, control_time, pose_time, takeoff_time;
+double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff;
 char waypoint_recv;
 std::string PID_file;
 bool init_takeoff;
@@ -42,8 +42,9 @@ bool marker_visibile;
 bool manual_mode;
 char new_pose_recv;
 double secs_0;
-//altezza di takeoff da raggiungere
+//altezza di takeoff da raggiungere e di partenza
 double alt_takeoff_target;
+double alt_takeoff_partenza;
 //struttura per la memorizzazione della posa della camera nel frame world
 struct NapodronePose
 {

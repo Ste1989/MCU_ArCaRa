@@ -465,17 +465,17 @@ bool disarm_vehicle()
 	rc_pub.publish(radio_pwm);
 	//funzione richiamata per disarmare il veicolo
 	mavros_msgs::CommandBool disarm_cmd;
-    disarm_cmd.request.value = false;
+  disarm_cmd.request.value = false;
     
-    //provo a disarmare
-    arming_client.call(disarm_cmd);
-    return disarm_cmd.response.success;
+  //provo a disarmare
+  arming_client.call(disarm_cmd);
+  return disarm_cmd.response.success;
 	
 
 }
 /********************************************************************************************/
 /*                                                                                         */
-/*    DISARMA VEHICLE                                                                         */
+/*    TAKEOFF VEHICLE                                                                         */
 /*                                                                                         */
 /*******************************************************************************************/
 bool takeoff_vehicle()
@@ -487,31 +487,32 @@ bool takeoff_vehicle()
 		ROS_INFO("PLEASE ARM BEFORE TAKEOFF");
 		return false;
 	}
+
+
 	//all'inizio devo inizializzare il takeoff
 	if(!init_takeoff)
 	{
 		init_takeoff = true;
-		//takeoff_pressure = current_pressure;
-		return false;	
+    //prendo il tempo in cui è arrivta la richiesta di takeoff
+    gettimeofday(&takeoff_time, NULL);
+		//inizializzo l'altezza desiderata di takeoff
+    //current_waypoint_world.position.x  DA INIZIALIZZARE
+    //current_waypoint_world.position.y  DA INIZIALIZZARE
+    current_waypoint_world.position.z = alt_takeoff_target;
+    current_waypoint_world.orientation.z = 0;
+    //metto in automatico
+    waypoint_recv = 1;
+    manual_mode = 0;
+    ROS_INFO("RICHIESTA DI TAKEOFF RICEVUTA: ALT %f HEADIND %f", alt_takeoff_target, 0.0);
+		return true;	
 	}
-	
-/*
-	//devo impostare il pwm del throttle al valore minimo.
-	mavros_msgs::OverrideRCIn radio_pwm;
-	radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
-	radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
-	radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT;
-	radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-	rc_pub.publish(radio_pwm);
-	//funzione richiamata per disarmare il veicolo
-	mavros_msgs::CommandBool disarm_cmd;
-    disarm_cmd.request.value = false;
-    
-    //provo a disarmare
-    arming_client.call(disarm_cmd);
-    return disarm_cmd.response.success;*/
-	
+  else
+  {
+    ROS_INFO("COMANDO DI TAKEOFF IN ESECUZIONE");
+    return true;
+  }
 
+	
 }
 /********************************************************************************************/
 /*                                                                                         */
@@ -597,9 +598,22 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   double pwm = m*u + q;
 
   if(pwm < saturazione_min)
+  {
     pwm = saturazione_min;
+    //azione antiwindup: devo scaricare l'integrale dell'ultimo valore inserito
+    //I_k = I_k - Ki *e; 
+    //variante 1
+    I_k = 0;
+
+  }
   if(pwm > saturazione_max)
+  {
     pwm = saturazione_max;
+    //azione antiwindup: devo scaricare l'integrale dell'ultimo valore inserito
+    //I_k = I_k - Ki *e;
+    //variante 1
+    I_k = 0;
+  }
 
   //se ho saturazione devo scaricare l'integrale (Tecnica AntiWindUp)
   //double u_att = (pwm-q)/m;
@@ -608,14 +622,6 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   //double AntiWindUp = e_t / Tt ;
   //I_k = I_k + e_t;
 
-
-
-
-  //cout << "PWM CALCOLATO: " << pwm << endl; 
-  //cout << "u : " << u << endl;
-  //cout << "u_att: " << u_att << endl;
-  //cout << "e_t: " << e_t << endl;
-  //cout << "I_k: " << I_k << endl;
   
   return pwm;
 }
@@ -717,7 +723,7 @@ void init_global_variables()
   alt_from_barometer = 0;
   new_pose_recv = 0;
   secs_0 =ros::Time::now().toSec();
-  std::string str_path  = "/home/robot/quota.txt";
+  std::string str_path  = "/home/robot/MCU_ArCaRa/log/quota.txt";
   FILE* fd;
   fd = fopen(str_path.c_str(), "w");
   fclose(fd);
@@ -733,8 +739,7 @@ void init_global_variables()
   marker_visibile = false;
 	
    //..
-	//altezza da raggiungere in takeoff
-	alt_takeoff_target = 1.0;
+	
 
   //inizializzo waypoint
   current_waypoint_world.position.x = 0;
@@ -848,7 +853,7 @@ void update_control()
       //double secs = header.stamp.sec;
       //secs = secs + (double(header.stamp.nsec)/pow(10,9));
       double secs = ros::Time::now().toSec();
-      std::string str_path  = "/home/robot/quota.txt";
+      std::string str_path  = "/home/robot/MCU_ArCaRa/log/quota.txt";
       FILE* fd;
       fd = fopen(str_path.c_str(), "a");
       fprintf(fd, "%f", secs -  secs_0);

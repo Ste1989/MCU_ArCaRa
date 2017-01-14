@@ -28,7 +28,7 @@
     <param name="roi_width" type="int" value="640" /> 
     <param name="roi_height" type="int" value="480" />  
     <param name="save_data" type="bool" value="true" />  
-    <param name="file_path_save" type="string" value="/home/robot/" /> 
+    <param name="file_path_save" type="string" value="/home/robot/MCU_ArCaRa/log/" /> 
     <!-- X NEGATIVA --> 
     <param name="Px_cam_body_cam" type="double" value="-0.190" />
     <!-- Y NEGATIVA --> 

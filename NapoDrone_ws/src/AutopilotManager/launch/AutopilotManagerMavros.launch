@@ -4,6 +4,8 @@
     <remap from="/napodrone_pose" to="/aruco/pose_body_from_board"/>
 	        <param name="loop_rate" type="int" value="20" />
 	        <param name="stream_rate" type="int" value="50" />
+	        <param name="alt_takeoff" type="double" value="-0.8" />
+	        <param name="alt_partenza" type="double" value="-0.3" />
 	        <param name="pid_file" type="string" value="$(find autopilot_manager)/data/PID_iris.txt" /> 
     </node>
 

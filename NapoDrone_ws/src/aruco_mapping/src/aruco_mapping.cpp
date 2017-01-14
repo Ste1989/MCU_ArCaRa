@@ -159,6 +159,22 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
 
   //initiliazer pose old
   initialize_pose_old = 1;
+  
+
+  /*inizializzazione file*/
+  if(save_data_on_file)
+  {
+
+      FILE* fd;
+      std::string str_path  = file_path_save + "camera_pose_valid.txt";
+      fd = fopen(str_path.c_str(), "w");
+      fclose(fd);
+
+      str_path  = file_path_save + "camera_pose.txt";
+      fd = fopen(str_path.c_str(), "w");
+      fclose(fd);
+  }
+
 
 }
 

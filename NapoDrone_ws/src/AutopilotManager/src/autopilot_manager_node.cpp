@@ -41,8 +41,13 @@ int main(int argc, char **argv)
 
 
     //leggo i parametri specificati nel launch file
-    nh.param<int>("/AutopilotManager/loop_rate", loop_rate, 30);
+    nh.param<int>("/AutopilotManager/loop_rate", loop_rate, 20);
     nh.param<int>("/AutopilotManager/stream_rate", stream_rate, 50);
+    nh.param<double>("/AutopilotManager/alt_takeoff", alt_takeoff_target, -1.0);
+    nh.param<double>("/AutopilotManager/alt_partenza", alt_takeoff_partenza, -0.3);
+    ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_target);
+    ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_partenza);
+    
     //PID file
     nh.param<std::string>("/AutopilotManager/pid_file", PID_file, "");
 
@@ -275,10 +280,7 @@ int main(int argc, char **argv)
             pid_controllers.pitch.init_PID();
             pid_controllers.yaw.init_PID();
             pid_controllers.altitude.init_PID();
-            //std::string str_path  = "/home/robot/quota.txt";
-            //FILE* fd;
-            //fd = fopen(str_path.c_str(), "w");
-            //fclose(fd);
+     
 
             waypoint_recv = 2;
         }
@@ -291,6 +293,28 @@ int main(int argc, char **argv)
         //calcolo tempo dall'ultima posa ricevuta
         elapsed_time_pose = (current_time.tv_sec - pose_time.tv_sec) * 1000;
         elapsed_time_pose += (current_time.tv_usec - pose_time.tv_usec) / 1000;
+        //calolo tempo passato dalla ichiesta di takeoff
+        elapsed_time_takeoff = (current_time.tv_sec - takeoff_time.tv_sec) * 1000;
+        elapsed_time_takeoff += (current_time.tv_usec - takeoff_time.tv_usec) / 1000;
+
+        //se è passato più di un secondo dalla richiesta di takeoff resetto il bit di takeoff
+        if (elapsed_time_takeoff > 1000)
+            init_takeoff = 0;
+
+        //se non ho una posa nuova ma sono in fase di takeoff 
+        if(!new_pose_recv && elapsed_time_control >=(1000/loop_rate)  && init_takeoff)
+        {
+            ROS_INFO("SONO QUI");
+            //inganno il controllo che una nuova posa 
+            new_pose_recv = 1;
+            //metto la quota di parteza
+            P_world_body_world.position.z = alt_takeoff_partenza;
+            P_world_body_world.orientation.z = 0;
+
+        }else
+        {
+            //dovrebbe entrare dopo nel caso che non ha più stima da un seconod della posa
+        }
 
 
         /******************CALOCLO DELL'AZIONE DI CONTROLLO*****************************************/
@@ -321,8 +345,8 @@ int main(int argc, char **argv)
         {
             //do nothing
         }*/
-
-        if(new_pose_recv)
+        /*scelgo di esseguire il controllo a loop_rate se ho una nuova posa*/
+        if(new_pose_recv && elapsed_time_control  >= (1000/loop_rate))
         {
             ROS_INFO("CICLO CONTROLLO");
             cout << "FREQUENZA CONTROLLO: " << 1000/elapsed_time_control <<endl;
