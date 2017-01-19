@@ -35,11 +35,12 @@ double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff;
 char waypoint_recv;
 std::string PID_file;
 bool init_takeoff;
-char stato_takeoff;
 //stato_takeoff:
 //0: nulla
 //1: comandoi di takeoff ricevuto il dorne si sta alzando
 //2: drone decollato
+char stato_takeoff;
+char hold_position_var;
 std::string init_flight_mode;
 int loop_rate;
 int stream_rate;
@@ -91,7 +92,7 @@ ros::ServiceClient set_stream_rate_client;
 #define RC_THROTTLE 2
 #define PWM_LOW_LIMIT_ROLL 1118
 #define PWM_HIGH_LIMIT_ROLL 1918
-#define PWM_MEDIUM_ROLL 1522
+#define PWM_MEDIUM_ROLL 1520
 #define PWM_LOW_LIMIT_PITCH 1118
 #define PWM_HIGH_LIMIT_PITCH 1918
 #define PWM_MEDIUM_PITCH 1518

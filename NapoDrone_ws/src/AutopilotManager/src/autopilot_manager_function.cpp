@@ -358,6 +358,7 @@ void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg)
   ROS_INFO("RICEVUTO NUOVO WAYPOINT"); 
   waypoint_recv = 1;
   manual_mode = false;
+  hold_position_var = 0;
 
 
 }
@@ -725,6 +726,7 @@ void init_global_variables()
   current_cmd_req = NO_REQ;
   init_takeoff = false;
   stato_takeoff = 0;
+  hold_position_var = 0;
   init_pressure = 0;
   alt_from_barometer = 0;
   new_pose_recv = 0;
@@ -818,7 +820,7 @@ void update_control()
   cout <<"=====================================================================" << endl;
   //2A)CONTROLLO DI PITCH
   //cout << "PID PITCH" << endl;
-  double pitch_command = pid_controllers.pitch.update_PID(-x_b, -x_des_b, PWM_MEDIUM_PITCH);
+  double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH);
   ROS_INFO("posizione x in body %f", x_b);
   ROS_INFO("posizione x  desiderata in body %f", x_des_b);
   ROS_INFO("pwm di pitch %f", pitch_command);
@@ -870,10 +872,20 @@ void update_control()
     radio_pwm.channels[RC_YAW] = yaw_command;
 
   }*/
-  radio_pwm.channels[RC_ROLL] = roll_command;
-  radio_pwm.channels[RC_PITCH] = pitch_command;
-  radio_pwm.channels[RC_THROTTLE] = throttle_command;
-  radio_pwm.channels[RC_YAW] = yaw_command;
+  //quando premo hold position faccio fare tutto in automatico
+  if(hold_position_var)
+  {
+    radio_pwm.channels[RC_ROLL] = roll_command;
+    radio_pwm.channels[RC_PITCH] = pitch_command;
+    radio_pwm.channels[RC_THROTTLE] = throttle_command;
+    radio_pwm.channels[RC_YAW] = yaw_command;
+  }else
+  {
+    radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+    radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+    radio_pwm.channels[RC_THROTTLE] = throttle_command;
+    radio_pwm.channels[RC_YAW] = yaw_command;
+  }
 
   rc_pub.publish(radio_pwm);
   
@@ -1048,7 +1060,7 @@ void hold_position()
   current_waypoint_world.position.y = P_world_body_world.position.y;
   current_waypoint_world.position.z = P_world_body_world.position.z;
   current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
-
+  hold_position_var = 1;
   waypoint_recv = 1;
   manual_mode = 0;
 
