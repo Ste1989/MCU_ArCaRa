@@ -35,6 +35,11 @@ double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff;
 char waypoint_recv;
 std::string PID_file;
 bool init_takeoff;
+char stato_takeoff;
+//stato_takeoff:
+//0: nulla
+//1: comandoi di takeoff ricevuto il dorne si sta alzando
+//2: drone decollato
 std::string init_flight_mode;
 int loop_rate;
 int stream_rate;

@@ -274,7 +274,7 @@ int main(int argc, char **argv)
     {
         if(waypoint_recv == 1)
         {   
-            ROS_INFO("NUOVO WAYPOINT");
+            ROS_INFO("DRONE IN AUTOMATICO: NUOVO WAYPOINT");
             //se è un nuovo waypoint rinizializzo i controllori
             pid_controllers.roll.init_PID();
             pid_controllers.pitch.init_PID();
@@ -297,14 +297,30 @@ int main(int argc, char **argv)
         elapsed_time_takeoff = (current_time.tv_sec - takeoff_time.tv_sec) * 1000;
         elapsed_time_takeoff += (current_time.tv_usec - takeoff_time.tv_usec) / 1000;
 
+        //GESTIONE DEL TAKEOFF===============================================================
         //se è passato più di un secondo dalla richiesta di takeoff resetto il bit di takeoff
         if (elapsed_time_takeoff > 1000)
-            init_takeoff = 0;
+            init_takeoff = false;
+
+        if(stato_takeoff == 1)
+        {
+            //devo controllare che l'altezza raggiunta sia circa quella impostata
+            //se si drone decollato
+            if(abs(P_world_body_world.position.z - current_waypoint_world.position.z) < 0.1)
+            {
+                stato_takeoff = 2;
+                //scrivo su topic che sono connesso
+                std_msgs::Int32 msg;
+                msg.data = HOVER;
+                state_pub.publish(msg);
+            }
+
+        }
 
         //se non ho una posa nuova ma sono in fase di takeoff 
-        if(!new_pose_recv && elapsed_time_control >=(1000/loop_rate)  && init_takeoff)
+        if(!new_pose_recv  && init_takeoff)
         {
-            ROS_INFO("SONO QUI");
+            ROS_INFO("NON HO LA POSA MA INGANNO COME SE CE L AVESSE");
             //inganno il controllo che una nuova posa 
             new_pose_recv = 1;
             //metto la quota di parteza
@@ -317,35 +333,7 @@ int main(int argc, char **argv)
         }
 
 
-        /******************CALOCLO DELL'AZIONE DI CONTROLLO*****************************************/
-        //il ciclo di controllo lo eseguo a loop_rate Hz
-        /*
-        if(elapsed_time_control  >= (1000/loop_rate)) //30Hz
-        {   
-            ROS_INFO("CICLO CONTROLLO");
-            cout << "FREQUENZA CONTROLLO" << 1000/elapsed_time_control <<endl;
-            //verifico che ho dati di stima di posizione validi da almeno 1 secondd
-            if(elapsed_time_pose <= 1000/1)
-            {
-                update_control();
-                
-            }
-            else
-            {
-                ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
-                //imposto i valori di pwm di yaw, pitch e roll al minimo
-                //todo: per l'altezza?
-                double pwm_throttle = 1500;
-                //warning_stop(pwm_throttle);
-                clear_radio_override();
-                
-            }
-            gettimeofday(&control_time, NULL); 
-        }else
-        {
-            //do nothing
-        }*/
-        /*scelgo di esseguire il controllo a loop_rate se ho una nuova posa*/
+      
         if(new_pose_recv && elapsed_time_control  >= (1000/loop_rate))
         {
             ROS_INFO("CICLO CONTROLLO");
@@ -356,8 +344,8 @@ int main(int argc, char **argv)
         }
         else
         {
-            //devo controllare che non sia passato più di un secondo dall'ultima posa ricevuta
-            if(elapsed_time_pose > 1000/1)
+            //devo controllare che non sia passato più di un secondo dall'ultima posa ricevuta e non sono in fase di decollo
+            if(elapsed_time_pose > 1000/1 && !init_takeoff)
             {
                 ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
                 //imposto i valori di pwm di yaw, pitch e roll al minimo
@@ -373,8 +361,6 @@ int main(int argc, char **argv)
             }
 
         }
-        //test gradino per identificazione 
-        //step_test();
         /************************************************************************************************/
         
     }//waypoint recv

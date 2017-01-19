@@ -448,6 +448,7 @@ bool arm_vehicle()
 	
 
 }
+
 /********************************************************************************************/
 /*                                                                                         */
 /*    DISARMA VEHICLE                                                                         */
@@ -456,34 +457,36 @@ bool arm_vehicle()
 bool disarm_vehicle()
 {
 
-	//devo impostare il pwm del throttle al valore minimo.
-	mavros_msgs::OverrideRCIn radio_pwm;
-	radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
-	radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
-	radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT_THROTTLE;
-	radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
-	rc_pub.publish(radio_pwm);
-	//funzione richiamata per disarmare il veicolo
-	mavros_msgs::CommandBool disarm_cmd;
+  //devo impostare il pwm del throttle al valore minimo.
+  mavros_msgs::OverrideRCIn radio_pwm;
+  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT_THROTTLE;
+  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  rc_pub.publish(radio_pwm);
+  //funzione richiamata per disarmare il veicolo
+  mavros_msgs::CommandBool disarm_cmd;
   disarm_cmd.request.value = false;
     
   //provo a disarmare
   arming_client.call(disarm_cmd);
   return disarm_cmd.response.success;
-	
+  
 
 }
+
 /********************************************************************************************/
 /*                                                                                         */
-/*    TAKEOFF VEHICLE                                                                         */
+/*    TAKEOFF VEHICLE                                                                      */
 /*                                                                                         */
-/*******************************************************************************************/
+/********************************************************************************************/
 bool takeoff_vehicle()
 {
 	//se non è armato non posso fare il takeoff
 	if(!current_state.armed)
 	{
 		init_takeoff = false;
+    stato_takeoff = 0;
 		ROS_INFO("PLEASE ARM BEFORE TAKEOFF");
 		return false;
 	}
@@ -493,6 +496,7 @@ bool takeoff_vehicle()
 	if(!init_takeoff)
 	{
 		init_takeoff = true;
+    stato_takeoff = 1;
     //prendo il tempo in cui è arrivta la richiesta di takeoff
     gettimeofday(&takeoff_time, NULL);
 		//inizializzo l'altezza desiderata di takeoff
@@ -504,6 +508,7 @@ bool takeoff_vehicle()
     waypoint_recv = 1;
     manual_mode = 0;
     ROS_INFO("RICHIESTA DI TAKEOFF RICEVUTA: ALT %f HEADIND %f", alt_takeoff_target, 0.0);
+
 		return true;	
 	}
   else
@@ -719,6 +724,7 @@ void init_global_variables()
  	//inizializzo richiesta di comando
   current_cmd_req = NO_REQ;
   init_takeoff = false;
+  stato_takeoff = 0;
   init_pressure = 0;
   alt_from_barometer = 0;
   new_pose_recv = 0;
@@ -795,25 +801,28 @@ void update_control()
 
   //1)-2)controllo di X-Y
   //devo ruotare [x_des_w, y_des_w] in body con RZ(yaw)
-  double yaw = P_world_body_world.orientation.z;
+  double yaw = -P_world_body_world.orientation.z;
   double x_des_b = cos(yaw)*current_waypoint_world.position.x + sin(yaw)*current_waypoint_world.position.y;
   double y_des_b = -sin(yaw)*current_waypoint_world.position.x + cos(yaw)*current_waypoint_world.position.y; 
   double x_b = cos(yaw)*P_world_body_world.position.x + sin(yaw)*P_world_body_world.position.y;
   double y_b = -sin(yaw)*P_world_body_world.position.x + cos(yaw)*P_world_body_world.position.y;
 
-  //compenso per gli angoli di pitch e roll
-  //double x_off = P_world_body_world.position.z * tan(P_world_body_world.orientation.y);
-  //double y_off = P_world_body_world.position.z * tan(P_world_body_world.orientation.x);
-  //x_b  = x_b + x_off;
-  //y_b  = y_b - y_off;
 
 
   //1A) CONTROLLO DI ROLL
   //cout << "PID ROLL" << endl;
-  //double roll_command = pid_controllers.roll.update_PID(y_b, y_des_b, PWM_MEDIUM_ROLL);
+  double roll_command = pid_controllers.roll.update_PID(-y_b, -y_des_b, PWM_MEDIUM_ROLL);
+  ROS_INFO("posizione y in body %f", y_b);
+  ROS_INFO("posizione y  desiderata in body %f", y_des_b);
+  ROS_INFO("pwm di rool %f", roll_command);
+  cout <<"=====================================================================" << endl;
   //2A)CONTROLLO DI PITCH
   //cout << "PID PITCH" << endl;
-  //double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH);
+  double pitch_command = pid_controllers.pitch.update_PID(-x_b, -x_des_b, PWM_MEDIUM_PITCH);
+  ROS_INFO("posizione x in body %f", x_b);
+  ROS_INFO("posizione x  desiderata in body %f", x_des_b);
+  ROS_INFO("pwm di pitch %f", pitch_command);
+  cout <<"=====================================================================" << endl;
 
 
 
@@ -823,9 +832,11 @@ void update_control()
   //calcolo il controllo da attuare
   double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
   //devo mappare l'ingresso in un comando ai servo
+
   ROS_INFO("heading corrrente %f", rz);
   ROS_INFO("heading desiderato %f", rz_des);
   ROS_INFO("pwm di yaw %f", yaw_command);
+  cout <<"=====================================================================" << endl;
 
   //4)controllo di quota
   double alt_des = current_waypoint_world.position.z;
@@ -835,16 +846,35 @@ void update_control()
   ROS_INFO("altezza corrrente %f", alt_curr);
   ROS_INFO("altezza desiderata %f", alt_des);
   ROS_INFO("pwm di throttle %f", throttle_command);
+  cout <<"=====================================================================" << endl;
 
   //END)publish control to radio
   mavros_msgs::OverrideRCIn radio_pwm;
-  //radio_pwm.channels[RC_ROLL] = roll_command;
-  //radio_pwm.channels[RC_PITCH] = pitch_command;
-  radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
-  radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+  
+  /*if(stato_takeoff == 1)
+  {    //radio_pwm.channels[RC_ROLL] = roll_command;
+    //radio_pwm.channels[RC_PITCH] = pitch_command;
+    radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+    radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+    radio_pwm.channels[RC_THROTTLE] = throttle_command;
+    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  }
+  else
+  {
+    //se sono nella fase di takeoof, scelgo di venire su senza controllo di altro
+    //radio_pwm.channels[RC_ROLL] = roll_command;
+    //radio_pwm.channels[RC_PITCH] = pitch_command;
+    radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+    radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+    radio_pwm.channels[RC_THROTTLE] = throttle_command;
+    radio_pwm.channels[RC_YAW] = yaw_command;
+
+  }*/
+  radio_pwm.channels[RC_ROLL] = roll_command;
+  radio_pwm.channels[RC_PITCH] = pitch_command;
   radio_pwm.channels[RC_THROTTLE] = throttle_command;
-  //radio_pwm.channels[RC_YAW] = yaw_command;
-  radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
+  radio_pwm.channels[RC_YAW] = yaw_command;
+
   rc_pub.publish(radio_pwm);
   
   //scrittura su file
@@ -1016,11 +1046,11 @@ void hold_position()
   //il waypoint sarà la posizione corrente
   current_waypoint_world.position.x = P_world_body_world.position.x;
   current_waypoint_world.position.y = P_world_body_world.position.y;
-  //current_waypoint_world.position.z = P_world_body_world.position.x;
+  current_waypoint_world.position.z = P_world_body_world.position.z;
   current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
 
   waypoint_recv = 1;
-  manual_mode = false;
+  manual_mode = 0;
 
   return;
 }
