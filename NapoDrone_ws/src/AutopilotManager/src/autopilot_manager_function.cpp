@@ -385,6 +385,38 @@ void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 
     //alzo un flag che ho una nuova stima
     new_pose_recv = 1;
+
+
+
+    //SCRITTURA SU FILE
+          //stampo su file la posizione della camera stimata nel fram world
+      double secs = msg->header.stamp.sec;
+      secs = secs + (double(msg->header.stamp.nsec)/pow(10,9));
+      
+      std::string str_path  = "/home/robot/MCU_ArCaRa/log/control.txt";
+      FILE* fd;
+      fd = fopen(str_path.c_str(), "a");
+      fprintf(fd, "%f", secs -  secs_0);
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_world_body_world.position.x); //2
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_world_body_world.position.y); //3
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_world_body_world.position.z); //4 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_world_body_world.orientation.z); //8
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.position.x); //9
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.position.y); //10 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.position.z); //11 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.orientation.z); //12 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%i\n", hold_position_var); //13
+      fclose(fd); 
+
 		
 }
 /********************************************************************************************/
@@ -735,6 +767,11 @@ void init_global_variables()
   FILE* fd;
   fd = fopen(str_path.c_str(), "w");
   fclose(fd);
+
+  str_path  = "/home/robot/MCU_ArCaRa/log/control.txt";
+  fd = fopen(str_path.c_str(), "w");
+  fclose(fd);
+  
   //inizializzo i controllori
   pid_controllers.roll.init_PID();
   pid_controllers.pitch.init_PID();
