@@ -1092,8 +1092,10 @@ void hold_position()
   //il waypoint sarà la posizione corrente
   current_waypoint_world.position.x = P_world_body_world.position.x;
   current_waypoint_world.position.y = P_world_body_world.position.y;
-  current_waypoint_world.position.z = P_world_body_world.position.z;
-  current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
+  //current_waypoint_world.position.z = P_world_body_world.position.z;
+  current_waypoint_world.position.z = 1;
+  //current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
+  current_waypoint_world.orientation.z = 0; P_world_body_world.orientation.z;
   hold_position_var = 1;
   waypoint_recv = 1;
   manual_mode = 0;
