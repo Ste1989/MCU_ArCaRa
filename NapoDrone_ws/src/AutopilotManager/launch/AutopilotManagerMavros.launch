@@ -1,7 +1,7 @@
 <launch>
 
     <node pkg="autopilot_manager" type="AutopilotManager_Node" name="AutopilotManager" output="screen" >
-    <remap from="/napodrone_pose" to="/aruco/pose_body_from_board"/>
+    <remap from="/napodrone_pose" to="/aruco/pose_cam_from_board"/>
 	        <param name="loop_rate" type="int" value="20" />
 	        <param name="stream_rate" type="int" value="50" />
 	        <param name="alt_takeoff" type="double" value="-0.8" />
