@@ -386,37 +386,6 @@ void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
     //alzo un flag che ho una nuova stima
     new_pose_recv = 1;
 
-
-
-    //SCRITTURA SU FILE
-          //stampo su file la posizione della camera stimata nel fram world
-      double secs = msg->header.stamp.sec;
-      secs = secs + (double(msg->header.stamp.nsec)/pow(10,9));
-      
-      std::string str_path  = "/home/robot/MCU_ArCaRa/log/control.txt";
-      FILE* fd;
-      fd = fopen(str_path.c_str(), "a");
-      fprintf(fd, "%f", secs -  secs_0);
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", P_world_body_world.position.x); //2
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", P_world_body_world.position.y); //3
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", P_world_body_world.position.z); //4 
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", P_world_body_world.orientation.z); //8
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.position.x); //9
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.position.y); //10 
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.position.z); //11 
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.orientation.z); //12 
-      fprintf(fd, "%s", " ");
-      fprintf(fd, "%i\n", hold_position_var); //13
-      fclose(fd); 
-
 		
 }
 /********************************************************************************************/
@@ -588,6 +557,7 @@ void PIDController::init_PID()
   I_k = 0;
   y_k = 0;
   D_k = 0;
+  e_k = 0;
   double Ts = 1.0/double(loop_rate);
   cout << "PID INIT "<< "KP: " << Kp << " KI: " << Ki << " KD: " << Td/(Nd*Ts+Td) << " KY: "<< (Ky*Td*Nd)/(Nd*Ts+Td)<< endl;
 }
@@ -597,37 +567,36 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   //calcolo dell'errore
   double e = y_des - y;
   
-  //P
+  //P========================================================
   double P = Kp * (b*y_des - y);
 
-  //I
+  //I========================================================
   double I_k_1 = 0;
-
+  //se l'errore ha cambiato segno scarico l'integrale
+  if(e * e_k < 0)
+    I_k = 0;  
   I_k_1 = I_k + Ki * e;
   //memorizzo integrale
   I_k = I_k_1;
-  /*cout << "INTEGRLE" << endl;
-  cout << I_k << endl;
-  cout << I_k_1 << endl;
-  cout << e << endl;
-  cout << Ki << endl;*/
 
-  //D
-  //cout << (y - y_k) << endl;
+
+  //D=========================================================
   double Ts = 1.0/double(loop_rate);
   double D_k_1 = 0;
-  if((Nd*Ts+Td) == 0)
+  //se il denominatore è uguale a 0, oppure è l aprima iterazione di controllo non calcolo l'azione derivativa
+  if((Nd*Ts+Td) == 0 || e_k == 0)
     D_k_1 = 0;
   else
-    D_k_1 = Td/(Nd*Ts+Td) * D_k - (Ky*Td*Nd)/(Nd*Ts+Td) * (y - y_k);
+    D_k_1 = Td/(Nd*Ts+Td) * D_k + (Ky*Td*Nd)/(Nd*Ts+Td) * (e - e_k);
+    //D_k_1 = Td/(Nd*Ts+Td) * D_k - (Ky*Td*Nd)/(Nd*Ts+Td) * (y - y_k);
+  
   //memorizzo derivativo
+  e_k = e;
   y_k = y; 
   D_k = D_k_1;
-  /*cout << Td/(Nd*Ts+Td) << endl;
-  cout << (Ky*Td*Nd)/(Nd*Ts+Td) << endl;
-  cout << "D_k_1: " << D_k_1 << endl;*/
 
-  //aziobne di contorllo 
+
+  //aziobne di contorllo==========================================
   double u = (P + I_k_1 + D_k_1);
 
   //mappo l'azione di controllo nel pwm
@@ -929,24 +898,52 @@ void update_control()
   //scrittura su file
   if(true)
   {
-      //double secs = header.stamp.sec;
-      //secs = secs + (double(header.stamp.nsec)/pow(10,9));
+
       double secs = ros::Time::now().toSec();
-      std::string str_path  = "/home/robot/MCU_ArCaRa/log/quota.txt";
+      std::string str_path  = "/home/robot/MCU_ArCaRa/log/control.txt";
       FILE* fd;
       fd = fopen(str_path.c_str(), "a");
       fprintf(fd, "%f", secs -  secs_0);
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", alt_curr); //2
+      fprintf(fd, "%f", P_world_body_world.position.x); //2
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", alt_des); //3
+      fprintf(fd, "%f", P_world_body_world.position.y); //3
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f\n", throttle_command); //4
-      fclose(fd);
+      fprintf(fd, "%f", P_world_body_world.position.z); //4 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_world_body_world.orientation.z); //8
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.position.x); //9
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.position.y); //10 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.position.z); //11 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", current_waypoint_world.orientation.z); //12 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", x_b); //14 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", x_des_b); //15 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", y_b); //16 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", y_des_b); //17 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", roll_command); //18 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", pitch_command); //19
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", yaw_command); //20
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", throttle_command); //21 
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%i\n", hold_position_var); //22
+      fclose(fd); 
 
 
   }
 
+     
 
 
 }

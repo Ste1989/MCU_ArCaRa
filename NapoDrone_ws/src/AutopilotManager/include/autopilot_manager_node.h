@@ -219,6 +219,7 @@ class PIDController {
     //parametri che memorizzano lo stato del controllore
     double I_k;
     double y_k;
+    double e_k;
     double D_k;
     
   public:
