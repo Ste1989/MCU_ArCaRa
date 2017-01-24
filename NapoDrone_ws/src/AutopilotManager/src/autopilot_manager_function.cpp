@@ -608,18 +608,18 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   {
     pwm = saturazione_min;
     //azione antiwindup: devo scaricare l'integrale dell'ultimo valore inserito
-    //I_k = I_k - Ki *e; 
+    I_k = I_k - Ki *e; 
     //variante 1
-    I_k = 0;
+    //I_k = 0;
 
   }
   if(pwm > saturazione_max)
   {
     pwm = saturazione_max;
     //azione antiwindup: devo scaricare l'integrale dell'ultimo valore inserito
-    //I_k = I_k - Ki *e;
+    I_k = I_k - Ki *e;
     //variante 1
-    I_k = 0;
+    //I_k = 0;
   }
 
   //se ho saturazione devo scaricare l'integrale (Tecnica AntiWindUp)
@@ -732,11 +732,8 @@ void init_global_variables()
   alt_from_barometer = 0;
   new_pose_recv = 0;
   secs_0 =ros::Time::now().toSec();
-  std::string str_path  = "/home/robot/MCU_ArCaRa/log/quota.txt";
+  std::string str_path  = "";
   FILE* fd;
-  fd = fopen(str_path.c_str(), "w");
-  fclose(fd);
-
   str_path  = "/home/robot/MCU_ArCaRa/log/control.txt";
   fd = fopen(str_path.c_str(), "w");
   fclose(fd);
@@ -911,33 +908,33 @@ void update_control()
       fprintf(fd, "%s", " ");
       fprintf(fd, "%f", P_world_body_world.position.z); //4 
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", P_world_body_world.orientation.z); //8
+      fprintf(fd, "%f", P_world_body_world.orientation.z); //5
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.position.x); //9
+      fprintf(fd, "%f", current_waypoint_world.position.x); //6
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.position.y); //10 
+      fprintf(fd, "%f", current_waypoint_world.position.y); //7 
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.position.z); //11 
+      fprintf(fd, "%f", current_waypoint_world.position.z); //8 
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", current_waypoint_world.orientation.z); //12 
+      fprintf(fd, "%f", current_waypoint_world.orientation.z); //9 
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", x_b); //14 
+      fprintf(fd, "%f", x_b); //10
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", x_des_b); //15 
+      fprintf(fd, "%f", x_des_b); //11
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", y_b); //16 
+      fprintf(fd, "%f", y_b); //12
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", y_des_b); //17 
+      fprintf(fd, "%f", y_des_b); //13
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", roll_command); //18 
+      fprintf(fd, "%f", roll_command); //14
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", pitch_command); //19
+      fprintf(fd, "%f", pitch_command); //15
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", yaw_command); //20
+      fprintf(fd, "%f", yaw_command); //16
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%f", throttle_command); //21 
+      fprintf(fd, "%f", throttle_command); //17
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%i\n", hold_position_var); //22
+      fprintf(fd, "%i\n", hold_position_var); //18
       fclose(fd); 
 
 
@@ -1093,7 +1090,7 @@ void hold_position()
   current_waypoint_world.position.x = P_world_body_world.position.x;
   current_waypoint_world.position.y = P_world_body_world.position.y;
   //current_waypoint_world.position.z = P_world_body_world.position.z;
-  current_waypoint_world.position.z = 1;
+  current_waypoint_world.position.z = -1;
   //current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
   current_waypoint_world.orientation.z = 0; P_world_body_world.orientation.z;
   hold_position_var = 1;
