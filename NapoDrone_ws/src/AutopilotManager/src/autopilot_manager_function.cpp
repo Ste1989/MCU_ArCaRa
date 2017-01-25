@@ -562,7 +562,7 @@ void PIDController::init_PID()
   cout << "PID INIT "<< "KP: " << Kp << " KI: " << Ki << " KD: " << Td/(Nd*Ts+Td) << " KY: "<< (Ky*Td*Nd)/(Nd*Ts+Td)<< endl;
 }
 
-double PIDController::update_PID(double y, double y_des, double pwm_medium)
+double PIDController::update_PID(double y, double y_des, double pwm_medium, double& P_out, double& I_out, double& D_out)
 {
   //calcolo dell'errore
   double e = y_des - y;
@@ -573,8 +573,8 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   //I========================================================
   double I_k_1 = 0;
   //se l'errore ha cambiato segno scarico l'integrale
-  if(e * e_k < 0)
-    I_k = 0;  
+  /*if(e * e_k < 0)
+    I_k = 0;  */
   I_k_1 = I_k + Ki * e;
   //memorizzo integrale
   I_k = I_k_1;
@@ -629,7 +629,11 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium)
   //double AntiWindUp = e_t / Tt ;
   //I_k = I_k + e_t;
 
-  
+  //passo le variabili
+  P_out = P;
+  I_out = I_k_1;
+  D_out = D_k_1;
+
   return pwm;
 }
 double PIDController::map_control_2_radio(double u, double pwm_medium)
@@ -815,15 +819,19 @@ void update_control()
 
 
   //1A) CONTROLLO DI ROLL
-  //cout << "PID ROLL" << endl;
-  double roll_command = pid_controllers.roll.update_PID(-y_b, -y_des_b, PWM_MEDIUM_ROLL);
+  double P_roll, I_roll, D_roll;
+  double roll_command = pid_controllers.roll.update_PID(-y_b, -y_des_b, PWM_MEDIUM_ROLL, P_roll, I_roll, D_roll);
+  //if(abs(y_b-  y_des_b) < 0.02)
+  //  roll_command = PWM_MEDIUM_ROLL;
   ROS_INFO("posizione y in body %f", y_b);
   ROS_INFO("posizione y  desiderata in body %f", y_des_b);
   ROS_INFO("pwm di rool %f", roll_command);
   cout <<"=====================================================================" << endl;
   //2A)CONTROLLO DI PITCH
-  //cout << "PID PITCH" << endl;
-  double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH);
+  double P_pitch, I_pitch, D_pitch;
+  double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH, P_pitch, I_pitch, D_pitch);
+  //if(abs(x_b-  x_des_b) < 0.02)
+  //  pitch_command = PWM_MEDIUM_PITCH;
   ROS_INFO("posizione x in body %f", x_b);
   ROS_INFO("posizione x  desiderata in body %f", x_des_b);
   ROS_INFO("pwm di pitch %f", pitch_command);
@@ -832,10 +840,11 @@ void update_control()
 
 
   //3)controllo di HEADING
+  double P_yaw, I_yaw, D_yaw;
   double rz = P_world_body_world.orientation.z;
   double rz_des = current_waypoint_world.orientation.z;
   //calcolo il controllo da attuare
-  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW);
+  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW, P_yaw, I_yaw, D_yaw);
   //devo mappare l'ingresso in un comando ai servo
 
   ROS_INFO("heading corrrente %f", rz);
@@ -844,9 +853,10 @@ void update_control()
   cout <<"=====================================================================" << endl;
 
   //4)controllo di quota
+  double P_alt, I_alt, D_alt;
   double alt_des = current_waypoint_world.position.z;
   double alt_curr = P_world_body_world.position.z;
-  double throttle_command = pid_controllers.altitude.update_PID(alt_curr, alt_des, PWM_MEDIUM_THROTTLE);
+  double throttle_command = pid_controllers.altitude.update_PID(alt_curr, alt_des, PWM_MEDIUM_THROTTLE, P_alt, I_alt, D_alt);
 
   ROS_INFO("altezza corrrente %f", alt_curr);
   ROS_INFO("altezza desiderata %f", alt_des);
@@ -934,8 +944,50 @@ void update_control()
       fprintf(fd, "%s", " ");
       fprintf(fd, "%f", throttle_command); //17
       fprintf(fd, "%s", " ");
-      fprintf(fd, "%i\n", hold_position_var); //18
+      fprintf(fd, "%f", y_b -y_des_b); //18
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_roll); //19
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", I_roll ); //20
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", D_roll); //21
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_roll+I_roll+D_roll); //22
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", -x_b + x_des_b); //23
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_pitch); //24
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", I_pitch ); //25
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", D_pitch); //26
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_pitch+I_pitch+D_pitch); //27
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", -rz +rz_des); //28
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_yaw); //29
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", I_yaw ); //30
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", D_yaw); //31
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_yaw+I_yaw+D_yaw); //32
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", -alt_curr + alt_des); //33
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_alt); //34
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", I_alt ); //35
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", D_alt); //36
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%f", P_alt+I_alt+D_alt); //37
+      fprintf(fd, "%s", " ");
+      fprintf(fd, "%i\n", hold_position_var); //38
       fclose(fd); 
+
+
 
 
   }

@@ -225,7 +225,7 @@ class PIDController {
   public:
     PIDController();
     void init_PID();
-    double update_PID(double y, double y_des, double pwm_medium);
+    double update_PID(double y, double y_des, double pwm_medium, double& P_out, double& I_out, double& D_out);
     double map_control_2_radio(double u, double pwm_medium);
     void set_Kp(double param);
     void set_b(double param);
