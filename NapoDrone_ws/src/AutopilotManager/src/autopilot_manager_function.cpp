@@ -747,7 +747,10 @@ void init_global_variables()
   pid_controllers.pitch.init_PID();
   pid_controllers.yaw.init_PID();
   pid_controllers.altitude.init_PID();
-
+  pid_enable_roll = 0;
+  pid_enable_pitch = 0;
+  pid_enable_yaw = 0;
+  pid_enable_alt = 0;
   //manual mode all'inizio abilitata
   manual_mode = true;
 
@@ -840,13 +843,32 @@ void update_control()
 
 
   //3)controllo di HEADING
-  double P_yaw, I_yaw, D_yaw;
+  double P_yaw = 0.0;
+  double I_yaw = 0.0;
+  double D_yaw = 0.0;
   double rz = P_world_body_world.orientation.z;
   double rz_des = current_waypoint_world.orientation.z;
   //calcolo il controllo da attuare
-  double yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW, P_yaw, I_yaw, D_yaw);
+  double yaw_command = PWM_MEDIUM_YAW;
+  //se l'errore è più grande di 0.2 rad scelgo di non fare mediante PID
+  if (abs(rz-rz_des) < 0.09)
+  {
+    if (pid_enable_yaw == 0)
+    {
+      pid_controllers.yaw.init_PID();
+      pid_enable_yaw = 1;
+    }
+    yaw_command = pid_controllers.yaw.update_PID(rz, rz_des, PWM_MEDIUM_YAW, P_yaw, I_yaw, D_yaw);
+  }
+  else
+  { 
+    if((rz_des-rz) < 0)
+      yaw_command = PWM_MEDIUM_YAW + 50;
+    else
+      yaw_command = PWM_MEDIUM_YAW - 50;
+    pid_enable_yaw = 0;
+  }
   //devo mappare l'ingresso in un comando ai servo
-
   ROS_INFO("heading corrrente %f", rz);
   ROS_INFO("heading desiderato %f", rz_des);
   ROS_INFO("pwm di yaw %f", yaw_command);
@@ -854,7 +876,12 @@ void update_control()
 
   //4)controllo di quota
   double P_alt, I_alt, D_alt;
-  double alt_des = current_waypoint_world.position.z;
+  double alt_des = 0;
+   if (current_waypoint_world.position.z > -0.1)
+    alt_des = -1;
+  else
+    alt_des= current_waypoint_world.position.z;
+
   double alt_curr = P_world_body_world.position.z;
   double throttle_command = pid_controllers.altitude.update_PID(alt_curr, alt_des, PWM_MEDIUM_THROTTLE, P_alt, I_alt, D_alt);
 

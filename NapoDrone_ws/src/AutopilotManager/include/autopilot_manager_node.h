@@ -34,6 +34,7 @@ timeval  current_time, control_time, pose_time, takeoff_time;
 double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff;
 char waypoint_recv;
 std::string PID_file;
+char pid_enable_yaw, pid_enable_pitch, pid_enable_roll, pid_enable_alt; 
 bool init_takeoff;
 //stato_takeoff:
 //0: nulla
