@@ -572,9 +572,7 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium, doub
 
   //I========================================================
   double I_k_1 = 0;
-  //se l'errore ha cambiato segno scarico l'integrale
-  /*if(e * e_k < 0)
-    I_k = 0;  */
+  
   I_k_1 = I_k + Ki * e;
   //memorizzo integrale
   I_k = I_k_1;
@@ -600,7 +598,9 @@ double PIDController::update_PID(double y, double y_des, double pwm_medium, doub
   double u = (P + I_k_1 + D_k_1);
 
   //mappo l'azione di controllo nel pwm
-  double m = (saturazione_min - saturazione_max)/2;
+  //double m = (saturazione_min - saturazione_max)/2;
+  //scelgo di mappare il pwm tra -1 ->2000 , 1 -> 1000
+  double m = -500;
   double q = pwm_medium;
   double pwm = m*u + q;
 
