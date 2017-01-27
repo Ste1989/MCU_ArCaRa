@@ -7,7 +7,7 @@
 		<param name="dev" type="string" value="/dev/ttyUSB0" />
 		<param name="stream_pose" type="bool" value="True" />
 		<param name="ack_el_time" type="int" value="1000" />
-		<param name="pose_el_time" type="int" value="500" />
+		<param name="pose_el_time" type="int" value="1000" />
 		<param name="x_m_LimitMax" type="double" value="3" />
 		<param name="x_m_LimitMin" type="double" value="0" />
 		<param name="y_m_LimitMax" type="double" value="2" />

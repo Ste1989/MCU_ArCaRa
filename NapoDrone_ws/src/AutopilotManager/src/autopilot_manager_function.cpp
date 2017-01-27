@@ -358,7 +358,7 @@ void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg)
   ROS_INFO("RICEVUTO NUOVO WAYPOINT"); 
   waypoint_recv = 1;
   manual_mode = false;
-  hold_position_var = 0;
+  //hold_position_var = 0;
 
 
 }
@@ -822,19 +822,60 @@ void update_control()
 
 
   //1A) CONTROLLO DI ROLL
-  double P_roll, I_roll, D_roll;
-  double roll_command = pid_controllers.roll.update_PID(-y_b, -y_des_b, PWM_MEDIUM_ROLL, P_roll, I_roll, D_roll);
-  //if(abs(y_b-  y_des_b) < 0.02)
-  //  roll_command = PWM_MEDIUM_ROLL;
+  double P_roll = 0.0;
+  double I_roll = 0.0;
+  double D_roll = 0.0;
+  //se l'errore è maggiore di 0.20 cm scelgo di non usare il pid
+  double roll_command = PWM_MEDIUM_ROLL;
+  //se l'errore è maggiore di 0.20 cm scelgo di non usare il pid
+  if(abs(y_des_b - y_b) < 0.4)
+  {
+    if (pid_enable_roll == 0)
+    {
+      pid_controllers.roll.init_PID();
+      //riabilito il PID
+      pid_enable_roll = 1;
+    }
+    roll_command = pid_controllers.roll.update_PID(-y_b, -y_des_b, PWM_MEDIUM_ROLL, P_roll, I_roll, D_roll);
+  }
+  else
+  {
+     if((y_des_b-y_b) > 0)
+      roll_command = PWM_MEDIUM_ROLL + 25;
+    else
+      roll_command = PWM_MEDIUM_ROLL - 25;
+    //disabilito il PID
+    pid_enable_roll = 0;
+  }
   ROS_INFO("posizione y in body %f", y_b);
   ROS_INFO("posizione y  desiderata in body %f", y_des_b);
   ROS_INFO("pwm di rool %f", roll_command);
   cout <<"=====================================================================" << endl;
   //2A)CONTROLLO DI PITCH
-  double P_pitch, I_pitch, D_pitch;
-  double pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH, P_pitch, I_pitch, D_pitch);
-  //if(abs(x_b-  x_des_b) < 0.02)
-  //  pitch_command = PWM_MEDIUM_PITCH;
+  double P_pitch = 0.0;
+  double I_pitch = 0.0;
+  double D_pitch = 0.0;
+  double pitch_command = PWM_MEDIUM_PITCH;
+  //se l'errore è maggiore di 0.20 cm scelgo di non usare il pid
+  if(abs(x_des_b - x_b) < 0.4)
+  {
+    if (pid_enable_pitch == 0)
+    {
+      pid_controllers.pitch.init_PID();
+      //riabilito il PID
+      pid_enable_pitch = 1;
+    }
+    pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH, P_pitch, I_pitch, D_pitch);
+  }
+  else
+  {
+     if((x_des_b-x_b) > 0)
+      pitch_command = PWM_MEDIUM_PITCH - 33;
+    else
+      pitch_command = PWM_MEDIUM_PITCH + 33;
+    //disabilito il PID
+    pid_enable_pitch = 0;
+  }
   ROS_INFO("posizione x in body %f", x_b);
   ROS_INFO("posizione x  desiderata in body %f", x_des_b);
   ROS_INFO("pwm di pitch %f", pitch_command);
@@ -851,7 +892,7 @@ void update_control()
   //calcolo il controllo da attuare
   double yaw_command = PWM_MEDIUM_YAW;
   //se l'errore è più grande di 0.2 rad scelgo di non fare mediante PID
-  if (abs(rz-rz_des) < 0.09)
+  if (abs(rz-rz_des) < 0.2)//0.09
   {
     if (pid_enable_yaw == 0)
     {
@@ -1166,8 +1207,8 @@ void hold_position()
 {
   cout << "HOLD POSITION" << endl;
   //il waypoint sarà la posizione corrente
-  current_waypoint_world.position.x = P_world_body_world.position.x;
-  current_waypoint_world.position.y = P_world_body_world.position.y;
+  current_waypoint_world.position.x = 1.12;//P_world_body_world.position.x;
+  current_waypoint_world.position.y =0.9;// P_world_body_world.position.y;
   //current_waypoint_world.position.z = P_world_body_world.position.z;
   current_waypoint_world.position.z = -1;
   //current_waypoint_world.orientation.z = P_world_body_world.orientation.z;

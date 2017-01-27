@@ -28,7 +28,7 @@ sleep 5
 
 xterm -T "MAVROS" -n "MAVROS" -hold -e "roslaunch mavros dji550_autec.launch" &
 
-sleep 30
+sleep 15
 
 xterm -T "MAVROS SYSID" -n "MAVROS SYSID" -hold -e "rosrun mavros mavparam set SYSID_MYGCS 1" &
 
