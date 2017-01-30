@@ -108,6 +108,16 @@ ros::ServiceClient set_stream_rate_client;
 
 
 //ENUMERATORI
+/*possibili stati drone *************************************/
+typedef enum{
+    LANDED_STATE,
+    TAKEOFF_STATE,
+    HOLD_POSITION_STATE,
+    GOTO_STATE,
+    LAND,
+}status_drone;
+
+status_drone drone_state;
 /*possibili stati autopilota *************************************/
 typedef enum{
     CONNECTING,
@@ -279,4 +289,5 @@ bool scrivi_PID_file(std::string PID_file);
 void warning_stop(double pwm_throttle);
 void hold_position();
 void step_test();
+void check_request();
 

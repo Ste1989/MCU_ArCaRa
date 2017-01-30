@@ -414,6 +414,197 @@ void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg)
   
 
 }
+ /********************************************************************************************/
+/*                                                                                         */
+/*    CHECK REQUEST                                                                         */
+/*                                                                                         */
+/*******************************************************************************************/
+void check_request()
+{
+  bool res = false;
+ //GESTIONE DELLA RICHIESTA DI COMANDO
+        
+  if(current_cmd_req != NO_REQ)
+  {
+    switch(current_cmd_req)
+    {
+      //ARMA//////////////////////////////////////////////////////////////
+      case ARM:
+        ROS_INFO("COMANDO : ARMA");
+        res = arm_vehicle();
+        if(res)
+        {   
+          ROS_INFO("ARMATO");
+          current_cmd_req = NO_REQ;
+          std_msgs::Int32 msg;
+          msg.data = ARMED;
+          state_pub.publish(msg);
+        }
+        else
+          current_cmd_req = NO_REQ;
+        break;
+
+      //DISARMA//////////////////////////////////////////////////////////////
+      case DISARM:
+        ROS_INFO("COMANDO : DISARMA");
+        res = disarm_vehicle();
+        if(res)
+        {   
+          ROS_INFO("DISARMATO");
+          current_cmd_req = NO_REQ;
+          std_msgs::Int32 msg;
+          msg.data = ARMABLE;
+          state_pub.publish(msg);
+        }
+        else
+          current_cmd_req = NO_REQ;
+        break;
+
+      //TAKEOFF//////////////////////////////////////////////////////////////
+      case TAKEOFF:
+        ROS_INFO("COMANDO : TAKE OFF");
+        res = takeoff_vehicle();
+        if(res)
+        {   
+          ROS_INFO("TAKE OFF");
+          current_cmd_req = NO_REQ;
+          std_msgs::Int32 msg;
+          msg.data = TAKEOFF;
+          state_pub.publish(msg);
+        }
+        else
+        {
+          if(!init_takeoff)
+            current_cmd_req = NO_REQ;
+          else
+            current_cmd_req = TAKEOFF;
+        }
+        break;
+
+        //LAND//////////////////////////////////////////////////////////////
+        case LAND:
+          ROS_INFO("COMANDO : LAND");
+          //res = arm_vehicle();
+          if(res)
+          {   
+            ROS_INFO("LANDED");
+            current_cmd_req = NO_REQ;
+            std_msgs::Int32 msg;
+            msg.data = LANDED;
+            state_pub.publish(msg);
+          }
+          else
+            current_cmd_req = NO_REQ;
+          break;
+
+        //RTL//////////////////////////////////////////////////////////////
+        case RTL:
+          ROS_INFO("COMANDO : RTL");
+          //res = arm_vehicle();
+          if(res)
+          {   
+            ROS_INFO("RTL");
+            current_cmd_req = NO_REQ;
+            std_msgs::Int32 msg;
+            msg.data = RTL;
+            state_pub.publish(msg);
+          }
+          else
+            current_cmd_req = NO_REQ;
+          break;
+
+        //EMERGENCY STOP////////////////////////////////////////////////////
+        case EMERGENCY_STOP:
+          ROS_INFO("COMANDO : EMERGENCY_STOP");
+          //res = arm_vehicle();
+          if(res)
+          {   
+            ROS_INFO("EMERGENCY_STOP");
+            current_cmd_req = NO_REQ;
+            std_msgs::Int32 msg;
+            msg.data = EMERGENCY_STOP;
+            state_pub.publish(msg);
+          }
+          else
+            current_cmd_req = NO_REQ;
+          break;
+
+        //CLEAR RADIO//////////////////////////////////////////////////////
+        case CLEAR_RADIO_OVERRIDE:
+          ROS_INFO("COMANDO : CLEAR_RADIO_OVERRIDE");
+          clear_radio_override();
+          current_cmd_req = NO_REQ;
+          break;
+
+        //HOLD POSITION//////////////////////////////////////////////////////
+        case HOLD_POSITION:
+          ROS_INFO("COMANDO : HOLD POSITION");
+          hold_position();
+          current_cmd_req = NO_REQ;
+          break;
+
+        //DEFAULT//////////////////////////////////////////////////////
+        default:
+          current_cmd_req = NO_REQ;
+          break;
+                 
+    } 
+  }//fine current_cmd_req/////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////      
+  if(current_mode_req != NO_MODE)
+  {
+    mavros_msgs::SetMode offb_set_mode;
+    switch(current_mode_req)
+    {
+
+      case ALT_HOLD:
+        ROS_INFO("FM : ALT HOLD ");
+        offb_set_mode.request.custom_mode = "ALT_HOLD";
+        set_mode_client.call(offb_set_mode);
+        if(offb_set_mode.response.success)
+        {   
+          ROS_INFO("ALT HOLD");
+          current_mode_req = NO_MODE;
+        }
+        else
+          current_mode_req = NO_MODE;
+        break;
+
+      case STABILIZE:
+        ROS_INFO("FM : STABILIZE ");
+        offb_set_mode.request.custom_mode = "STABILIZE";
+        set_mode_client.call(offb_set_mode);
+        if(offb_set_mode.response.success)
+        {   
+          ROS_INFO("STABILIZE");
+          current_mode_req = NO_MODE;
+        }
+        else
+          current_mode_req = NO_MODE;
+        break;
+
+        case LOITER:
+          ROS_INFO("FM : LOITER ");
+          offb_set_mode.request.custom_mode = "LOITER";
+          set_mode_client.call(offb_set_mode);
+          if(offb_set_mode.response.success)
+          {   
+            ROS_INFO("LOITER");
+            current_mode_req = NO_MODE;
+          }
+          else
+            current_mode_req = NO_MODE;
+          break;
+
+        default:
+          current_mode_req = NO_MODE;
+          break;
+    }
+  }//fine current_mode_req/////////////////////////////////////////////////////////////////////////////////////
+
+  return;
+}
 /********************************************************************************************/
 /*                                                                                         */
 /*    ARMA VEHICLE                                                                         */
@@ -502,8 +693,8 @@ bool takeoff_vehicle()
     //prendo il tempo in cui è arrivta la richiesta di takeoff
     gettimeofday(&takeoff_time, NULL);
 		//inizializzo l'altezza desiderata di takeoff
-    //current_waypoint_world.position.x  DA INIZIALIZZARE
-    //current_waypoint_world.position.y  DA INIZIALIZZARE
+    current_waypoint_world.position.x = 0;
+    current_waypoint_world.position.y = 0;
     current_waypoint_world.position.z = alt_takeoff_target;
     current_waypoint_world.orientation.z = 0;
     //metto in automatico
