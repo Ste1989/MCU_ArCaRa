@@ -60,9 +60,12 @@ struct NapodronePose
 
 };
 NapodronePose P_world_body_world;
+NapodronePose P_world_body_world_START;
 
 //memorizzo waypoint
 geometry_msgs::Pose current_waypoint_world;
+geometry_msgs::Pose waypoint_world_GOAL;
+
 
 //ros topic subscriber
 ros::Subscriber state_sub;
@@ -114,7 +117,7 @@ typedef enum{
     TAKEOFF_STATE,
     HOLD_POSITION_STATE,
     GOTO_STATE,
-    LAND,
+    LAND_STATE,
 }status_drone;
 
 status_drone drone_state;

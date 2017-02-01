@@ -70,101 +70,171 @@ int main(int argc, char **argv)
     /*                     CICLO PRINCIPALE CONTROLLO                                          */
     /*                                                                                         */
     /*******************************************************************************************/
+    
     while(ros::ok())
     {
+        //calolo tempo attuale
+        gettimeofday(&current_time, NULL);
+        //calcolo tempo di controllo
+        elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
+        elapsed_time_control += (current_time.tv_usec - control_time.tv_usec) / 1000;
+        //calcolo tempo dall'ultima posa ricevuta
+        elapsed_time_pose = (current_time.tv_sec - pose_time.tv_sec) * 1000;
+        elapsed_time_pose += (current_time.tv_usec - pose_time.tv_usec) / 1000;
+        //calolo tempo passato dalla ichiesta di takeoff
+        elapsed_time_takeoff = (current_time.tv_sec - takeoff_time.tv_sec) * 1000;
+        elapsed_time_takeoff += (current_time.tv_usec - takeoff_time.tv_usec) / 1000;
+
         //A)se non sono in manuale
-        if(waypoint_recv && !manual_mode)
+        if(!manual_mode)
         {
-            if(waypoint_recv == 1)
-            {   
-                ROS_INFO("DRONE IN AUTOMATICO: NUOVO WAYPOINT");
-                //se è un nuovo waypoint rinizializzo i controllori
-                pid_controllers.roll.init_PID();
-                pid_controllers.pitch.init_PID();
-                pid_controllers.yaw.init_PID();
-                pid_controllers.altitude.init_PID();
-         
+            //il drone può trovarsi in 5 stati codificati nella viariabile drone_state:
+            //1-landed
+            //2-takeoff
+            //3-hold position
+            //4-go to waypoint
+            //5-land
+            //a seconda di dove si trova faccio un azione oppure un altra
+            switch(drone_state)
+            {
+                case LANDED_STATE:
+                    //da qui posso solo decollare
+                    break;
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                case TAKEOFF_STATE:
+                    //qui devo gestire il decollo
+                    //devo controllare che l'altezza raggiunta sia circa quella impostata
+                    //se si drone decollato
+                    if(abs(P_world_body_world.position.z - current_waypoint_world.position.z) <= 0.1)
+                    {
+                        //il drone è decollato, devo adesso manteere la posizione:
+                        //aggiorno current_waypoint e lo stato del drone
+                        current_waypoint_world.position.x = P_world_body_world.position.x;
+                        current_waypoint_world.position.y = P_world_body_world.position.y;
+                        current_waypoint_world.position.z = 1.0; 
+                        current_waypoint_world.orientation.z = 0;
+                        init_takeoff = false;
+                        drone_state = HOLD_POSITION_STATE;
+                    }
+                    else
+                    {
+                        //se è passato più di 1 secondo dalla richiesta di takeoof e non ho ancora una stima di poszione
+                        if (elapsed_time_takeoff > 1000 && elapsed_time_pose > 1000/1)
+                        {
+                            ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                            //imposto i valori di pwm di yaw, pitch e roll al minimo
+                            //todo: per l'altezza?
+                            double pwm_throttle = PWM_MEDIUM_THROTTLE;
+                            warning_stop(pwm_throttle);
+                        }
+                        //se è passato più di 5 secondi e il drone è ancora in takeoof_state significa che qualcosa non è anadato bene
+                        //scelgo di atterrare
+                        //if (elapsed_time_takeoff > 5000)
+                            //..land
+                    }
+                    break;
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                case HOLD_POSITION_STATE:
+                    //qui devo mantenere la posizione, potrei voler andare in un altro punto o atterrare
+                    //controllo che abbia la posizione stimata
+                    if(elapsed_time_pose > 1000/1)
+                    {
+                        ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                        //imposto i valori di pwm di yaw, pitch e roll al minimo
+                        //todo: per l'altezza?
+                        double pwm_throttle = PWM_MEDIUM_THROTTLE;
+                        warning_stop(pwm_throttle);
+                        //clear_radio_override();               
+                    }           
+                    break;
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+                case GOTO_STATE:
+                    //qui devo gestire l'andare in una posizione
+                    if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.3 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.3)
+                    {
 
-                waypoint_recv = 2;
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) > 0.1)
+                        {
+                            //calcolo angolo tra la mia posizione e il goal
+                            double gx = waypoint_world_GOAL.position.x;
+                            double gy = waypoint_world_GOAL.position.y;
+                            double px = P_world_body_world.position.x;
+                            double py = P_world_body_world.position.y;
+                            double alfa = atan2((gx-px),(gy-py));
+                            double intorno_max = 0.3;
+                            double delta_y = intorno_max * cos(alfa);
+                            double delta_x = intorno_max * sin(alfa);
+                            //genero nuovo waypoint
+                            ROS_INFO("GENERO NUOVO WAYPOINT");
+                            current_waypoint_world.position.x = px + delta_x;
+                            current_waypoint_world.position.y = py + delta_y;
+                            //se il nuovo waypoint generato nrlla coord y non è nella fascia
+                            if(abs(current_waypoint_world.position.y - gy) > 0.2)
+                            {
+                                if((current_waypoint_world.position.y - gy) >0)
+                                    current_waypoint_world.position.y = gy + 0.2;
+                                else
+                                    current_waypoint_world.position.y = gy - 0.2;
+                            }
+                            current_waypoint_world.position.z = -1;
+                            current_waypoint_world.orientation.z = 0.0;
+                            ROS_INFO("X: %f",current_waypoint_world.position.x );
+                            ROS_INFO("Y: %f",current_waypoint_world.position.y );
+                            //inizializzo PID
+                            //inizializzo i controllori
+                            pid_controllers.roll.init_PID();
+                            pid_controllers.pitch.init_PID();
+                            //pid_controllers.yaw.init_PID();
+                            //pid_controllers.altitude.init_PID();
+
+                        }
+                        else
+                        {
+                            //..
+                        }
+
+                    }
+                    else
+                    {
+ 
+                        //sono sul punto: devo vedere se quello finale allora vado in hold position state
+                        ROS_INFO("SONO ARRIVATO");
+                        current_waypoint_world = waypoint_world_GOAL;
+                        pid_controllers.roll.init_PID();
+                        pid_controllers.pitch.init_PID();
+                        drone_state = HOLD_POSITION_STATE;
+    
+                    }
+
+                    //controllo che abbia la posizione stimata
+                    if(elapsed_time_pose > 1000/1)
+                    {
+                        ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                        //imposto i valori di pwm di yaw, pitch e roll al minimo
+                        //todo: per l'altezza?
+                        double pwm_throttle = PWM_MEDIUM_THROTTLE;
+                        warning_stop(pwm_throttle);
+                        //clear_radio_override();               
+                    }
+                    //controllo se ho raggiunto la posizione
+                    break;
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+                case LAND_STATE:
+                    //qui devo gestire l'atterraggio
+                    break;
+                    
             }
-
-            //calolo tempo attuale
-            gettimeofday(&current_time, NULL);
-            //calcolo tempo di controllo
-            elapsed_time_control = (current_time.tv_sec - control_time.tv_sec) * 1000;
-            elapsed_time_control += (current_time.tv_usec - control_time.tv_usec) / 1000;
-            //calcolo tempo dall'ultima posa ricevuta
-            elapsed_time_pose = (current_time.tv_sec - pose_time.tv_sec) * 1000;
-            elapsed_time_pose += (current_time.tv_usec - pose_time.tv_usec) / 1000;
-            //calolo tempo passato dalla ichiesta di takeoff
-            elapsed_time_takeoff = (current_time.tv_sec - takeoff_time.tv_sec) * 1000;
-            elapsed_time_takeoff += (current_time.tv_usec - takeoff_time.tv_usec) / 1000;
-
-            //GESTIONE DEL TAKEOFF===============================================================
-            //se è passato più di un secondo dalla richiesta di takeoff resetto il bit di takeoff
-            if (elapsed_time_takeoff > 1000)
-                init_takeoff = false;
-
-            if(stato_takeoff == 1)
+            
+            //se ho una nuov posa e sono passati 1000/loop_rate ms chiamo update_control 
+            if(new_pose_recv && elapsed_time_control  >= (1000/loop_rate) && elapsed_time_pose <= 1000/1)
             {
-                //devo controllare che l'altezza raggiunta sia circa quella impostata
-                //se si drone decollato
-                if(abs(P_world_body_world.position.z - current_waypoint_world.position.z) < 0.1)
-                {
-                    stato_takeoff = 2;
-                    //scrivo su topic che sono connesso
-                    std_msgs::Int32 msg;
-                    msg.data = HOVER;
-                    state_pub.publish(msg);
-                }
-
-            }
-
-            //se non ho una posa nuova ma sono in fase di takeoff 
-            if(!new_pose_recv  && init_takeoff)
-            {
-                ROS_INFO("NON HO LA POSA MA INGANNO COME SE CE L AVESSE");
-                //inganno il controllo che una nuova posa 
-                new_pose_recv = 1;
-                //metto la quota di parteza
-                P_world_body_world.position.z = alt_takeoff_partenza;
-                P_world_body_world.orientation.z = 0;
-
-            }else
-            {
-                //dovrebbe entrare dopo nel caso che non ha più stima da un seconod della posa
-            }
-
-
-          
-            if(new_pose_recv && elapsed_time_control  >= (1000/loop_rate))
-            {
-                ROS_INFO("CICLO CONTROLLO");
-                cout << "FREQUENZA CONTROLLO: " << 1000/elapsed_time_control <<endl;
+                //ROS_INFO("CICLO CONTROLLO");
+                //cout << "FREQUENZA CONTROLLO: " << 1000/elapsed_time_control <<endl;
                 update_control();
+                //resetto new_pose_recv
                 new_pose_recv = 0;
                 gettimeofday(&control_time, NULL);
             }
-            else
-            {
-                //devo controllare che non sia passato più di un secondo dall'ultima posa ricevuta e non sono in fase di decollo
-                if(elapsed_time_pose > 1000/1 && !init_takeoff)
-                {
-                    ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
-                    //imposto i valori di pwm di yaw, pitch e roll al minimo
-                    //todo: per l'altezza?
-                    double pwm_throttle = 1500;
-                    //warning_stop(pwm_throttle);
-                    clear_radio_override();
-                    
-                }
-                else
-                {
-                    //do nothing
-                }
-
-            }
-            /************************************************************************************************/
             
         }
         else
@@ -173,7 +243,7 @@ int main(int argc, char **argv)
         }
         
         //B)Controllo se vi sono delle richieste di comando
-        void check_request();
+        check_request();
 
 
         //C)leggo i topic

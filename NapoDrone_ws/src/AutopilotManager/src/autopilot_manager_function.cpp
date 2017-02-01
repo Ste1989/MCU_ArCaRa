@@ -354,10 +354,45 @@ void param_cb(const serial_manager::Param::ConstPtr& msg)
 void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg)
 {
   //ricevuto un nuovo waypoint
-  current_waypoint_world = *msg;
+  waypoint_world_GOAL = *msg;
+  P_world_body_world_START = P_world_body_world;
   ROS_INFO("RICEVUTO NUOVO WAYPOINT"); 
-  waypoint_recv = 1;
-  manual_mode = false;
+
+  //calcolo angolo tra la mia posizione e il goal
+  double gx = waypoint_world_GOAL.position.x;
+  double gy = waypoint_world_GOAL.position.y;
+  double px = P_world_body_world.position.x;
+  double py = P_world_body_world.position.y;
+  double alfa = atan2((gx-px),(gy-py));
+  double intorno_max = 0.3;
+  double delta_y = intorno_max * cos(alfa);
+  double delta_x = intorno_max * sin(alfa);
+  //genero nuovo waypoint
+  ROS_INFO("GENERO NUOVO WAYPOINT");
+  current_waypoint_world.position.x = px + delta_x;
+  current_waypoint_world.position.y = py + delta_y;
+  //se il nuovo waypoint generato nrlla coord y non è nella fascia
+  cout <<  current_waypoint_world.position.y - gy<< endl;
+  if(abs(current_waypoint_world.position.y - gy) > 0.2)
+  {
+    if((current_waypoint_world.position.y - gy) >0)
+      current_waypoint_world.position.y = gy + 0.2;
+     else
+      current_waypoint_world.position.y = gy - 0.2;
+  }
+  current_waypoint_world.position.z = -1;
+  current_waypoint_world.orientation.z = 0.0;
+  ROS_INFO("X: %f",current_waypoint_world.position.x );
+  ROS_INFO("Y: %f",current_waypoint_world.position.y );
+  //iniziliazzo PID
+  //inizializzo i controllori
+  pid_controllers.roll.init_PID();
+  pid_controllers.pitch.init_PID();
+  //pid_controllers.yaw.init_PID();
+  //pid_controllers.altitude.init_PID();
+  //waypoint_recv = 1;
+  manual_mode = 0;
+  drone_state = GOTO_STATE;
   //hold_position_var = 0;
 
 
@@ -423,7 +458,7 @@ void check_request()
 {
   bool res = false;
  //GESTIONE DELLA RICHIESTA DI COMANDO
-        
+  
   if(current_cmd_req != NO_REQ)
   {
     switch(current_cmd_req)
@@ -540,6 +575,7 @@ void check_request()
         case HOLD_POSITION:
           ROS_INFO("COMANDO : HOLD POSITION");
           hold_position();
+          ROS_INFO("OK");
           current_cmd_req = NO_REQ;
           break;
 
@@ -929,10 +965,10 @@ void init_global_variables()
   secs_0 =ros::Time::now().toSec();
   std::string str_path  = "";
   FILE* fd;
-  str_path  = "/home/robot/MCU_ArCaRa/log/control.txt";
+  str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/control.txt";
   fd = fopen(str_path.c_str(), "w");
   fclose(fd);
-  
+  drone_state = LANDED_STATE;
   //inizializzo i controllori
   pid_controllers.roll.init_PID();
   pid_controllers.pitch.init_PID();
@@ -1019,17 +1055,17 @@ void update_control()
   //se l'errore è maggiore di 0.20 cm scelgo di non usare il pid
   double roll_command = PWM_MEDIUM_ROLL;
   //se l'errore è maggiore di 0.20 cm scelgo di non usare il pid
-  if(abs(y_des_b - y_b) < 0.4)
-  {
-    if (pid_enable_roll == 0)
-    {
-      pid_controllers.roll.init_PID();
+  //if(abs(y_des_b - y_b) < 0.4)
+  //{
+   // if (pid_enable_roll == 0)
+   // {
+    //  pid_controllers.roll.init_PID();
       //riabilito il PID
-      pid_enable_roll = 1;
-    }
+     // pid_enable_roll = 1;
+    //}
     roll_command = pid_controllers.roll.update_PID(-y_b, -y_des_b, PWM_MEDIUM_ROLL, P_roll, I_roll, D_roll);
-  }
-  else
+  //}
+  /*else
   {
      if((y_des_b-y_b) > 0)
       roll_command = PWM_MEDIUM_ROLL + 25;
@@ -1037,28 +1073,28 @@ void update_control()
       roll_command = PWM_MEDIUM_ROLL - 25;
     //disabilito il PID
     pid_enable_roll = 0;
-  }
-  ROS_INFO("posizione y in body %f", y_b);
-  ROS_INFO("posizione y  desiderata in body %f", y_des_b);
-  ROS_INFO("pwm di rool %f", roll_command);
-  cout <<"=====================================================================" << endl;
+  }*/
+  //ROS_INFO("posizione y in body %f", y_b);
+  //ROS_INFO("posizione y  desiderata in body %f", y_des_b);
+  //ROS_INFO("pwm di rool %f", roll_command);
+  //cout <<"=====================================================================" << endl;
   //2A)CONTROLLO DI PITCH
   double P_pitch = 0.0;
   double I_pitch = 0.0;
   double D_pitch = 0.0;
   double pitch_command = PWM_MEDIUM_PITCH;
   //se l'errore è maggiore di 0.20 cm scelgo di non usare il pid
-  if(abs(x_des_b - x_b) < 0.4)
-  {
-    if (pid_enable_pitch == 0)
-    {
-      pid_controllers.pitch.init_PID();
+  //if(abs(x_des_b - x_b) < 0.4)
+  //{
+   // if (pid_enable_pitch == 0)
+    //{
+     // pid_controllers.pitch.init_PID();
       //riabilito il PID
-      pid_enable_pitch = 1;
-    }
+     /// pid_enable_pitch = 1;
+   // }
     pitch_command = pid_controllers.pitch.update_PID(x_b, x_des_b, PWM_MEDIUM_PITCH, P_pitch, I_pitch, D_pitch);
-  }
-  else
+  //}
+  /*else
   {
      if((x_des_b-x_b) > 0)
       pitch_command = PWM_MEDIUM_PITCH - 33;
@@ -1066,11 +1102,11 @@ void update_control()
       pitch_command = PWM_MEDIUM_PITCH + 33;
     //disabilito il PID
     pid_enable_pitch = 0;
-  }
-  ROS_INFO("posizione x in body %f", x_b);
-  ROS_INFO("posizione x  desiderata in body %f", x_des_b);
-  ROS_INFO("pwm di pitch %f", pitch_command);
-  cout <<"=====================================================================" << endl;
+  }*/
+  //ROS_INFO("posizione x in body %f", x_b);
+  //ROS_INFO("posizione x  desiderata in body %f", x_des_b);
+  //ROS_INFO("pwm di pitch %f", pitch_command);
+  //cout <<"=====================================================================" << endl;
 
 
 
@@ -1101,10 +1137,10 @@ void update_control()
     pid_enable_yaw = 0;
   }
   //devo mappare l'ingresso in un comando ai servo
-  ROS_INFO("heading corrrente %f", rz);
-  ROS_INFO("heading desiderato %f", rz_des);
-  ROS_INFO("pwm di yaw %f", yaw_command);
-  cout <<"=====================================================================" << endl;
+  //ROS_INFO("heading corrrente %f", rz);
+  //ROS_INFO("heading desiderato %f", rz_des);
+  //ROS_INFO("pwm di yaw %f", yaw_command);
+  //cout <<"=====================================================================" << endl;
 
   //4)controllo di quota
   double P_alt, I_alt, D_alt;
@@ -1117,10 +1153,10 @@ void update_control()
   double alt_curr = P_world_body_world.position.z;
   double throttle_command = pid_controllers.altitude.update_PID(alt_curr, alt_des, PWM_MEDIUM_THROTTLE, P_alt, I_alt, D_alt);
 
-  ROS_INFO("altezza corrrente %f", alt_curr);
-  ROS_INFO("altezza desiderata %f", alt_des);
-  ROS_INFO("pwm di throttle %f", throttle_command);
-  cout <<"=====================================================================" << endl;
+  //ROS_INFO("altezza corrrente %f", alt_curr);
+  //ROS_INFO("altezza desiderata %f", alt_des);
+  //ROS_INFO("pwm di throttle %f", throttle_command);
+  //cout <<"=====================================================================" << endl;
 
   //END)publish control to radio
   mavros_msgs::OverrideRCIn radio_pwm;
@@ -1145,7 +1181,7 @@ void update_control()
 
   }*/
   //quando premo hold position faccio fare tutto in automatico
-  if(hold_position_var)
+  if(drone_state == HOLD_POSITION_STATE || drone_state == GOTO_STATE)
   {
     radio_pwm.channels[RC_ROLL] = roll_command;
     radio_pwm.channels[RC_PITCH] = pitch_command;
@@ -1166,7 +1202,7 @@ void update_control()
   {
 
       double secs = ros::Time::now().toSec();
-      std::string str_path  = "/home/robot/MCU_ArCaRa/log/control.txt";
+      std::string str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/control.txt";
       FILE* fd;
       fd = fopen(str_path.c_str(), "a");
       fprintf(fd, "%f", secs -  secs_0);
@@ -1398,15 +1434,21 @@ void hold_position()
 {
   cout << "HOLD POSITION" << endl;
   //il waypoint sarà la posizione corrente
-  current_waypoint_world.position.x = 1.12;//P_world_body_world.position.x;
-  current_waypoint_world.position.y =0.9;// P_world_body_world.position.y;
+  current_waypoint_world.position.x = P_world_body_world.position.x;
+  current_waypoint_world.position.y = P_world_body_world.position.y;
   //current_waypoint_world.position.z = P_world_body_world.position.z;
   current_waypoint_world.position.z = -1;
   //current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
   current_waypoint_world.orientation.z = 0; P_world_body_world.orientation.z;
-  hold_position_var = 1;
-  waypoint_recv = 1;
+  //hold_position_var = 1;
+  //waypoint_recv = 1;
+  drone_state = HOLD_POSITION_STATE;
   manual_mode = 0;
+  //inizializzo i controllori
+  pid_controllers.roll.init_PID();
+  pid_controllers.pitch.init_PID();
+  //pid_controllers.yaw.init_PID();
+  //pid_controllers.altitude.init_PID();
 
   return;
 }
