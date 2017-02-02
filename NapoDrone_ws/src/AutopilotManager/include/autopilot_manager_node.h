@@ -30,8 +30,8 @@ double current_pressure;
 double alt_from_barometer; 
 
 //cvarianili per la gestione del tempo
-timeval  current_time, control_time, pose_time, takeoff_time;
-double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff;
+timeval  current_time, control_time, pose_time, takeoff_time, land_time, land_over_time;
+double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff, elapsed_time_land, elapsed_time_land_over;
 char waypoint_recv;
 std::string PID_file;
 char pid_enable_yaw, pid_enable_pitch, pid_enable_roll, pid_enable_alt; 
@@ -42,6 +42,7 @@ bool init_takeoff;
 //2: drone decollato
 char stato_takeoff;
 char hold_position_var;
+char new_land;
 std::string init_flight_mode;
 int loop_rate;
 int stream_rate;
@@ -282,6 +283,7 @@ void param_cb(const serial_manager::Param::ConstPtr& msg);
 void waypoint_cb(const geometry_msgs::Pose::ConstPtr& msg);
 void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg);
 bool arm_vehicle();
+bool land_vehicle();
 bool disarm_vehicle();
 bool takeoff_vehicle();
 void clear_radio_override();

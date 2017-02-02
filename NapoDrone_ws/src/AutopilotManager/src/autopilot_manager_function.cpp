@@ -519,7 +519,7 @@ void check_request()
         //LAND//////////////////////////////////////////////////////////////
         case LAND:
           ROS_INFO("COMANDO : LAND");
-          //res = arm_vehicle();
+          res = land_vehicle();
           if(res)
           {   
             ROS_INFO("LANDED");
@@ -677,7 +677,22 @@ bool arm_vehicle()
 	
 
 }
+/********************************************************************************************/
+/*                                                                                         */
+/*    LAND VEHICLE                                                                         */
+/*                                                                                         */
+/*******************************************************************************************/
+bool land_vehicle()
+{
+  gettimeofday(&land_time, NULL);
+  drone_state = LAND_STATE;
+  new_land = 1;
+  manual_mode = 0;
 
+  return true;
+  
+
+}
 /********************************************************************************************/
 /*                                                                                         */
 /*    DISARMA VEHICLE                                                                         */
@@ -696,7 +711,7 @@ bool disarm_vehicle()
   //funzione richiamata per disarmare il veicolo
   mavros_msgs::CommandBool disarm_cmd;
   disarm_cmd.request.value = false;
-    
+  
   //provo a disarmare
   arming_client.call(disarm_cmd);
   return disarm_cmd.response.success;
@@ -725,7 +740,7 @@ bool takeoff_vehicle()
 	if(!init_takeoff)
 	{
 		init_takeoff = true;
-    stato_takeoff = 1;
+    //stato_takeoff = 1;
     //prendo il tempo in cui è arrivta la richiesta di takeoff
     gettimeofday(&takeoff_time, NULL);
 		//inizializzo l'altezza desiderata di takeoff
@@ -733,8 +748,11 @@ bool takeoff_vehicle()
     current_waypoint_world.position.y = 0;
     current_waypoint_world.position.z = alt_takeoff_target;
     current_waypoint_world.orientation.z = 0;
+    pid_controllers.yaw.init_PID();
+    pid_controllers.altitude.init_PID();
     //metto in automatico
-    waypoint_recv = 1;
+    //waypoint_recv = 1;
+    drone_state = TAKEOFF_STATE;
     manual_mode = 0;
     ROS_INFO("RICHIESTA DI TAKEOFF RICEVUTA: ALT %f HEADIND %f", alt_takeoff_target, 0.0);
 
@@ -1181,20 +1199,27 @@ void update_control()
 
   }*/
   //quando premo hold position faccio fare tutto in automatico
-  if(drone_state == HOLD_POSITION_STATE || drone_state == GOTO_STATE)
+  if(drone_state == HOLD_POSITION_STATE || drone_state == GOTO_STATE || drone_state == LAND_STATE )
   {
     radio_pwm.channels[RC_ROLL] = roll_command;
     radio_pwm.channels[RC_PITCH] = pitch_command;
     radio_pwm.channels[RC_THROTTLE] = throttle_command;
     radio_pwm.channels[RC_YAW] = yaw_command;
-  }else
+  }
+  if(drone_state == LANDED_STATE)
+  {
+    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM_ROLL;
+    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM_PITCH;
+    radio_pwm.channels[RC_THROTTLE] = PWM_MEDIUM_THROTTLE - 70;
+    radio_pwm.channels[RC_YAW] = yaw_command;
+  }
+  if(drone_state == TAKEOFF_STATE)
   {
     radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
     radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
     radio_pwm.channels[RC_THROTTLE] = throttle_command;
     radio_pwm.channels[RC_YAW] = yaw_command;
   }
-
   rc_pub.publish(radio_pwm);
   
   //scrittura su file
@@ -1437,7 +1462,7 @@ void hold_position()
   current_waypoint_world.position.x = P_world_body_world.position.x;
   current_waypoint_world.position.y = P_world_body_world.position.y;
   //current_waypoint_world.position.z = P_world_body_world.position.z;
-  current_waypoint_world.position.z = -1;
+  current_waypoint_world.position.z = -1.3;
   //current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
   current_waypoint_world.orientation.z = 0; P_world_body_world.orientation.z;
   //hold_position_var = 1;
