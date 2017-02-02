@@ -14,6 +14,15 @@
 		<param name="y_m_LimitMin" type="double" value="0" />
 		<param name="z_m_LimitMax" type="double" value="5" />
 		<param name="z_m_LimitMin" type="double" value="0" />
+		<param name="x_carico" type="double" value="0" />
+		<param name="y_carico" type="double" value="0" />
+		<param name="z_carico" type="double" value="0" />
+		<param name="x_centro" type="double" value="0" />
+		<param name="y_centro" type="double" value="0" />
+		<param name="z_centro" type="double" value="0" />
+		<param name="x_scarico" type="double" value="0" />
+		<param name="y_scarico" type="double" value="0" />
+		<param name="z_scarico" type="double" value="0" />
     </node>
 
         
