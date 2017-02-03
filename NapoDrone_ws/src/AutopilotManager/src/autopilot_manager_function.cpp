@@ -79,6 +79,15 @@ void cmd_cb(const std_msgs::Int32::ConstPtr& msg)
     case HOLD_POSITION:
         current_cmd_req = HOLD_POSITION;
         break;
+    case GOTO_WAYPOINT_A:
+        current_cmd_req = GOTO_WAYPOINT_A;
+        break;
+    case GOTO_WAYPOINT_B:
+        current_cmd_req = GOTO_WAYPOINT_B;
+        break;
+    case GOTO_WAYPOINT_C:
+        current_cmd_req = GOTO_WAYPOINT_C;
+        break;
 		default:
 			  current_cmd_req = NO_REQ;          
 			  break;
@@ -575,7 +584,27 @@ void check_request()
         case HOLD_POSITION:
           ROS_INFO("COMANDO : HOLD POSITION");
           hold_position();
-          ROS_INFO("OK");
+          current_cmd_req = NO_REQ;
+          break;
+
+        //GOTO WAYPOINT A/////////////////////////////////////////////////////
+        case GOTO_WAYPOINT_A:
+          ROS_INFO("COMANDO : GOTO CARICO");
+          goto_waypoint(1);
+          current_cmd_req = NO_REQ;
+          break;
+
+        //GOTO WAYPOINT B/////////////////////////////////////////////////////
+        case GOTO_WAYPOINT_B:
+          ROS_INFO("COMANDO : GOTO CENTRO");
+          goto_waypoint(2);
+          current_cmd_req = NO_REQ;
+          break;
+
+        //GOTO WAYPOINT C/////////////////////////////////////////////////////
+        case GOTO_WAYPOINT_C:
+          ROS_INFO("COMANDO : GOTO SCARICO");
+          goto_waypoint(3);
           current_cmd_req = NO_REQ;
           break;
 
@@ -686,7 +715,7 @@ bool land_vehicle()
 {
   gettimeofday(&land_time, NULL);
   drone_state = LAND_STATE;
-  new_land = 1;
+  land_req = 1;
   manual_mode = 0;
 
   return true;
@@ -977,6 +1006,7 @@ void init_global_variables()
   init_takeoff = false;
   stato_takeoff = 0;
   hold_position_var = 0;
+  land_req = 0;
   init_pressure = 0;
   alt_from_barometer = 0;
   new_pose_recv = 0;
@@ -1206,12 +1236,19 @@ void update_control()
     radio_pwm.channels[RC_THROTTLE] = throttle_command;
     radio_pwm.channels[RC_YAW] = yaw_command;
   }
-  if(drone_state == LANDED_STATE)
+  if(drone_state == LANDING_STATE)
   {
-    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM_ROLL;
-    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM_PITCH;
+    radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+    radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
     radio_pwm.channels[RC_THROTTLE] = PWM_MEDIUM_THROTTLE - 70;
     radio_pwm.channels[RC_YAW] = yaw_command;
+  }
+  if(drone_state == LANDED_STATE)
+  {
+    radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+    radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+    radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT_THROTTLE;
+    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
   }
   if(drone_state == TAKEOFF_STATE)
   {
@@ -1457,23 +1494,63 @@ void warning_stop(double pwm_throttle)
 /*******************************************************************************************/
 void hold_position()
 {
-  cout << "HOLD POSITION" << endl;
   //il waypoint sarà la posizione corrente
   current_waypoint_world.position.x = P_world_body_world.position.x;
   current_waypoint_world.position.y = P_world_body_world.position.y;
   //current_waypoint_world.position.z = P_world_body_world.position.z;
-  current_waypoint_world.position.z = -1.3;
+  current_waypoint_world.position.z = -1;
   //current_waypoint_world.orientation.z = P_world_body_world.orientation.z;
-  current_waypoint_world.orientation.z = 0; P_world_body_world.orientation.z;
-  //hold_position_var = 1;
-  //waypoint_recv = 1;
+  current_waypoint_world.orientation.z = 0; 
+
   drone_state = HOLD_POSITION_STATE;
   manual_mode = 0;
   //inizializzo i controllori
   pid_controllers.roll.init_PID();
   pid_controllers.pitch.init_PID();
   //pid_controllers.yaw.init_PID();
-  //pid_controllers.altitude.init_PID();
+  pid_controllers.altitude.init_PID();
+
+  return;
+}
+
+ /********************************************************************************************/
+/*                                                                                         */
+/*    GOTO WAYPOINT                                                                        */
+/*                                                                                         */
+/*******************************************************************************************/
+void goto_waypoint(char position)
+{
+  if(position == 1)
+  {
+    //vai al carico
+    //devo andare in posizione di carico: quindi andarci sopra e poi atterrare
+    //imposto il primo waypoint la posizione in cui si trova
+    current_waypoint_world.position.x = P_world_body_world.position.x;
+    current_waypoint_world.position.y = P_world_body_world.position.y;
+    current_waypoint_world.position.z = 1; 
+    current_waypoint_world.orientation.z = 0;
+                      
+    //inizializzo i suoi controllori
+    pid_controllers.roll.init_PID();
+    pid_controllers.pitch.init_PID();
+    pid_controllers.altitude.init_PID();
+
+    //imposto il goal al carico
+    waypoint_world_GOAL = waypoint_carico;
+    //imposto lo stato a goto state
+    drone_state = GOTO_STATE;
+    //imposto la richiesta di atterraggio in quel punto
+    land_req = 1;
+  }
+  if(position == 2)
+  {
+    //vai al centro
+  }
+  if(position == 3)
+  {
+    //vai allo scarico
+  }
+
 
   return;
 }

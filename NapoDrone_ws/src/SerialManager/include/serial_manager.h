@@ -160,9 +160,9 @@ gripper_request gripper_msg;
 #define CMD_CLEAR_RADIO_OVERRIDE (int)0x86
 #define CMD_HOLD_POSITION (int)0x87
 #define CMD_SEND_WAYPOINT (int)0x88
-#define CMD_SEND_WAYPOINT_A (int)0x89
-#define CMD_SEND_WAYPOINT_B (int)0x90
-#define CMD_SEND_WAYPOINT_C (int)0x91
+#define CMD_GOTO_WAYPOINT_A (int)0x89
+#define CMD_GOTO_WAYPOINT_B (int)0x90
+#define CMD_GOTO_WAYPOINT_C (int)0x91
 #define CMD_NO_REQ (int)0xFF
 /*possibili richiesta di comandi**********************************/
 typedef enum{
@@ -175,6 +175,9 @@ typedef enum{
     EMERGENCY_STOP,
     CLEARRADIOOVERRIDE,
     HOLD_POSITION,
+    GOTO_WAYPOINT_A,
+    GOTO_WAYPOINT_B,
+    GOTO_WAYPOINT_C,
 } cmd_request;
 //variabile per la memorizzazione dello richiesta effettuata
 cmd_request cmd_msg;
@@ -378,9 +381,6 @@ NapodronePose P_world_body_world;
 bool stream_pose;
 char new_waypoint = 0;
 geometry_msgs::Pose waypoint_recv;
-geometry_msgs::Pose waypoint_carico;
-geometry_msgs::Pose waypoint_centro;
-geometry_msgs::Pose waypoint_scarico;
 
 /*batteria*/
 mavros_msgs::BatteryStatus battery_status;

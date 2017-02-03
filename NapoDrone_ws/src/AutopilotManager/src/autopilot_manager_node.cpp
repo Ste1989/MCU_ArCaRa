@@ -45,11 +45,48 @@ int main(int argc, char **argv)
     nh.param<int>("/AutopilotManager/stream_rate", stream_rate, 50);
     nh.param<double>("/AutopilotManager/alt_takeoff", alt_takeoff_target, -1.0);
     nh.param<double>("/AutopilotManager/alt_partenza", alt_takeoff_partenza, -0.3);
-    ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_target);
-    ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_partenza);
-    
+     //leggo coordinate carico scarico centro
+    double x_carico,y_carico,z_carico,x_centro,y_centro,z_centro,x_scarico,y_scarico,z_scarico;
+    nh.param<double>("/AutopilotManager/x_carico", x_carico, 0);
+    nh.param<double>("/AutopilotManager/y_carico", y_carico, 0);
+    nh.param<double>("/AutopilotManager/z_carico", z_carico, -1);
+    nh.param<double>("/AutopilotManager/x_centro", x_centro, 0);
+    nh.param<double>("/AutopilotManager/y_centro", y_centro, 0);
+    nh.param<double>("/AutopilotManager/z_centro", z_centro, -1);
+    nh.param<double>("/AutopilotManager/x_scarico", x_scarico, 0);
+    nh.param<double>("/AutopilotManager/y_scarico", y_scarico, 0);
+    nh.param<double>("/AutopilotManager/z_scarico", z_scarico, -1);
     //PID file
     nh.param<std::string>("/AutopilotManager/pid_file", PID_file, "");
+
+    ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_target);
+    ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_partenza);
+    ROS_INFO("x_carico: %f ", x_carico);
+    ROS_INFO("y_carico: %f ", y_carico);
+    ROS_INFO("z_carico: %f ", z_carico);
+    ROS_INFO("x_centro: %f ", x_centro);
+    ROS_INFO("y_centro: %f ", y_centro);
+    ROS_INFO("z_centro: %f ", z_centro);
+    ROS_INFO("x_scarico: %f ", x_scarico);
+    ROS_INFO("y_scarico: %f ", y_scarico);
+    ROS_INFO("z_scarico: %f ", z_scarico);
+
+    waypoint_carico.position.x = x_carico;
+    waypoint_carico.position.y = y_carico;
+    waypoint_carico.position.z = z_carico;
+    waypoint_carico.orientation.z = 0;
+
+    waypoint_centro.position.x = x_centro;
+    waypoint_centro.position.y = y_centro;
+    waypoint_centro.position.z = z_centro;
+    waypoint_centro.orientation.z = 0;
+
+    waypoint_scarico.position.x = x_scarico;
+    waypoint_scarico.position.y = y_scarico;
+    waypoint_scarico.position.z = z_scarico;
+    waypoint_scarico.orientation.z = 0;
+    
+    
 
 
     //////////////////////////////////////LEGGI FILE PID////////////////////////////////////////////
@@ -107,25 +144,34 @@ int main(int argc, char **argv)
                     //da qui posso solo decollare
                     init_takeoff = false;
                     break;
+                case LANDING_STATE:
+                    //qua devo controllare di essere arrivato a terra e disarmare
+                    if(abs(P_world_body_world.position.z - alt_takeoff_partenza) < 0.05)
+                    {
+                        drone_state = LANDED_STATE;
+                    }
+                    break;
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 case TAKEOFF_STATE:
                     //qui devo gestire il decollo
                     //devo controllare che l'altezza raggiunta sia circa quella impostata
-                    //se si drone decollato
+                    //se si drone è decollato-->devo andare al centro
                     if(abs(P_world_body_world.position.z -  current_waypoint_world.position.z ) <  0.15 && elapsed_time_takeoff > 0.5)
                     {
-                        //il drone è decollato, devo adesso manteere la posizione:
-                        //aggiorno current_waypoint e lo stato del drone
+                        //il drone è decollato, devo adesso andare al centro, ma nel fratempo matengo la posizione sopra
                         current_waypoint_world.position.x = P_world_body_world.position.x;
                         current_waypoint_world.position.y = P_world_body_world.position.y;
-                        current_waypoint_world.position.z = 0.9; 
+                        current_waypoint_world.position.z = 1; 
                         current_waypoint_world.orientation.z = 0;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
                         pid_controllers.altitude.init_PID();
                         //init_takeoff = false;
                         ROS_INFO("DECOLLATO");
-                        drone_state = HOLD_POSITION_STATE;
+                        ROS_INFO("VADO AL CENTRO IN HOVER");
+                        //gli dico di andare al centro
+                        waypoint_world_GOAL = waypoint_centro;
+                        drone_state = GOTO_STATE;
                         
                     }
                     else
@@ -149,6 +195,34 @@ int main(int argc, char **argv)
                     break;
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 case HOLD_POSITION_STATE:
+
+
+                    //qua devo controllare il caso in cui sono andato troppo lontano dal punto in cui devo stare fermo ci torno
+                    //con una traiettoria
+                    if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) > 0.5 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) > 0.5)
+                    {
+                        //sono troppo lontano dal punto in cui devo stare fermo:
+                        //imposto il waypoint nel punto in cui si trova il drone e il suo goal la poszione che aveva
+                        waypoint_world_GOAL = current_waypoint_world;
+                        //imposto il suo waypoint attuale
+                        current_waypoint_world.position.x = P_world_body_world.position.x;
+                        current_waypoint_world.position.y = P_world_body_world.position.y;
+                        current_waypoint_world.position.z = 1; 
+                        current_waypoint_world.orientation.z = 0;
+                        pid_controllers.roll.init_PID();
+                        pid_controllers.pitch.init_PID();
+                        pid_controllers.altitude.init_PID();
+                        drone_state = GOTO_STATE;
+
+                    }
+                    //controllo se ho una richiesta di atterraggio nel punto, se si e sono abbastanza vicino al punto di atterraggio inizio l'atterragio
+                    if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && land_req)
+                    {
+                        //devo atterrarre nel punto
+                        gettimeofday(&land_time, NULL);
+                        drone_state = LAND_STATE;
+                    }
+
                     //qui devo mantenere la posizione, potrei voler andare in un altro punto o atterrare
                     //controllo che abbia la posizione stimata
                     if(elapsed_time_pose > 1000/1)
@@ -167,7 +241,7 @@ int main(int argc, char **argv)
                     if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.3 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.3)
                     {
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15)
                         {
                             //calcolo angolo tra la mia posizione e il goal
                             double gx = waypoint_world_GOAL.position.x;
@@ -190,7 +264,7 @@ int main(int argc, char **argv)
                                 else
                                     current_waypoint_world.position.y = gy - 0.2;
                             }
-                            current_waypoint_world.position.z = -1.3;
+                            current_waypoint_world.position.z = -1;
                             current_waypoint_world.orientation.z = 0.0;
                             ROS_INFO("X: %f",current_waypoint_world.position.x );
                             ROS_INFO("Y: %f",current_waypoint_world.position.y );
@@ -204,7 +278,7 @@ int main(int argc, char **argv)
                         }
                         else
                         {
-                            //..
+                            //..sto andando nel punto
                         }
 
                     }
@@ -212,10 +286,11 @@ int main(int argc, char **argv)
                     {
  
                         //sono sul punto: devo vedere se quello finale allora vado in hold position state
-                        ROS_INFO("SONO ARRIVATO");
+                        ROS_INFO("VADO AL PUNTO DI ARRIVO");
                         current_waypoint_world = waypoint_world_GOAL;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
+                        pid_controllers.altitude.init_PID();
                         drone_state = HOLD_POSITION_STATE;
     
                     }
@@ -237,37 +312,35 @@ int main(int argc, char **argv)
                     //qui devo gestire l'atterraggio
                     //devo variare l altrezza di atterraggio
 
-                    if(new_land == 1){
-                        current_waypoint_world.position.z = -1;
-                        pid_controllers.altitude.init_PID();
-                        ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
-                        new_land = 2;
-                    }
-
-                    if(elapsed_time_land > 1000 *2 && new_land == 2){
+                    if(land_req == 1){
                         current_waypoint_world.position.z = -0.9;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
-                        new_land = 3;}
+                        land_req = 2;
+                    }
 
-                    if(elapsed_time_land > 1000*5 && new_land ==3)
+                    if(elapsed_time_land > 1000  && land_req == 2){
+                        current_waypoint_world.position.z = -0.7;
+                        pid_controllers.altitude.init_PID();
+                        ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
+                        land_req = 3;}
+
+                    if(elapsed_time_land > 1000*3 && land_req ==3)
                     {
-                        current_waypoint_world.position.z = -0.75;
+                        current_waypoint_world.position.z = -0.7;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         gettimeofday(&land_over_time, NULL);
                         elapsed_time_land_over = 0;
-                        new_land = 4;
+                        land_req = 4;
                     }
-                    if(elapsed_time_land > 1000*7 && new_land == 4)
+                    if(land_req == 4)
                     {
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.03 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.03)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.05)
                             if(elapsed_time_land_over >= 1000)
                              {   
-                                //drone_state = LANDED_STATE;
-                                //ROS_INFO("atterrato");
-                                current_waypoint_world.position.z = -1;
-                                pid_controllers.altitude.init_PID();
+                                drone_state = LANDING_STATE;
+                                ROS_INFO("atterrato");
                              }
                             else
                                 ROS_INFO("aspetto");

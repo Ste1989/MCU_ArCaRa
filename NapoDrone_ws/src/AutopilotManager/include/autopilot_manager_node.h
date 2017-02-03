@@ -42,7 +42,6 @@ bool init_takeoff;
 //2: drone decollato
 char stato_takeoff;
 char hold_position_var;
-char new_land;
 std::string init_flight_mode;
 int loop_rate;
 int stream_rate;
@@ -66,7 +65,11 @@ NapodronePose P_world_body_world_START;
 //memorizzo waypoint
 geometry_msgs::Pose current_waypoint_world;
 geometry_msgs::Pose waypoint_world_GOAL;
-
+geometry_msgs::Pose waypoint_carico;
+geometry_msgs::Pose waypoint_centro;
+geometry_msgs::Pose waypoint_scarico;
+//richiesta di atterraggio
+char land_req;
 
 //ros topic subscriber
 ros::Subscriber state_sub;
@@ -119,6 +122,7 @@ typedef enum{
     HOLD_POSITION_STATE,
     GOTO_STATE,
     LAND_STATE,
+    LANDING_STATE,
 }status_drone;
 
 status_drone drone_state;
@@ -169,6 +173,9 @@ typedef enum{
     EMERGENCY_STOP,
     CLEAR_RADIO_OVERRIDE,
     HOLD_POSITION,
+    GOTO_WAYPOINT_A,
+    GOTO_WAYPOINT_B,
+    GOTO_WAYPOINT_C,
 } cmd_request;
 
 cmd_request current_cmd_req;
@@ -295,4 +302,5 @@ void warning_stop(double pwm_throttle);
 void hold_position();
 void step_test();
 void check_request();
+void goto_waypoint(char position);
 

@@ -6,13 +6,21 @@
 	        <param name="stream_rate" type="int" value="50" />
 	        <param name="alt_takeoff" type="double" value="-0.8" />
 	        <param name="alt_partenza" type="double" value="-0.45" />
-	        <param name="pid_file" type="string" value="$(find autopilot_manager)/data/PID_iris.txt" /> 
+	        <param name="pid_file" type="string" value="$(find autopilot_manager)/data/PID_iris.txt" />
+
+	        <!--SISTEMA DI RIFERIMENTO NED!!!! Z NEGATIVA-->
+	        <param name="x_carico" type="double" value="0" />
+			<param name="y_carico" type="double" value="0" />
+			<param name="z_carico" type="double" value="-1" />
+			<param name="x_centro" type="double" value="0" />
+			<param name="y_centro" type="double" value="0" />
+			<param name="z_centro" type="double" value="-1" />
+			<param name="x_scarico" type="double" value="0" />
+			<param name="y_scarico" type="double" value="0" />
+			<param name="z_scarico" type="double" value="-1" /> 
     </node>
 
         <!--rosrun mavros mavparam set SYSID_MYGCS 1-->
 
 
-	 
-	<!--<node name="mavparam" pkg="mavros" type="mavparam" args="set SYSID_MYGCS 1" >-->
-	<!--</node>-->
 </launch>

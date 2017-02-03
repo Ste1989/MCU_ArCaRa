@@ -48,17 +48,7 @@ int main(int argc, char **argv)
     n.param<double>("/SerialManager/x_m_LimitMin", x_m_LimitMin, 0);
     n.param<double>("/SerialManager/y_m_LimitMin", y_m_LimitMin, 0);
     n.param<double>("/SerialManager/z_m_LimitMin", z_m_LimitMin, 0);
-    //leggo coordinate carico scarico centro
-    double x_carico,y_carico,z_carico,x_centro,y_centro,z_centro,x_scarico,y_scarico,z_scarico;
-    n.param<double>("/SerialManager/x_carico", x_carico, 0);
-    n.param<double>("/SerialManager/y_carico", y_carico, 0);
-    n.param<double>("/SerialManager/z_carico", z_carico, 0);
-    n.param<double>("/SerialManager/x_centro", x_centro, 0);
-    n.param<double>("/SerialManager/y_centro", y_centro, 0);
-    n.param<double>("/SerialManager/z_centro", z_centro, 0);
-    n.param<double>("/SerialManager/x_scarico", x_scarico, 0);
-    n.param<double>("/SerialManager/y_scarico", y_scarico, 0);
-    n.param<double>("/SerialManager/z_scarico", z_scarico, 0);
+   
 
 
     //pubblico area di lavoro
@@ -69,30 +59,7 @@ int main(int argc, char **argv)
     ROS_INFO("valore Z massimo: %f ", z_m_LimitMax);
     ROS_INFO("valore Z minimo: %f ", z_m_LimitMin);
 
-    ROS_INFO("x_carico: %f ", x_carico);
-    ROS_INFO("y_carico: %f ", y_carico);
-    ROS_INFO("z_carico: %f ", z_carico);
-    ROS_INFO("x_centro: %f ", x_centro);
-    ROS_INFO("y_centro: %f ", y_centro);
-    ROS_INFO("z_centro: %f ", z_centro);
-    ROS_INFO("x_scarico: %f ", x_scarico);
-    ROS_INFO("y_scarico: %f ", y_scarico);
-    ROS_INFO("z_scarico: %f ", z_scarico);
 
-    waypoint_carico.position.x = x_carico;
-    waypoint_carico.position.y = y_carico;
-    waypoint_carico.position.z = z_carico;
-    waypoint_carico.orientation.z = 0;
-
-    waypoint_centro.position.x = x_centro;
-    waypoint_centro.position.y = y_centro;
-    waypoint_centro.position.z = z_centro;
-    waypoint_centro.orientation.z = 0;
-
-    waypoint_scarico.position.x = x_scarico;
-    waypoint_scarico.position.y = y_scarico;
-    waypoint_scarico.position.z = z_scarico;
-    waypoint_scarico.orientation.z = 0;
     int serial;
     // init della seriale
     int result = serial_init(&serial, seriale_dev.c_str());

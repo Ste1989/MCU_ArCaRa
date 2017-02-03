@@ -258,22 +258,16 @@ void decode_packet()
                         new_waypoint = 1;
                         coda_recv_seriale.pop();
                         break;
-                    case CMD_SEND_WAYPOINT_A:
-                        cmd_msg = NO_REQ;
-                        waypoint_recv = waypoint_carico;
-                        new_waypoint = 1;
+                    case CMD_GOTO_WAYPOINT_A:
+                        cmd_msg = GOTO_WAYPOINT_A;
                         coda_recv_seriale.pop();
                         break;
-                    case CMD_SEND_WAYPOINT_B:
-                        cmd_msg = NO_REQ;
-                        waypoint_recv = waypoint_centro;
-                        new_waypoint = 1;
+                    case CMD_GOTO_WAYPOINT_B:
+                        cmd_msg = GOTO_WAYPOINT_B;
                         coda_recv_seriale.pop();
                         break;
-                    case CMD_SEND_WAYPOINT_C:
-                        cmd_msg = NO_REQ;
-                        waypoint_recv = waypoint_scarico;
-                        new_waypoint = 1;
+                    case CMD_GOTO_WAYPOINT_C:
+                        cmd_msg = GOTO_WAYPOINT_C;
                         coda_recv_seriale.pop();
                         break;
                     default:
