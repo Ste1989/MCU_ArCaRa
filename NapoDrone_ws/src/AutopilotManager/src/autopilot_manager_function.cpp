@@ -1545,10 +1545,42 @@ void goto_waypoint(char position)
   if(position == 2)
   {
     //vai al centro
+    //devo andare in posizione di centro: quindi andarci sopra e poi atterrare
+    //imposto il primo waypoint la posizione in cui si trova
+    current_waypoint_world.position.x = P_world_body_world.position.x;
+    current_waypoint_world.position.y = P_world_body_world.position.y;
+    current_waypoint_world.position.z = 1; 
+    current_waypoint_world.orientation.z = 0;
+                      
+    //inizializzo i suoi controllori
+    pid_controllers.roll.init_PID();
+    pid_controllers.pitch.init_PID();
+    pid_controllers.altitude.init_PID();
+
+    //imposto il goal al carico
+    waypoint_world_GOAL = waypoint_centro;
+    //imposto lo stato a goto state
+    drone_state = GOTO_STATE;
+    //imposto la richiesta di atterraggio in quel punto
+    land_req = 1;
   }
   if(position == 3)
   {
     //vai allo scarico
+    //devo andare in posizione di centro: quindi andarci sopra e poi atterrare
+    //imposto il primo waypoint la posizione in cui si trova
+    current_waypoint_world.position.x = P_world_body_world.position.x;
+    current_waypoint_world.position.y = P_world_body_world.position.y;
+    current_waypoint_world.position.z = 1; 
+    current_waypoint_world.orientation.z = 0;
+                      
+    //inizializzo i suoi controllori
+    pid_controllers.roll.init_PID();
+    pid_controllers.pitch.init_PID();
+    pid_controllers.altitude.init_PID();
+
+    //imposto il goal al carico
+    waypoint_world_GOAL = waypoint_scarico;
   }
 
 
