@@ -17,9 +17,9 @@
    <!--  <remap from="/image_raw" to="/camera/image_raw_filtered"/>-->
     <remap from="/image_raw" to="/camera/color/image_raw"/>
     <param name="calibration_file" type="string" value="$(find aruco_mapping)/data/R200_640x480.ini" /> 
-    <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_2.map" /> 
-    <param name="board_config" type="string" value="$(find aruco_mapping)/data/board_2.yml" />
-    <param name="num_of_markers" type="int" value="200" />
+    <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_SIMAC.map" /> 
+    <param name="board_config" type="string" value="$(find aruco_mapping)/data/board_SIMAC.yml" />
+    <param name="num_of_markers" type="int" value="323" />
     <param name="marker_size" type="double" value="0.110"/>
     <param name="space_type" type="string" value="plane" />
     <param name="roi_allowed" type="bool" value="false" /> 
