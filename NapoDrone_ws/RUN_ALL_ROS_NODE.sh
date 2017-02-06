@@ -22,6 +22,10 @@ xterm -T "SERIAL MANAGER" -n "SERIAL MANAGER" -hold -e "roslaunch serial_manager
 
 sleep 1
 
+xterm -T "GRIPPER MANAGER" -n "GRIPPER MANAGER" -hold -e "roslaunch gripper_manager gripper.launch" &
+
+sleep 1
+
 xterm -T "AUTOPILOT MANAGER" -n "AUTOPILOT MANAGER" -hold -e "roslaunch autopilot_manager AutopilotManagerMavros.launch" &
 
 sleep 5

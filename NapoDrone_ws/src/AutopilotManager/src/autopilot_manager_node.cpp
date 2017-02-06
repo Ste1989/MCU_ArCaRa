@@ -240,8 +240,10 @@ int main(int argc, char **argv)
                     //qui devo gestire l'andare in una posizione
                     if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.3 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.3)
                     {
+                        /*cout << waypoint_world_GOAL.position.x << endl;
+                        cout << waypoint_world_GOAL.position.y << endl;*/
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
                         {
                             //calcolo angolo tra la mia posizione e il goal
                             double gx = waypoint_world_GOAL.position.x;
@@ -288,6 +290,8 @@ int main(int argc, char **argv)
                         //sono sul punto: devo vedere se quello finale allora vado in hold position state
                         ROS_INFO("VADO AL PUNTO DI ARRIVO");
                         current_waypoint_world = waypoint_world_GOAL;
+                        cout << waypoint_world_GOAL.position.x << endl;
+                        cout << waypoint_world_GOAL.position.y << endl;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
                         pid_controllers.altitude.init_PID();
@@ -320,14 +324,14 @@ int main(int argc, char **argv)
                     }
 
                     if(elapsed_time_land > 1000  && land_req == 2){
-                        current_waypoint_world.position.z = -0.7;
+                        current_waypoint_world.position.z = -0.8;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 3;}
 
                     if(elapsed_time_land > 1000*3 && land_req ==3)
                     {
-                        current_waypoint_world.position.z = -0.7;
+                        current_waypoint_world.position.z = -0.75;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         gettimeofday(&land_over_time, NULL);
@@ -336,8 +340,8 @@ int main(int argc, char **argv)
                     }
                     if(land_req == 4)
                     {
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.05)
-                            if(elapsed_time_land_over >= 1000)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
+                            if(elapsed_time_land_over >= 0)
                              {   
                                 drone_state = LANDING_STATE;
                                 ROS_INFO("atterrato");
