@@ -143,6 +143,7 @@ int main(int argc, char **argv)
                 case LANDED_STATE:
                     //da qui posso solo decollare
                     init_takeoff = false;
+                    land_req = 0;
                     break;
                 case LANDING_STATE:
                     //qua devo controllare di essere arrivato a terra e disarmare
@@ -156,12 +157,12 @@ int main(int argc, char **argv)
                     //qui devo gestire il decollo
                     //devo controllare che l'altezza raggiunta sia circa quella impostata
                     //se si drone è decollato-->devo andare al centro
-                    if(abs(P_world_body_world.position.z -  current_waypoint_world.position.z ) <  0.15 && elapsed_time_takeoff > 0.5)
+                    if(abs(P_world_body_world.position.z -  current_waypoint_world.position.z ) <  0.15 && elapsed_time_takeoff > 1000)
                     {
                         //il drone è decollato, devo adesso andare al centro, ma nel fratempo matengo la posizione sopra
                         current_waypoint_world.position.x = P_world_body_world.position.x;
                         current_waypoint_world.position.y = P_world_body_world.position.y;
-                        current_waypoint_world.position.z = 1; 
+                        current_waypoint_world.position.z = -1; 
                         current_waypoint_world.orientation.z = 0;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
@@ -207,7 +208,7 @@ int main(int argc, char **argv)
                         //imposto il suo waypoint attuale
                         current_waypoint_world.position.x = P_world_body_world.position.x;
                         current_waypoint_world.position.y = P_world_body_world.position.y;
-                        current_waypoint_world.position.z = 1; 
+                        current_waypoint_world.position.z = -1; 
                         current_waypoint_world.orientation.z = 0;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
@@ -216,7 +217,7 @@ int main(int argc, char **argv)
 
                     }
                     //controllo se ho una richiesta di atterraggio nel punto, se si e sono abbastanza vicino al punto di atterraggio inizio l'atterragio
-                    if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && land_req)
+                    if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.10 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10 && land_req)
                     {
                         //devo atterrarre nel punto
                         gettimeofday(&land_time, NULL);

@@ -1527,7 +1527,7 @@ void goto_waypoint(char position)
     //imposto il primo waypoint la posizione in cui si trova
     current_waypoint_world.position.x = P_world_body_world.position.x;
     current_waypoint_world.position.y = P_world_body_world.position.y;
-    current_waypoint_world.position.z = 1; 
+    current_waypoint_world.position.z = -1; 
     current_waypoint_world.orientation.z = 0;
                       
     //inizializzo i suoi controllori
@@ -1549,7 +1549,7 @@ void goto_waypoint(char position)
     //imposto il primo waypoint la posizione in cui si trova
     current_waypoint_world.position.x = P_world_body_world.position.x;
     current_waypoint_world.position.y = P_world_body_world.position.y;
-    current_waypoint_world.position.z = 1; 
+    current_waypoint_world.position.z = -1; 
     current_waypoint_world.orientation.z = 0;
                       
     //inizializzo i suoi controllori
@@ -1571,7 +1571,7 @@ void goto_waypoint(char position)
     //imposto il primo waypoint la posizione in cui si trova
     current_waypoint_world.position.x = P_world_body_world.position.x;
     current_waypoint_world.position.y = P_world_body_world.position.y;
-    current_waypoint_world.position.z = 1; 
+    current_waypoint_world.position.z = -1; 
     current_waypoint_world.orientation.z = 0;
                       
     //inizializzo i suoi controllori
@@ -1581,6 +1581,8 @@ void goto_waypoint(char position)
 
     //imposto il goal al carico
     waypoint_world_GOAL = waypoint_scarico;
+      //imposto lo stato a goto state
+    drone_state = GOTO_STATE;
   }
 
 
