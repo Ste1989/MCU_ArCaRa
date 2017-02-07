@@ -30,6 +30,8 @@ int main(int argc, char **argv)
     rc_pub = nh.advertise<mavros_msgs::OverrideRCIn>("mavros/rc/override", 1);
     //topic per scrivere lo stato
     state_pub = nh.advertise<std_msgs::Int32>("napodrone/px4_status", 10);
+    //topic per la pinza
+    gripper_pub = nh.advertise<std_msgs::Int32>("napodrone/gripper_request", 1);
     
 
     //service per armare il drone
@@ -125,8 +127,8 @@ int main(int argc, char **argv)
         elapsed_time_land = (current_time.tv_sec - land_time.tv_sec) * 1000;
         elapsed_time_land += (current_time.tv_usec - land_time.tv_usec) / 1000;
         //calolo tempo passato dalla richiesta di land
-        elapsed_time_land_over = (current_time.tv_sec - land_over_time.tv_sec) * 1000;
-        elapsed_time_land_over += (current_time.tv_usec - land_over_time.tv_usec) / 1000;
+        elapsed_time_hover = (current_time.tv_sec - hover_time.tv_sec) * 1000;
+        elapsed_time_hover += (current_time.tv_usec - hover_time.tv_usec) / 1000;
         
         //A)se non sono in manuale
         if(!manual_mode)
@@ -162,7 +164,7 @@ int main(int argc, char **argv)
                         //il drone è decollato, devo adesso andare al centro, ma nel fratempo matengo la posizione sopra
                         current_waypoint_world.position.x = P_world_body_world.position.x;
                         current_waypoint_world.position.y = P_world_body_world.position.y;
-                        current_waypoint_world.position.z = -1; 
+                        current_waypoint_world.position.z = current_waypoint_world.position.z; 
                         current_waypoint_world.orientation.z = 0;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
@@ -208,7 +210,7 @@ int main(int argc, char **argv)
                         //imposto il suo waypoint attuale
                         current_waypoint_world.position.x = P_world_body_world.position.x;
                         current_waypoint_world.position.y = P_world_body_world.position.y;
-                        current_waypoint_world.position.z = -1; 
+                        current_waypoint_world.position.z = P_world_body_world.position.z; 
                         current_waypoint_world.orientation.z = 0;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
@@ -216,6 +218,7 @@ int main(int argc, char **argv)
                         drone_state = GOTO_STATE;
 
                     }
+                    //LAND
                     //controllo se ho una richiesta di atterraggio nel punto, se si e sono abbastanza vicino al punto di atterraggio inizio l'atterragio
                     if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.10 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10 && land_req)
                     {
@@ -223,7 +226,36 @@ int main(int argc, char **argv)
                         gettimeofday(&land_time, NULL);
                         drone_state = LAND_STATE;
                     }
+                    //APRI PINZA
+                    if(scarico_req)
+                    {
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10  )
+                        {
+                            if(elapsed_time_hover > 1000)
+                            {
+                                //apro pinza
+                                cout << "COMANDO PINZA RICEVUTO" << endl;
+                                //preparo la struttura dati
+                                std_msgs::Int32 msg;
+                                //messggio di apertura 
+                                msg.data = 2;
+                                //pubblico sul topc
+                                gripper_pub.publish(msg);
+                                //vengo via
+                                scarico_req = 0;
+                            }
+                            else{//aspetto}
+                                
+                            }
+                        }else
+                        {
+                            elapsed_time_hover = 0;
+                            gettimeofday(&hover_time, NULL);
 
+                        }
+                    }
+                    
+                    
                     //qui devo mantenere la posizione, potrei voler andare in un altro punto o atterrare
                     //controllo che abbia la posizione stimata
                     if(elapsed_time_pose > 1000/1)
@@ -267,7 +299,15 @@ int main(int argc, char **argv)
                                 else
                                     current_waypoint_world.position.y = gy - 0.2;
                             }
-                            current_waypoint_world.position.z = -1;
+
+                            //altezza:
+                            double alt_curr_way = current_waypoint_world.position.z;
+                            double alt_des_way = waypoint_world_GOAL.position.z;
+                            if(alt_curr_way > alt_des_way)
+                                alt_curr_way = alt_curr_way - 0.1;
+                            if(alt_curr_way < alt_des_way)
+                                alt_curr_way = alt_curr_way + 0.1;
+                            current_waypoint_world.position.z = alt_curr_way;
                             current_waypoint_world.orientation.z = 0.0;
                             ROS_INFO("X: %f",current_waypoint_world.position.x );
                             ROS_INFO("Y: %f",current_waypoint_world.position.y );
@@ -297,6 +337,9 @@ int main(int argc, char **argv)
                         pid_controllers.pitch.init_PID();
                         pid_controllers.altitude.init_PID();
                         drone_state = HOLD_POSITION_STATE;
+                        //resetto variabile hover time
+                        elapsed_time_hover = 0;
+                        gettimeofday(&hover_time, NULL);
     
                     }
 
@@ -335,14 +378,14 @@ int main(int argc, char **argv)
                         current_waypoint_world.position.z = -0.75;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
-                        gettimeofday(&land_over_time, NULL);
-                        elapsed_time_land_over = 0;
+                        gettimeofday(&hover_time, NULL);
+                        elapsed_time_hover = 0;
                         land_req = 4;
                     }
                     if(land_req == 4)
                     {
                         if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
-                            if(elapsed_time_land_over >= 0)
+                            if(elapsed_time_hover >= 0)
                              {   
                                 drone_state = LANDING_STATE;
                                 ROS_INFO("atterrato");
@@ -351,7 +394,7 @@ int main(int argc, char **argv)
                                 ROS_INFO("aspetto");
                         else{
                             //resetto contatore tempo
-                            gettimeofday(&land_over_time, NULL);
+                            gettimeofday(&hover_time, NULL);
                             ROS_INFO("troppo lontano");
                             }
                         cout << "X: "<<P_world_body_world.position.x - current_waypoint_world.position.x << endl;

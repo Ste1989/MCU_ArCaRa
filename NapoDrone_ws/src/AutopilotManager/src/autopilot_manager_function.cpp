@@ -802,8 +802,7 @@ bool takeoff_vehicle()
 /*******************************************************************************************/
 void clear_radio_override()
 {
-  //setto manual mode 
-  manual_mode = true;
+  
 	//devo impostare il pwm del throttle al valore minimo.
 	mavros_msgs::OverrideRCIn radio_pwm;
 	radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
@@ -815,6 +814,13 @@ void clear_radio_override()
 	radio_pwm.channels[6] = NO_OVERRIDE;
 	radio_pwm.channels[7] = NO_OVERRIDE;
 	rc_pub.publish(radio_pwm);
+
+  //resetto tutto
+  drone_state = LANDED_STATE;
+  land_req = 0;
+  init_takeoff = false;
+  //setto manual mode 
+  manual_mode = true;
 
 }
 /********************************************************************************************/
@@ -1527,7 +1533,7 @@ void goto_waypoint(char position)
     //imposto il primo waypoint la posizione in cui si trova
     current_waypoint_world.position.x = P_world_body_world.position.x;
     current_waypoint_world.position.y = P_world_body_world.position.y;
-    current_waypoint_world.position.z = -1; 
+    current_waypoint_world.position.z = P_world_body_world.position.z; 
     current_waypoint_world.orientation.z = 0;
                       
     //inizializzo i suoi controllori
@@ -1549,7 +1555,7 @@ void goto_waypoint(char position)
     //imposto il primo waypoint la posizione in cui si trova
     current_waypoint_world.position.x = P_world_body_world.position.x;
     current_waypoint_world.position.y = P_world_body_world.position.y;
-    current_waypoint_world.position.z = -1; 
+    current_waypoint_world.position.z = P_world_body_world.position.z; 
     current_waypoint_world.orientation.z = 0;
                       
     //inizializzo i suoi controllori
@@ -1571,7 +1577,7 @@ void goto_waypoint(char position)
     //imposto il primo waypoint la posizione in cui si trova
     current_waypoint_world.position.x = P_world_body_world.position.x;
     current_waypoint_world.position.y = P_world_body_world.position.y;
-    current_waypoint_world.position.z = -1; 
+    current_waypoint_world.position.z = P_world_body_world.position.z; 
     current_waypoint_world.orientation.z = 0;
                       
     //inizializzo i suoi controllori
@@ -1583,6 +1589,8 @@ void goto_waypoint(char position)
     waypoint_world_GOAL = waypoint_scarico;
       //imposto lo stato a goto state
     drone_state = GOTO_STATE;
+    //richiesta apertura pinza
+    scarico_req = 1;
   }
 
 

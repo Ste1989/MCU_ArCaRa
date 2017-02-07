@@ -17,7 +17,7 @@
 			<param name="z_centro" type="double" value="-1" />
 			<param name="x_scarico" type="double" value="3.50" />
 			<param name="y_scarico" type="double" value="0.94" />
-			<param name="z_scarico" type="double" value="-1" /> 
+			<param name="z_scarico" type="double" value="-1.2" /> 
     </node>
 
         <!--rosrun mavros mavparam set SYSID_MYGCS 1-->

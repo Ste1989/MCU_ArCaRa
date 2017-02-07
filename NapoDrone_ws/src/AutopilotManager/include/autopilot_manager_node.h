@@ -30,12 +30,13 @@ double current_pressure;
 double alt_from_barometer; 
 
 //cvarianili per la gestione del tempo
-timeval  current_time, control_time, pose_time, takeoff_time, land_time, land_over_time;
-double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff, elapsed_time_land, elapsed_time_land_over;
+timeval  current_time, control_time, pose_time, takeoff_time, land_time, hover_time;
+double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff, elapsed_time_land, elapsed_time_hover;
 char waypoint_recv;
 std::string PID_file;
 char pid_enable_yaw, pid_enable_pitch, pid_enable_roll, pid_enable_alt; 
 bool init_takeoff;
+char scarico_req;
 //stato_takeoff:
 //0: nulla
 //1: comandoi di takeoff ricevuto il dorne si sta alzando
@@ -82,6 +83,7 @@ ros::Subscriber waypoint_sub;
 //ros topic publisher
 ros::Publisher rc_pub;
 ros::Publisher state_pub;
+ros::Publisher gripper_pub;
 //ros topic service
 ros::ServiceClient arming_client;
 ros::ServiceClient set_mode_client;
