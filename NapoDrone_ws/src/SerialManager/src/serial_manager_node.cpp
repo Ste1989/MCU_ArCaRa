@@ -26,6 +26,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     req_topic = n.advertise<std_msgs::Int32>("napodrone/cmd_request", 1);
     gripper_topic = n.advertise<std_msgs::Int32>("napodrone/gripper_request", 1);
+    buzzer_topic = n.advertise<std_msgs::Int32>("napodrone/buzzer", 1);
     param_topic = n.advertise<serial_manager::Param>("napodrone/param_request", 1);
     mode_topic = n.advertise<std_msgs::Int32>("napodrone/mode_request", 1);
     waypoint_topic = n.advertise<geometry_msgs::Pose>("napodrone/waypoint", 1);
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
     gettimeofday(&stream_pose_time, NULL);
     gettimeofday(&stream_battery_time, NULL);
     //ros::Rate loop_rate(100); // 100 Hz
+    secs_0 = ros::Time::now().toSec();
     if (result == 1)
     {
         while(ros::ok())

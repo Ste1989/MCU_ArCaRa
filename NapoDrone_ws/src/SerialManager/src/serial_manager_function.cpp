@@ -42,6 +42,16 @@ void Battery_cb(const mavros_msgs::BatteryStatus::ConstPtr& msg)
 {
         battery_status = *msg;
         new_packet_battery = 1;
+        double secs = ros::Time::now().toSec();
+        std::string str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/battery.txt";
+        FILE* fd;
+        fd = fopen(str_path.c_str(), "a");
+        fprintf(fd, "%f", secs -  secs_0);
+        fprintf(fd, "%s", " ");
+        fprintf(fd, "%f", battery_status.voltage); //2
+        fprintf(fd, "%s", " ");
+        fprintf(fd, "%f\n", battery_status.current); //3
+        fclose(fd);
         return;
   
 }
@@ -773,7 +783,14 @@ void check_send_request()
         coda_send_seriale.push(HEADER_B);
         coda_send_seriale.push(PAYLOAD_CMD);
         coda_send_seriale.push(PAYLOAD_ACK);
-  
+        
+        //suono il buzzer
+        //preparo la struttura dati
+        std_msgs::Int32 msg_buzz;
+        //riempio la struttura dati
+        msg_buzz.data = 1;
+        //pubblico sul topc
+        buzzer_topic.publish(msg_buzz);
 
         cmd_msg_last = cmd_msg;
         //resetto cmd_msg
@@ -785,21 +802,30 @@ void check_send_request()
     if(gripper_msg != NO_GRIPPER_REQ )
     {
         cout << "COMANDO PINZA RICEVUTO" << endl;
+
+
         //preparo la struttura dati
         std_msgs::Int32 msg;
         //riempio la struttura dati
         msg.data = gripper_msg;
-        //pubblico sul topc
-        gripper_topic.publish(msg);
+
 
         //invio ack
         coda_send_seriale.push(HEADER_A);
         coda_send_seriale.push(HEADER_B);
         coda_send_seriale.push(PAYLOAD_GRIPPER);
         coda_send_seriale.push(PAYLOAD_ACK);
-  
-
         
+        //preparo la struttura dati
+        std_msgs::Int32 msg_buzz;
+        //riempio la struttura dati
+        msg_buzz.data = 2;
+        //pubblico sul topc
+        buzzer_topic.publish(msg_buzz);
+
+
+        //pubblico sul topc
+        gripper_topic.publish(msg);
         //resetto gripper_msg
         gripper_msg = NO_GRIPPER_REQ;
 
@@ -822,6 +848,13 @@ void check_send_request()
         coda_send_seriale.push(PAYLOAD_PARAM);
         coda_send_seriale.push(PAYLOAD_ACK);
         
+        //preparo la struttura dati
+        std_msgs::Int32 msg_buzz;
+        //riempio la struttura dati
+        msg_buzz.data = 3;
+        //pubblico sul topc
+        buzzer_topic.publish(msg_buzz);
+
         //pubblico sul topc
         param_topic.publish(msg);
 
@@ -840,6 +873,13 @@ void check_send_request()
         coda_send_seriale.push(PAYLOAD_WAYPOINT);
         coda_send_seriale.push(PAYLOAD_ACK);
 
+        //preparo la struttura dati
+        std_msgs::Int32 msg_buzz;
+        //riempio la struttura dati
+        msg_buzz.data = 4;
+        //pubblico sul topc
+        buzzer_topic.publish(msg_buzz);
+
 
         way_msg = NO_WAY;
 
@@ -857,6 +897,14 @@ void check_send_request()
         coda_send_seriale.push(HEADER_B);
         coda_send_seriale.push(PAYLOAD_MODE);
         coda_send_seriale.push(PAYLOAD_ACK);
+
+        //preparo la struttura dati
+        std_msgs::Int32 msg_buzz;
+        //riempio la struttura dati
+        msg_buzz.data = 5;
+        //pubblico sul topc
+        buzzer_topic.publish(msg_buzz);
+
         //pubblico sul topc
         mode_topic.publish(msg);
 
@@ -872,6 +920,13 @@ void check_send_request()
         coda_send_seriale.push(HEADER_B);
         coda_send_seriale.push(PAYLOAD_CMD);
         coda_send_seriale.push(PAYLOAD_ACK);
+
+        //preparo la struttura dati
+        std_msgs::Int32 msg_buzz;
+        //riempio la struttura dati
+        msg_buzz.data = 6;
+        //pubblico sul topc
+        buzzer_topic.publish(msg_buzz);
 
         //pubblico il waypoint sul topic
         geometry_msgs::Pose msg = waypoint_recv;

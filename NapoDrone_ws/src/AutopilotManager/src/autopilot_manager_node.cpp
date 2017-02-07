@@ -231,7 +231,7 @@ int main(int argc, char **argv)
                     {
                         if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10  )
                         {
-                            if(elapsed_time_hover > 1000)
+                            if(elapsed_time_hover > 500)
                             {
                                 //apro pinza
                                 cout << "COMANDO PINZA RICEVUTO" << endl;
@@ -271,12 +271,12 @@ int main(int argc, char **argv)
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
                 case GOTO_STATE:
                     //qui devo gestire l'andare in una posizione
-                    if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.3 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.3)
+                    if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.25 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.25)
                     {
                         /*cout << waypoint_world_GOAL.position.x << endl;
                         cout << waypoint_world_GOAL.position.y << endl;*/
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
                         {
                             //calcolo angolo tra la mia posizione e il goal
                             double gx = waypoint_world_GOAL.position.x;

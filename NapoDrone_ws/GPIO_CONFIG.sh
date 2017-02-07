@@ -27,6 +27,17 @@ sudo chmod 777 /sys/class/pwm/pwmchip0/pwm0/enable
 sudo chmod 777 /sys/class/pwm/pwmchip0/pwm0/duty_cycle
 sudo chmod 777 /sys/class/pwm/pwmchip0/pwm0/period
 
+sleep 1
+echo "configurazione GPIO pin gpio 13 (27)"
+echo "configuro gpio27"
+sudo echo 27 > /sys/class/gpio/export
+
+sleep 3
+echo "abilito accessi gpio27"
+sudo chmod 777 /sys/class/gpio/gpio27/value 
+sudo chmod 777 /sys/class/gpio/gpio27/direction
+
+
 echo "DONE"
 
 
