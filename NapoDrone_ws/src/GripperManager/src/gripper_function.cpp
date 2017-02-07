@@ -133,14 +133,14 @@ void buzzerCallback(const std_msgs::Int32::ConstPtr& msg)
     //cmd
     tone_buzzer(0,200);
     usleep(200000);
-    tone_buzzer(0,200);
+    tone_buzzer(0,400);
    }
    if(msg->data == 2)
    {
     //gripper
-    tone_buzzer(0,300);
+    tone_buzzer(0,100);
     usleep(200000);
-    tone_buzzer(0,300);
+    tone_buzzer(0,200);
     usleep(200000);
     tone_buzzer(0,300);
    }
