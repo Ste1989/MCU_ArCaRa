@@ -14,6 +14,13 @@
 //sudo chmod 777 direction
 //sudo chmod 777 /sys/class/pwm/pwmchip0/export ecc..
 
+/*typedef enum{
+    NO_BUZZER_REQ,
+    COMANDO,
+    OPEN,
+} buzzer_request;
+buzzer_request buzz_enum;*/
+
 
 mraa::Pwm* pwm;
 mraa::Gpio* gpio;

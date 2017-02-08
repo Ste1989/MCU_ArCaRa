@@ -84,6 +84,7 @@ ros::Subscriber waypoint_sub;
 ros::Publisher rc_pub;
 ros::Publisher state_pub;
 ros::Publisher gripper_pub;
+ros::Publisher buzzer_topic;
 //ros topic service
 ros::ServiceClient arming_client;
 ros::ServiceClient set_mode_client;

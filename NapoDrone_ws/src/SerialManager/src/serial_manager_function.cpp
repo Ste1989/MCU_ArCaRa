@@ -55,6 +55,7 @@ void Battery_cb(const mavros_msgs::BatteryStatus::ConstPtr& msg)
             buzzer_topic.publish(msg_buzz);
         }
      
+        ROS_INFO("Battery Voltage: %f", battery_status.voltage);
 
         double secs = ros::Time::now().toSec();
         std::string str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/battery.txt";

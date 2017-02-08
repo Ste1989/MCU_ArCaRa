@@ -128,48 +128,48 @@ void cmd_gripper(int dir, int speed)
 /***************************************************************************/
 void buzzerCallback(const std_msgs::Int32::ConstPtr& msg)
 {
-   if(msg->data == 1)
-   {
+  if(msg->data == 1)
+  {
     //cmd
     tone_buzzer(0,200);
     usleep(200000);
     tone_buzzer(0,400);
-   }
-   if(msg->data == 2)
-   {
+  }
+  if(msg->data == 2)
+  {
     //gripper
     tone_buzzer(0,100);
     usleep(200000);
     tone_buzzer(0,200);
     usleep(200000);
     tone_buzzer(0,300);
-   }
-   if(msg->data == 3)
-   {
+  }
+  if(msg->data == 3)
+  {
     //param
     tone_buzzer(0,500);
-     usleep(200000);
+    usleep(200000);
     tone_buzzer(0,500);
-   }
+  }
    
-   if(msg->data == 4)
-   {
+  if(msg->data == 4)
+  {
     tone_buzzer(0,1000);
-   }
+  }
    
-   if(msg->data == 5)
-   {
+  if(msg->data == 5)
+  {
     tone_buzzer(0,1000);
-   }
+  }
    
-   if(msg->data == 6)
-   {
+  if(msg->data == 6)
+  {
     tone_buzzer(0,1000);
-   }
+  }
    
 
-   if(msg->data == 7 )
-   {
+  if(msg->data == 7 )
+  {
     //batteria
     tone_buzzer(0,200);
     usleep(100000);
@@ -177,7 +177,23 @@ void buzzerCallback(const std_msgs::Int32::ConstPtr& msg)
     usleep(100000);
     tone_buzzer(0,200);
     usleep(100000);
-   }
+  }
+  if(msg->data == 8 )
+  {
+    //manca la posa da 0.3 secondi
+  }
+  if(msg->data == 9 )
+  {
+    //manca la posa da 1 secondo
+  }
+  if(msg->data == 10 )
+  {
+    //sta per atterarre
+  }
+  if(msg->data == 11 )
+  {
+    //sta per aprire la pinza
+  }
 
    return;
 }

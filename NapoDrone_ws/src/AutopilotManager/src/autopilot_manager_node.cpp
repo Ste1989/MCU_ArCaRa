@@ -32,6 +32,8 @@ int main(int argc, char **argv)
     state_pub = nh.advertise<std_msgs::Int32>("napodrone/px4_status", 10);
     //topic per la pinza
     gripper_pub = nh.advertise<std_msgs::Int32>("napodrone/gripper_request", 1);
+    //topic per il cicalino
+    buzzer_topic = nh.advertise<std_msgs::Int32>("napodrone/buzzer", 1);
     
 
     //service per armare il drone
@@ -49,14 +51,14 @@ int main(int argc, char **argv)
     nh.param<double>("/AutopilotManager/alt_partenza", alt_takeoff_partenza, -0.3);
      //leggo coordinate carico scarico centro
     double x_carico,y_carico,z_carico,x_centro,y_centro,z_centro,x_scarico,y_scarico,z_scarico;
-    nh.param<double>("/AutopilotManager/x_carico", x_carico, 0);
-    nh.param<double>("/AutopilotManager/y_carico", y_carico, 0);
+    nh.param<double>("/AutopilotManager/x_carico", x_carico, 0.9);
+    nh.param<double>("/AutopilotManager/y_carico", y_carico, 0.9);
     nh.param<double>("/AutopilotManager/z_carico", z_carico, -1);
-    nh.param<double>("/AutopilotManager/x_centro", x_centro, 0);
-    nh.param<double>("/AutopilotManager/y_centro", y_centro, 0);
+    nh.param<double>("/AutopilotManager/x_centro", x_centro, 2.3);
+    nh.param<double>("/AutopilotManager/y_centro", y_centro, 0.9);
     nh.param<double>("/AutopilotManager/z_centro", z_centro, -1);
-    nh.param<double>("/AutopilotManager/x_scarico", x_scarico, 0);
-    nh.param<double>("/AutopilotManager/y_scarico", y_scarico, 0);
+    nh.param<double>("/AutopilotManager/x_scarico", x_scarico, 3.5);
+    nh.param<double>("/AutopilotManager/y_scarico", y_scarico, 0.9);
     nh.param<double>("/AutopilotManager/z_scarico", z_scarico, -1);
     //PID file
     nh.param<std::string>("/AutopilotManager/pid_file", PID_file, "");
@@ -187,9 +189,27 @@ int main(int argc, char **argv)
                     else
                     {
                         //se è passato più di 1 secondo dalla richiesta di takeoof e non ho ancora una stima di poszione
+                        if ( elapsed_time_pose > 300/1)
+                        {
+                            ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 0.3 SECONDO");
+                            //suono il cicalino
+                            //preparo la struttura dati
+                            std_msgs::Int32 msg_buzz;
+                            //riempio la struttura dati
+                            msg_buzz.data = 8;
+                            //pubblico sul topc
+                            buzzer_topic.publish(msg_buzz);
+                        }
                         if ( elapsed_time_pose > 1000/1)
                         {
                             ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                            //suono il cicalino
+                            //preparo la struttura dati
+                            std_msgs::Int32 msg_buzz;
+                            //riempio la struttura dati
+                            msg_buzz.data = 9;
+                            //pubblico sul topc
+                            buzzer_topic.publish(msg_buzz);
                             drone_state = EMERGENCY_STATE;
                         }
                         //if (elapsed_time_takeoff <= 1000 && elapsed_time_pose > 1000/1)
@@ -252,8 +272,16 @@ int main(int argc, char **argv)
                                 //vengo via
                                 scarico_req = 2;
                             }
-                            else{//aspetto}
-                                
+                            else
+                            {
+                                //aspetto   
+                                //suono il cicalino
+                                //preparo la struttura dati
+                                std_msgs::Int32 msg_buzz;
+                                //riempio la struttura dati
+                                msg_buzz.data = 11;
+                                //pubblico sul topc
+                                buzzer_topic.publish(msg_buzz);
                             }
                         }else
                         {
@@ -274,9 +302,27 @@ int main(int argc, char **argv)
                     
                     //qui devo mantenere la posizione, potrei voler andare in un altro punto o atterrare
                     //controllo che abbia la posizione stimata
+                    if ( elapsed_time_pose > 300/1)
+                    {
+                        ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 0.3 SECONDO");
+                        //suono il cicalino
+                        //preparo la struttura dati
+                        std_msgs::Int32 msg_buzz;
+                        //riempio la struttura dati
+                        msg_buzz.data = 8;
+                        //pubblico sul topc
+                        buzzer_topic.publish(msg_buzz);
+                    }
                     if(elapsed_time_pose > 1000/1)
                     {
                         ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                        //suono il cicalino
+                        //preparo la struttura dati
+                        std_msgs::Int32 msg_buzz;
+                        //riempio la struttura dati
+                        msg_buzz.data = 9;
+                        //pubblico sul topc
+                        buzzer_topic.publish(msg_buzz);
                         drone_state = EMERGENCY_STATE;
                     }           
                     break;
@@ -368,9 +414,27 @@ int main(int argc, char **argv)
                     }
 
                     //controllo che abbia la posizione stimata
+                    if ( elapsed_time_pose > 300/1)
+                    {
+                        ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 0.3 SECONDO");
+                        //suono il cicalino
+                        //preparo la struttura dati
+                        std_msgs::Int32 msg_buzz;
+                        //riempio la struttura dati
+                        msg_buzz.data = 8;
+                        //pubblico sul topc
+                        buzzer_topic.publish(msg_buzz);
+                    }
                     if(elapsed_time_pose > 1000/1)
                     {
                         ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
+                        //suono il cicalino
+                        //preparo la struttura dati
+                        std_msgs::Int32 msg_buzz;
+                        //riempio la struttura dati
+                        msg_buzz.data = 9;
+                        //pubblico sul topc
+                        buzzer_topic.publish(msg_buzz);
                         drone_state = EMERGENCY_STATE;               
                     }
                     //controllo se ho raggiunto la posizione
@@ -380,30 +444,40 @@ int main(int argc, char **argv)
                     //qui devo gestire l'atterraggio
                     //devo variare l altrezza di atterraggio
 
-                    if(land_req == 1){
+                    if(land_req == 1 && elapsed_time_land > 1000){
                         current_waypoint_world.position.z = -0.9;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 2;
                     }
 
-                    if(elapsed_time_land > 500  && land_req == 2){
+                    if(elapsed_time_land > 2000  && land_req == 2){
                         current_waypoint_world.position.z = -0.8;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 3;}
 
-                    if(elapsed_time_land > 1000 && land_req ==3)
+                    if(elapsed_time_land > 2500 && land_req ==3)
                     {
                         current_waypoint_world.position.z = -0.75;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         gettimeofday(&hover_time, NULL);
                         elapsed_time_hover = 0;
+
+                        //suono il cicalino che sto atterrando
+                        //preparo la struttura dati
+                        std_msgs::Int32 msg_buzz;
+                        //riempio la struttura dati
+                        msg_buzz.data = 10;
+                        //pubblico sul topc
+                        buzzer_topic.publish(msg_buzz);
+                        
                         land_req = 4;
                     }
                     if(land_req == 4)
                     {
+
                         if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
                             if(elapsed_time_hover >= 250)
                              {   
