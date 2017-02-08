@@ -129,7 +129,11 @@ int main(int argc, char **argv)
         //calolo tempo passato dalla richiesta di land
         elapsed_time_hover = (current_time.tv_sec - hover_time.tv_sec) * 1000;
         elapsed_time_hover += (current_time.tv_usec - hover_time.tv_usec) / 1000;
-        
+        //calolo tempo passato dalla richiesta di land
+        elapsed_time_way = (current_time.tv_sec - way_time.tv_sec) * 1000;
+        elapsed_time_way += (current_time.tv_usec - way_time.tv_usec) / 1000;
+                
+
         //A)se non sono in manuale
         if(!manual_mode)
         {
@@ -142,6 +146,9 @@ int main(int argc, char **argv)
             //a seconda di dove si trova faccio un azione oppure un altra
             switch(drone_state)
             {
+                case EMERGENCY_STATE:
+                    manual_mode = true;
+                    break;
                 case LANDED_STATE:
                     //da qui posso solo decollare
                     init_takeoff = false;
@@ -183,10 +190,7 @@ int main(int argc, char **argv)
                         if ( elapsed_time_pose > 1000/1)
                         {
                             ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
-                            //imposto i valori di pwm di yaw, pitch e roll al minimo
-                            //todo: per l'altezza?
-                            double pwm_throttle = PWM_MEDIUM_THROTTLE;
-                            warning_stop(pwm_throttle);
+                            drone_state = EMERGENCY_STATE;
                         }
                         //if (elapsed_time_takeoff <= 1000 && elapsed_time_pose > 1000/1)
                            // P_world_body_world.position.z = alt_takeoff_partenza;
@@ -198,7 +202,11 @@ int main(int argc, char **argv)
                     break;
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 case HOLD_POSITION_STATE:
-
+                    if(abs(P_world_body_world.position.z - alt_takeoff_partenza) < 0.05)
+                    {
+                        drone_state = LANDED_STATE;
+                        break;
+                    }
 
                     //qua devo controllare il caso in cui sono andato troppo lontano dal punto in cui devo stare fermo ci torno
                     //con una traiettoria
@@ -227,7 +235,7 @@ int main(int argc, char **argv)
                         drone_state = LAND_STATE;
                     }
                     //APRI PINZA
-                    if(scarico_req)
+                    if(scarico_req == 1)
                     {
                         if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10  )
                         {
@@ -242,7 +250,7 @@ int main(int argc, char **argv)
                                 //pubblico sul topc
                                 gripper_pub.publish(msg);
                                 //vengo via
-                                scarico_req = 0;
+                                scarico_req = 2;
                             }
                             else{//aspetto}
                                 
@@ -254,6 +262,14 @@ int main(int argc, char **argv)
 
                         }
                     }
+                    if(scarico_req == 2 && elapsed_time_hover > 4000)
+                    {
+                        //devo venire via
+                        goto_waypoint(2);
+                        land_req = 0;
+                        scarico_req = 0;
+                    }
+
                     
                     
                     //qui devo mantenere la posizione, potrei voler andare in un altro punto o atterrare
@@ -261,30 +277,31 @@ int main(int argc, char **argv)
                     if(elapsed_time_pose > 1000/1)
                     {
                         ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
-                        //imposto i valori di pwm di yaw, pitch e roll al minimo
-                        //todo: per l'altezza?
-                        double pwm_throttle = PWM_MEDIUM_THROTTLE;
-                        warning_stop(pwm_throttle);
-                        //clear_radio_override();               
+                        drone_state = EMERGENCY_STATE;
                     }           
                     break;
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
                 case GOTO_STATE:
+                    if(abs(P_world_body_world.position.z - alt_takeoff_partenza) < 0.05)
+                    {
+                        drone_state = LANDED_STATE;
+                        break;
+                    }
                     //qui devo gestire l'andare in una posizione
                     if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.25 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.25)
                     {
                         /*cout << waypoint_world_GOAL.position.x << endl;
                         cout << waypoint_world_GOAL.position.y << endl;*/
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
-                        {
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 1500)
+                        {   
                             //calcolo angolo tra la mia posizione e il goal
                             double gx = waypoint_world_GOAL.position.x;
                             double gy = waypoint_world_GOAL.position.y;
                             double px = P_world_body_world.position.x;
                             double py = P_world_body_world.position.y;
                             double alfa = atan2((gx-px),(gy-py));
-                            double intorno_max = 0.3;
+                            double intorno_max = 0.25;
                             double delta_y = intorno_max * cos(alfa);
                             double delta_x = intorno_max * sin(alfa);
                             //genero nuovo waypoint
@@ -292,13 +309,15 @@ int main(int argc, char **argv)
                             current_waypoint_world.position.x = px + delta_x;
                             current_waypoint_world.position.y = py + delta_y;
                             //se il nuovo waypoint generato nrlla coord y non è nella fascia
-                            if(abs(current_waypoint_world.position.y - gy) > 0.2)
-                            {
-                                if((current_waypoint_world.position.y - gy) >0)
-                                    current_waypoint_world.position.y = gy + 0.2;
-                                else
-                                    current_waypoint_world.position.y = gy - 0.2;
-                            }
+                            //if(abs(current_waypoint_world.position.y - gy) > 0.2)
+                            //{
+                            //    if((current_waypoint_world.position.y - gy) >0)
+                            //        current_waypoint_world.position.y = gy + 0.2;
+                            //    else
+                            //        current_waypoint_world.position.y = gy - 0.2;
+                            //}
+                            //scelgo di mantenere la y sempre al centro
+                            current_waypoint_world.position.y = gy;
 
                             //altezza:
                             double alt_curr_way = current_waypoint_world.position.z;
@@ -313,10 +332,15 @@ int main(int argc, char **argv)
                             ROS_INFO("Y: %f",current_waypoint_world.position.y );
                             //inizializzo PID
                             //inizializzo i controllori
-                            pid_controllers.roll.init_PID();
+                            
+                            //pid_controllers.roll.init_PID();
+                            
                             pid_controllers.pitch.init_PID();
                             //pid_controllers.yaw.init_PID();
                             //pid_controllers.altitude.init_PID();
+
+                            gettimeofday(&way_time, NULL);
+                            elapsed_time_way = 0;
 
                         }
                         else
@@ -347,11 +371,7 @@ int main(int argc, char **argv)
                     if(elapsed_time_pose > 1000/1)
                     {
                         ROS_WARN("NON HO STIMA DELLA POSIZIONE DA 1 SECONDO");
-                        //imposto i valori di pwm di yaw, pitch e roll al minimo
-                        //todo: per l'altezza?
-                        double pwm_throttle = PWM_MEDIUM_THROTTLE;
-                        warning_stop(pwm_throttle);
-                        //clear_radio_override();               
+                        drone_state = EMERGENCY_STATE;               
                     }
                     //controllo se ho raggiunto la posizione
                     break;
@@ -367,13 +387,13 @@ int main(int argc, char **argv)
                         land_req = 2;
                     }
 
-                    if(elapsed_time_land > 1000  && land_req == 2){
+                    if(elapsed_time_land > 500  && land_req == 2){
                         current_waypoint_world.position.z = -0.8;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 3;}
 
-                    if(elapsed_time_land > 1000*3 && land_req ==3)
+                    if(elapsed_time_land > 1000 && land_req ==3)
                     {
                         current_waypoint_world.position.z = -0.75;
                         pid_controllers.altitude.init_PID();
@@ -385,7 +405,7 @@ int main(int argc, char **argv)
                     if(land_req == 4)
                     {
                         if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
-                            if(elapsed_time_hover >= 0)
+                            if(elapsed_time_hover >= 250)
                              {   
                                 drone_state = LANDING_STATE;
                                 ROS_INFO("atterrato");
@@ -428,6 +448,12 @@ int main(int argc, char **argv)
         }
         else
         {
+            //se il drone è in emergency state atterro:
+            if(drone_state == EMERGENCY_STATE)
+            {
+                warning_stop(PWM_MEDIUM_THROTTLE - 100);   
+            }
+            
             //il drone è comandato via radio: do nothing
         }
         

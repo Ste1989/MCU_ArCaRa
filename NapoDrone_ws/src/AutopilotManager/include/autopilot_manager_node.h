@@ -30,8 +30,8 @@ double current_pressure;
 double alt_from_barometer; 
 
 //cvarianili per la gestione del tempo
-timeval  current_time, control_time, pose_time, takeoff_time, land_time, hover_time;
-double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff, elapsed_time_land, elapsed_time_hover;
+timeval  current_time, control_time, pose_time, takeoff_time, land_time, hover_time, way_time;
+double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff, elapsed_time_land, elapsed_time_hover, elapsed_time_way;
 char waypoint_recv;
 std::string PID_file;
 char pid_enable_yaw, pid_enable_pitch, pid_enable_roll, pid_enable_alt; 
@@ -125,6 +125,7 @@ typedef enum{
     GOTO_STATE,
     LAND_STATE,
     LANDING_STATE,
+    EMERGENCY_STATE,
 }status_drone;
 
 status_drone drone_state;
@@ -305,4 +306,4 @@ void hold_position();
 void step_test();
 void check_request();
 void goto_waypoint(char position);
-
+void emergency_stop_and_land();

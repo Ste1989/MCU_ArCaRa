@@ -560,7 +560,7 @@ void check_request()
         //EMERGENCY STOP////////////////////////////////////////////////////
         case EMERGENCY_STOP:
           ROS_INFO("COMANDO : EMERGENCY_STOP");
-          //res = arm_vehicle();
+          emergency_stop_and_land();
           if(res)
           {   
             ROS_INFO("EMERGENCY_STOP");
@@ -672,6 +672,19 @@ void check_request()
 }
 /********************************************************************************************/
 /*                                                                                         */
+/*    EMERGENCY STOP AND LAND                                                              */
+/*                                                                                         */
+/*******************************************************************************************/
+void emergency_stop_and_land()
+{
+  //devo atterrare prima possibile
+  drone_state = EMERGENCY_STATE;
+  manual_mode = true;
+
+  return;
+}
+/********************************************************************************************/
+/*                                                                                         */
 /*    ARMA VEHICLE                                                                         */
 /*                                                                                         */
 /*******************************************************************************************/
@@ -713,10 +726,24 @@ bool arm_vehicle()
 /*******************************************************************************************/
 bool land_vehicle()
 {
-  gettimeofday(&land_time, NULL);
-  drone_state = LAND_STATE;
+
+  //atterro nel punto in cui mi trovo
+  //devo andare in posizione di carico: quindi andarci sopra e poi atterrare
+  //imposto il primo waypoint la posizione in cui si trova
+  current_waypoint_world.position.x = P_world_body_world.position.x;
+  current_waypoint_world.position.y = P_world_body_world.position.y;
+  current_waypoint_world.position.z = P_world_body_world.position.z; 
+  current_waypoint_world.orientation.z = 0;
+                      
+  //inizializzo i suoi controllori
+  pid_controllers.roll.init_PID();
+  pid_controllers.pitch.init_PID();
+  pid_controllers.altitude.init_PID();
+
+  drone_state = HOLD_POSITION_STATE;
+
   land_req = 1;
-  manual_mode = 0;
+  manual_mode = false;
 
   return true;
   
@@ -1486,10 +1513,10 @@ void warning_stop(double pwm_throttle)
 {
     //rilascia gli stick di roll e pitch e yaw
     mavros_msgs::OverrideRCIn radio_pwm;
-    radio_pwm.channels[RC_ROLL] = PWM_MEDIUM_ROLL;
-    radio_pwm.channels[RC_PITCH] = PWM_MEDIUM_PITCH;
+    radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+    radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
     radio_pwm.channels[RC_THROTTLE] = pwm_throttle; //TODO METTERE UN VALORE QUA
-    radio_pwm.channels[RC_YAW] = PWM_MEDIUM_YAW;
+    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
     rc_pub.publish(radio_pwm);
 
 }

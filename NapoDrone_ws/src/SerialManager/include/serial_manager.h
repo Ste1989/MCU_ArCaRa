@@ -367,6 +367,7 @@ double x_m_LimitMax, y_m_LimitMax, z_m_LimitMax;
 double x_m_LimitMin, y_m_LimitMin, z_m_LimitMin;
 using std::cout;
 using std::endl;
+double soglia_batteria;
 //strutture dati emporali
 timeval new_pkt_time, current_time, ping_time, stream_pose_time, stream_battery_time;
 double elapsed_time_pkt_received, elapsed_time_ping, elapsed_time_pose, elapsed_time_battery;

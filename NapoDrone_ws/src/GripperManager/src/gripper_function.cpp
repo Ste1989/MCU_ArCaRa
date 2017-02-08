@@ -168,6 +168,17 @@ void buzzerCallback(const std_msgs::Int32::ConstPtr& msg)
    }
    
 
+   if(msg->data == 7 )
+   {
+    //batteria
+    tone_buzzer(0,200);
+    usleep(100000);
+    tone_buzzer(0,200);
+    usleep(100000);
+    tone_buzzer(0,200);
+    usleep(100000);
+   }
+
    return;
 }
 /****************************************************************************/

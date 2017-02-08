@@ -42,6 +42,20 @@ void Battery_cb(const mavros_msgs::BatteryStatus::ConstPtr& msg)
 {
         battery_status = *msg;
         new_packet_battery = 1;
+
+        //se la batteria è minore di soglia_batteria suona il buzzer
+        if(battery_status.voltage <= soglia_batteria)
+        {
+            //suono il buzzer
+            //preparo la struttura dati
+            std_msgs::Int32 msg_buzz;
+            //riempio la struttura dati
+            msg_buzz.data = 7;
+            //pubblico sul topc
+            buzzer_topic.publish(msg_buzz);
+        }
+     
+
         double secs = ros::Time::now().toSec();
         std::string str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/battery.txt";
         FILE* fd;

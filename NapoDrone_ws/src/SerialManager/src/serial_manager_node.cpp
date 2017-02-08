@@ -42,6 +42,7 @@ int main(int argc, char **argv)
     n.param<int>("/SerialManager/ack_el_time", ack_el_time, 500);
     n.param<int>("/SerialManager/pose_el_time", pose_el_time, 500);
     n.param<int>("/SerialManager/battery_el_time", battery_el_time, 500);
+    n.param<double>("/SerialManager/soglia_batteria", soglia_batteria, 13.3);
     //limiti area di lavoro
     n.param<double>("/SerialManager/x_m_LimitMax", x_m_LimitMax, 5);
     n.param<double>("/SerialManager/y_m_LimitMax", y_m_LimitMax, 5);
@@ -71,6 +72,11 @@ int main(int argc, char **argv)
     gettimeofday(&stream_battery_time, NULL);
     //ros::Rate loop_rate(100); // 100 Hz
     secs_0 = ros::Time::now().toSec();
+    std::string str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/battery.txt";
+    FILE* fd;
+    fd = fopen(str_path.c_str(), "w");
+    fclose(fd);
+
     if (result == 1)
     {
         while(ros::ok())

@@ -9,7 +9,7 @@
 	        <param name="pid_file" type="string" value="$(find autopilot_manager)/data/PID_iris.txt" />
 
 	        <!--SISTEMA DI RIFERIMENTO NED!!!! Z NEGATIVA-->
-	        <param name="x_carico" type="double" value="0.65" />
+	        <param name="x_carico" type="double" value="0.95" />
 			<param name="y_carico" type="double" value="0.94" />
 			<param name="z_carico" type="double" value="-1" />
 			<param name="x_centro" type="double" value="2.30" />
@@ -17,7 +17,7 @@
 			<param name="z_centro" type="double" value="-1" />
 			<param name="x_scarico" type="double" value="3.50" />
 			<param name="y_scarico" type="double" value="0.94" />
-			<param name="z_scarico" type="double" value="-1.2" /> 
+			<param name="z_scarico" type="double" value="-1" /> 
     </node>
 
         <!--rosrun mavros mavparam set SYSID_MYGCS 1-->
