@@ -257,7 +257,7 @@ int main(int argc, char **argv)
                     //APRI PINZA
                     if(scarico_req == 1)
                     {
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10  )
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.08  )
                         {
                             if(elapsed_time_hover > 500)
                             {
@@ -269,12 +269,29 @@ int main(int argc, char **argv)
                                 msg.data = 2;
                                 //pubblico sul topc
                                 gripper_pub.publish(msg);
+
+                                //suono il cicalino
+                                //preparo la struttura dati
+                                std_msgs::Int32 msg_buzz;
+                                //riempio la struttura dati
+                                msg_buzz.data = 12;
+                                //pubblico sul topc
+                                buzzer_topic.publish(msg_buzz);
+                                
                                 //vengo via
                                 scarico_req = 2;
                             }
                             else
                             {
                                 //aspetto   
+
+                            }
+                        }else
+                        {
+                            elapsed_time_hover = 0;
+                            gettimeofday(&hover_time, NULL);
+                            if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.20  )
+                            {
                                 //suono il cicalino
                                 //preparo la struttura dati
                                 std_msgs::Int32 msg_buzz;
@@ -283,14 +300,10 @@ int main(int argc, char **argv)
                                 //pubblico sul topc
                                 buzzer_topic.publish(msg_buzz);
                             }
-                        }else
-                        {
-                            elapsed_time_hover = 0;
-                            gettimeofday(&hover_time, NULL);
 
                         }
                     }
-                    if(scarico_req == 2 && elapsed_time_hover > 4000)
+                    if(scarico_req == 2 && elapsed_time_hover > 5000)
                     {
                         //devo venire via
                         goto_waypoint(2);
@@ -339,21 +352,45 @@ int main(int argc, char **argv)
                         /*cout << waypoint_world_GOAL.position.x << endl;
                         cout << waypoint_world_GOAL.position.y << endl;*/
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 1500)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) <= 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 1000)
                         {   
                             //calcolo angolo tra la mia posizione e il goal
                             double gx = waypoint_world_GOAL.position.x;
                             double gy = waypoint_world_GOAL.position.y;
                             double px = P_world_body_world.position.x;
                             double py = P_world_body_world.position.y;
-                            double alfa = atan2((gx-px),(gy-py));
-                            double intorno_max = 0.25;
-                            double delta_y = intorno_max * cos(alfa);
-                            double delta_x = intorno_max * sin(alfa);
+                            //double alfa = atan2((gx-px),(gy-py));
+                            //double intorno_max = 0.25;
+                            //double delta_y = intorno_max * cos(alfa);
+                            //double delta_x = intorno_max * sin(alfa);
                             //genero nuovo waypoint
+                            double delta_x = 0;
+                            double segno = 1;
+                            if(gx-px > 0)
+                                segno = 1;
+                            else
+                                segno = -1;
+                            if(abs(gx-px) > 0.7)
+                                delta_x = segno*0.20;
+                            if(abs(gx -px) <=0.7 && abs(gx -px) > 0.4)
+                                delta_x = segno*0.15;
+                            if(abs(gx -px) <= 0.4 )
+                                delta_x = segno*0.10;
+
                             ROS_INFO("GENERO NUOVO WAYPOINT");
-                            current_waypoint_world.position.x = px + delta_x;
-                            current_waypoint_world.position.y = py + delta_y;
+                            double c_w_x= current_waypoint_world.position.x + delta_x;
+                            if(segno == 1)
+                            {
+                                c_w_x = c_w_x - gx > 0 ? gx : c_w_x;
+                            }
+                            else
+                            {
+                                c_w_x = c_w_x - gx < 0 ? gx : c_w_x;
+                            }
+                            current_waypoint_world.position.x  = c_w_x;
+                            
+                            
+                            //current_waypoint_world.position.y = py + delta_y;
                             //se il nuovo waypoint generato nrlla coord y non è nella fascia
                             //if(abs(current_waypoint_world.position.y - gy) > 0.2)
                             //{
@@ -379,7 +416,8 @@ int main(int argc, char **argv)
                             //inizializzo PID
                             //inizializzo i controllori
                             
-                            //pid_controllers.roll.init_PID();
+                            //RIMESSO
+                            pid_controllers.roll.init_PID();
                             
                             pid_controllers.pitch.init_PID();
                             //pid_controllers.yaw.init_PID();
@@ -451,20 +489,23 @@ int main(int argc, char **argv)
                         land_req = 2;
                     }
 
-                    if(elapsed_time_land > 2000  && land_req == 2){
+                    if(elapsed_time_land > 1500  && land_req == 2){
                         current_waypoint_world.position.z = -0.8;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 3;}
 
-                    if(elapsed_time_land > 2500 && land_req ==3)
+                    if(elapsed_time_land > 2000 && land_req ==3)
                     {
                         current_waypoint_world.position.z = -0.75;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         gettimeofday(&hover_time, NULL);
-                        elapsed_time_hover = 0;
-
+                        elapsed_time_hover = 0;                        
+                        land_req = 4;
+                    }
+                    if(land_req == 4)
+                    {
                         //suono il cicalino che sto atterrando
                         //preparo la struttura dati
                         std_msgs::Int32 msg_buzz;
@@ -472,14 +513,9 @@ int main(int argc, char **argv)
                         msg_buzz.data = 10;
                         //pubblico sul topc
                         buzzer_topic.publish(msg_buzz);
-                        
-                        land_req = 4;
-                    }
-                    if(land_req == 4)
-                    {
 
                         if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
-                            if(elapsed_time_hover >= 250)
+                            if(elapsed_time_hover >= 700)
                              {   
                                 drone_state = LANDING_STATE;
                                 ROS_INFO("atterrato");

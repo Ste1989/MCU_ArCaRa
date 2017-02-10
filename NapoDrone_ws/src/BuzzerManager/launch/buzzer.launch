@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch> 
+  <node pkg="buzzer_manager" type="buzzer_manager" name="buzzer_manager" output="screen">
+    
+    	<param name="buzzer_pin" type="int" value="13" /> 
+    
+    	 
+
+  </node> 
+  
+</launch>

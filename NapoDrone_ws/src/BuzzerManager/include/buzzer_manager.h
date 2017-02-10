@@ -16,15 +16,14 @@
 
 
 
-mraa::Pwm* pwm;
-mraa::Gpio* gpio;
 
-mraa_pwm_context pwm2;
-double time_open2close;
+
+mraa::Gpio* gpio_buzzer;
+
+
 //topic per comando della pinza
-ros::Subscriber gripper_sub;
+ros::Subscriber buzzer_sub;
 
-ros::Publisher gripper_pub;
 
 //funzioni per il tempo
 timeval duration_time,current_time;
@@ -32,7 +31,6 @@ double elapsed_time_note;
 
 //FUNZIONI
 void sig_handler(int signo);
-void init_pwm_gpio(int pwm_pin, int gpio_pin);
-void cmdgripperCallback(const std_msgs::Int32::ConstPtr& msg);
-void cmd_gripper(int dir, int speed);
-
+void init_pwm_gpio(int gpio_buzz);
+void buzzerCallback(const std_msgs::Int32::ConstPtr& msg);
+void tone_buzzer(int frequency, int duration);

@@ -116,6 +116,15 @@ void parser_mess(unsigned char buffer){
                 state_msg = PAYLOAD_4_2;
             else if(buffer == PAYLOAD_GRIPPER)
                 state_msg = PAYLOAD_5_2;
+            else if(buffer == PAYLOAD_PING)
+                {
+                    //pacchetto contenente un ping
+                    coda_recv_seriale.pop();
+                    //resetto il time di pkt arrivato
+                    gettimeofday(&new_pkt_time, NULL);
+                    com_loss = 0;
+                    state_msg=HEADER_1;
+                }
             break;
 
 

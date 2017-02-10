@@ -1,4 +1,4 @@
-#include "gripper_manager.h"
+#include "buzzer_manager.h"
 
 
 /***********************************************************************************************/
@@ -9,7 +9,7 @@
 int main(int argc, char **argv)
 {
 
-  ros::init(argc, argv, "gripper_manager");
+  ros::init(argc, argv, "buzzer_manager");
 
   /**
    * NodeHandle is the main access point to communications with the ROS system.
@@ -20,20 +20,16 @@ int main(int argc, char **argv)
 
   //leggi launch file
   int pwm_pin, dir_pin, buzzer_pin;
-  n.param<int>("/gripper_manager/pwm_pin", pwm_pin, 32);
-  n.param<int>("/gripper_manager/dir_pin", dir_pin, 37);
-  n.param<double>("/gripper_manager/time_grip", time_open2close, 2.5);
-  
+  n.param<int>("/buzzer_manager/buzzer_pin", buzzer_pin, 13);
 
   //topic subscribe
-  gripper_sub = n.subscribe("napodrone/gripper_request", 1, cmdgripperCallback);
+  buzzer_sub = n.subscribe("napodrone/buzzer", 1, buzzerCallback);
   
-  gripper_pub = n.advertise<std_msgs::Int32>("napodrone/gripper_status", 1);
 
   /*********Init*******************************************************************************/
   signal(SIGINT, sig_handler);
 
-  init_pwm_gpio(pwm_pin, dir_pin);
+  init_pwm_gpio(buzzer_pin);
   
   ros::Rate loop_rate(100); 
 

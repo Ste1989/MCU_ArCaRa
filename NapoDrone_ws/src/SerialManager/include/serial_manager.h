@@ -360,6 +360,7 @@ double waypoint_data = 0.0;
 int new_packet = 0;
 char new_packet_pose = 0;
 char new_packet_battery = 0;
+double com_loss = 0;
 int pose_el_time, ack_el_time,battery_el_time;
 double PI = 3.14159;
 double secs_0;

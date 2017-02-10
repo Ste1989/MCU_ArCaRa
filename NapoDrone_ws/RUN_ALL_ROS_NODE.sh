@@ -22,7 +22,11 @@ xterm -T "SERIAL MANAGER" -n "SERIAL MANAGER" -hold -e "roslaunch serial_manager
 
 sleep 1
 
-xterm -T "GRIPPER MANAGER" -n "GRIPPER MANAGER" -hold -e "roslaunch gripper_manager gripper.launch" &
+xterm -T "GRIPPER MANAGER" -n "GRIPPER MANAGER" -hold -e "roslaunch buzzer_manager buzzer.launch" &
+
+sleep 1
+
+xterm -T "BUZZER MANAGER" -n "BUZZER MANAGER" -hold -e "roslaunch gripper_manager gripper.launch" &
 
 sleep 1
 

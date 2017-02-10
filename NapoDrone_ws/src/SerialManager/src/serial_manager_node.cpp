@@ -145,22 +145,33 @@ int main(int argc, char **argv)
             gettimeofday(&stream_battery_time, NULL);
 
           }
- /*         
- /*        cout << elapsed_time_pkt_received << "ms.\n";
+         
+       //cout << elapsed_time_pkt_received << "ms.\n";
 
-           if(elapsed_time_pkt_received > 2000)
-          {
-                //comunicazione persa
-                coda_send_seriale.push('C');
-                coda_send_seriale.push('O');
-                coda_send_seriale.push('M');
-                coda_send_seriale.push(' ');
-                coda_send_seriale.push('L');
-                coda_send_seriale.push('O');
-                coda_send_seriale.push('S');
-                coda_send_seriale.push('T');
-                coda_send_seriale.push('.');
-          }*/
+           if(elapsed_time_pkt_received > 1000*60 && !com_loss)
+           {
+                ROS_INFO("comunicazione persa");
+                //dico al drone di tornare al carico
+                //preparo la struttura dati
+                std_msgs::Int32 msg;
+                //riempio la struttura dati
+                msg.data = GOTO_WAYPOINT_A;
+                //pubblico sul topc
+                req_topic.publish(msg);
+
+        
+              //suono il buzzer
+              //preparo la struttura dati
+              std_msgs::Int32 msg_buzz;
+              //riempio la struttura dati
+              msg_buzz.data = 1;
+              //pubblico sul topc
+              buzzer_topic.publish(msg_buzz);
+
+              //setto bit della perdita di comunicazione
+              com_loss = 1;
+                
+            }
 
           /*********CONTROLLO RICHIESTE DI COMANDI***********************************************************/
           //controllo se vi è una richiesta di comando
