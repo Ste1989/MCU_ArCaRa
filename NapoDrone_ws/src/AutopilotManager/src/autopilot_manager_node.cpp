@@ -257,7 +257,7 @@ int main(int argc, char **argv)
                     //APRI PINZA
                     if(scarico_req == 1)
                     {
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.08  )
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10  )
                         {
                             if(elapsed_time_hover > 500)
                             {
@@ -303,7 +303,7 @@ int main(int argc, char **argv)
 
                         }
                     }
-                    if(scarico_req == 2 && elapsed_time_hover > 5000)
+                    if(scarico_req == 2 && elapsed_time_hover > 3000)
                     {
                         //devo venire via
                         goto_waypoint(2);
@@ -347,12 +347,12 @@ int main(int argc, char **argv)
                         break;
                     }
                     //qui devo gestire l'andare in una posizione
-                    if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.25 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.25)
+                    if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.15 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.2)
                     {
                         /*cout << waypoint_world_GOAL.position.x << endl;
                         cout << waypoint_world_GOAL.position.y << endl;*/
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) <= 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 1000)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) <= 0.10 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 2000)
                         {   
                             //calcolo angolo tra la mia posizione e il goal
                             double gx = waypoint_world_GOAL.position.x;
@@ -371,11 +371,11 @@ int main(int argc, char **argv)
                             else
                                 segno = -1;
                             if(abs(gx-px) > 0.7)
-                                delta_x = segno*0.20;
-                            if(abs(gx -px) <=0.7 && abs(gx -px) > 0.4)
                                 delta_x = segno*0.15;
-                            if(abs(gx -px) <= 0.4 )
+                            if(abs(gx -px) <=0.7 && abs(gx -px) > 0.4)
                                 delta_x = segno*0.10;
+                            if(abs(gx -px) <= 0.4 )
+                                delta_x = segno*0.5;
 
                             ROS_INFO("GENERO NUOVO WAYPOINT");
                             double c_w_x= current_waypoint_world.position.x + delta_x;
@@ -482,20 +482,20 @@ int main(int argc, char **argv)
                     //qui devo gestire l'atterraggio
                     //devo variare l altrezza di atterraggio
 
-                    if(land_req == 1 && elapsed_time_land > 1000){
+                    if(land_req == 1 && elapsed_time_land > 2000){
                         current_waypoint_world.position.z = -0.9;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 2;
                     }
 
-                    if(elapsed_time_land > 1500  && land_req == 2){
+                    if(elapsed_time_land > 4000  && land_req == 2){
                         current_waypoint_world.position.z = -0.8;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 3;}
 
-                    if(elapsed_time_land > 2000 && land_req ==3)
+                    if(elapsed_time_land > 6000 && land_req ==3)
                     {
                         current_waypoint_world.position.z = -0.75;
                         pid_controllers.altitude.init_PID();

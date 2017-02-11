@@ -711,7 +711,7 @@ bool arm_vehicle()
     //imposto il valore di thtrolle piu del minimo per non farlo disarmare
     radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
     radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
-    radio_pwm.channels[RC_THROTTLE] = PWM_LOW_LIMIT_THROTTLE + 100;
+    radio_pwm.channels[RC_THROTTLE] = 1000;
     radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
     rc_pub.publish(radio_pwm);
   }
@@ -810,6 +810,7 @@ bool takeoff_vehicle()
     //waypoint_recv = 1;
     drone_state = TAKEOFF_STATE;
     manual_mode = 0;
+    land_req = 0;
     ROS_INFO("RICHIESTA DI TAKEOFF RICEVUTA: ALT %f HEADIND %f", alt_takeoff_target, 0.0);
 
 		return true;	
