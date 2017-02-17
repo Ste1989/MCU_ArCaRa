@@ -30,8 +30,8 @@ double current_pressure;
 double alt_from_barometer; 
 
 //cvarianili per la gestione del tempo
-timeval  current_time, control_time, pose_time, takeoff_time, land_time, hover_time, way_time;
-double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff, elapsed_time_land, elapsed_time_hover, elapsed_time_way;
+timeval  current_time, control_time, pose_time, takeoff_time, land_time, hover_time, way_time, ruota_time;
+double elapsed_time_control, elapsed_time_pose, elapsed_time_takeoff, elapsed_time_land, elapsed_time_hover, elapsed_time_way,elapsed_time_ruota;
 char waypoint_recv;
 std::string PID_file;
 char pid_enable_yaw, pid_enable_pitch, pid_enable_roll, pid_enable_alt; 
@@ -53,6 +53,9 @@ double secs_0;
 //altezza di takeoff da raggiungere e di partenza
 double alt_takeoff_target;
 double alt_takeoff_partenza;
+double x_limit_inf_area1, x_limit_sup_area1;
+int limit_area;
+
 //struttura per la memorizzazione della posa della camera nel frame world
 struct NapodronePose
 {
@@ -71,6 +74,8 @@ geometry_msgs::Pose waypoint_centro;
 geometry_msgs::Pose waypoint_scarico;
 //richiesta di atterraggio
 char land_req;
+//richiesta di ruotare al centro
+int ruota_req;
 
 //ros topic subscriber
 ros::Subscriber state_sub;

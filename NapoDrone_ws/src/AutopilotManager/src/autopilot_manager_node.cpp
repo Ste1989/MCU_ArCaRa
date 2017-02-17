@@ -46,6 +46,7 @@ int main(int argc, char **argv)
 
     //leggo i parametri specificati nel launch file
     nh.param<int>("/AutopilotManager/loop_rate", loop_rate, 20);
+    nh.param<int>("/AutopilotManager/ruota", ruota_req, 0);
     nh.param<int>("/AutopilotManager/stream_rate", stream_rate, 50);
     nh.param<double>("/AutopilotManager/alt_takeoff", alt_takeoff_target, -1.0);
     nh.param<double>("/AutopilotManager/alt_partenza", alt_takeoff_partenza, -0.3);
@@ -60,6 +61,10 @@ int main(int argc, char **argv)
     nh.param<double>("/AutopilotManager/x_scarico", x_scarico, 3.5);
     nh.param<double>("/AutopilotManager/y_scarico", y_scarico, 0.9);
     nh.param<double>("/AutopilotManager/z_scarico", z_scarico, -1);
+    //leggo la x limite dell'area di velocità bassa
+    nh.param<double>("/AutopilotManager/x_limit_inf_area1", x_limit_inf_area1, 1.3);
+    nh.param<double>("/AutopilotManager/x_limit_sup_area1", x_limit_sup_area1, 2.5);
+
     //PID file
     nh.param<std::string>("/AutopilotManager/pid_file", PID_file, "");
 
@@ -74,6 +79,8 @@ int main(int argc, char **argv)
     ROS_INFO("x_scarico: %f ", x_scarico);
     ROS_INFO("y_scarico: %f ", y_scarico);
     ROS_INFO("z_scarico: %f ", z_scarico);
+    ROS_INFO("limite inferioire area 1: %f ", x_limit_inf_area1);
+    ROS_INFO("limite superiore area 1: %f ", x_limit_sup_area1);
 
     waypoint_carico.position.x = x_carico;
     waypoint_carico.position.y = y_carico;
@@ -134,7 +141,10 @@ int main(int argc, char **argv)
         //calolo tempo passato dalla richiesta di land
         elapsed_time_way = (current_time.tv_sec - way_time.tv_sec) * 1000;
         elapsed_time_way += (current_time.tv_usec - way_time.tv_usec) / 1000;
-                
+         //calolo tempo passato dalla richiesta di ruota
+        elapsed_time_ruota = (current_time.tv_sec - ruota_time.tv_sec) * 1000;
+        elapsed_time_ruota += (current_time.tv_usec - ruota_time.tv_usec) / 1000;
+                 
 
         //A)se non sono in manuale
         if(!manual_mode)
@@ -149,7 +159,7 @@ int main(int argc, char **argv)
             switch(drone_state)
             {
                 case EMERGENCY_STATE:
-                    manual_mode = true;
+                    //manual_mode = true;
                     break;
                 case LANDED_STATE:
                     //da qui posso solo decollare
@@ -242,8 +252,50 @@ int main(int argc, char **argv)
                         current_waypoint_world.orientation.z = 0;
                         pid_controllers.roll.init_PID();
                         pid_controllers.pitch.init_PID();
+                        pid_controllers.yaw.init_PID();
                         pid_controllers.altitude.init_PID();
                         drone_state = GOTO_STATE;
+
+                    }
+                    //RUOTA AL CENTRO
+                    if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.10 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10 && !land_req && !scarico_req && ruota_req > 0 && elapsed_time_ruota > 20000)
+                    {
+                        switch(ruota_req)
+                        {
+                            case 1:
+                                current_waypoint_world.orientation.z = 1.57; //20 gradi
+                                pid_controllers.yaw.init_PID();
+                                gettimeofday(&ruota_time, NULL);
+                                elapsed_time_ruota = 0;
+                                ruota_req = 2;
+                            break;
+
+                            case 2:
+                                current_waypoint_world.orientation.z = 0; //0 gradi
+                                pid_controllers.yaw.init_PID();
+                                gettimeofday(&ruota_time, NULL);
+                                elapsed_time_ruota = 0;
+                                ruota_req = 3;
+                            break;
+
+                            case 3:
+                                current_waypoint_world.orientation.z = -1.57; //-20 gradi
+                                pid_controllers.yaw.init_PID();
+                                gettimeofday(&ruota_time, NULL);
+                                elapsed_time_ruota = 0;
+                                ruota_req = 4;
+                            break;
+
+                            case 4:
+                                current_waypoint_world.orientation.z = 0; //0 gradi
+                                pid_controllers.yaw.init_PID();
+                                gettimeofday(&ruota_time, NULL);
+                                elapsed_time_ruota = 0;
+                                ruota_req = 1;
+                            break;
+
+                        }
+                        
 
                     }
                     //LAND
@@ -259,7 +311,7 @@ int main(int argc, char **argv)
                     {
                         if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.05 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.10  )
                         {
-                            if(elapsed_time_hover > 500)
+                            if(elapsed_time_hover > 300)
                             {
                                 //apro pinza
                                 cout << "COMANDO PINZA RICEVUTO" << endl;
@@ -346,13 +398,186 @@ int main(int argc, char **argv)
                         drone_state = LANDED_STATE;
                         break;
                     }
+                    //vedo se sono nell'area a bassa velocità o meno
+                    int area_bassa_vel;
+                    if(P_world_body_world.position.x < x_limit_inf_area1 || P_world_body_world.position.x > x_limit_sup_area1 || abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) < 0.3 || limit_area == 1)
+                    {
+                        area_bassa_vel = 1;
+                    }
+                    else
+                    {
+                        area_bassa_vel = 0;
+                    }
+                   
                     //qui devo gestire l'andare in una posizione
                     if(abs(P_world_body_world.position.x - waypoint_world_GOAL.position.x ) > 0.15 || abs(P_world_body_world.position.y-waypoint_world_GOAL.position.y ) > 0.2)
                     {
-                        /*cout << waypoint_world_GOAL.position.x << endl;
-                        cout << waypoint_world_GOAL.position.y << endl;*/
+                        
+                        switch(area_bassa_vel)
+                        {
+                            case 1:
+                            //siamo nell'area a bassa velocità
+                            //ROS_INFO("AREA BASSA VELOCITA");
+                            if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) <= 0.15 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 2000)
+                            {
+                                //calcolo angolo tra la mia posizione e il goal
+                                double gx = waypoint_world_GOAL.position.x;
+                                double gy = waypoint_world_GOAL.position.y;
+                                double px = P_world_body_world.position.x;
+                                double py = P_world_body_world.position.y;
+                                //double alfa = atan2((gx-px),(gy-py));
+                                //double intorno_max = 0.25;
+                                //double delta_y = intorno_max * cos(alfa);
+                                //double delta_x = intorno_max * sin(alfa);
+                                //genero nuovo waypoint
+                                double delta_x = 0;
+                                double segno = 1;
+                                if(gx-px > 0)
+                                    segno = 1;
+                                else
+                                    segno = -1;
+                                /*if(abs(gx-px) > 0.7)
+                                    delta_x = segno*0.10;
+                                if(abs(gx -px) <=0.7 && abs(gx -px) > 0.4)
+                                    delta_x = segno*0.10;
+                                if(abs(gx -px) <= 0.4 )
+                                    delta_x = segno*0.10;*/
+                                delta_x = segno * 0.10;
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) <= 0.10 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 2000)
+                                ROS_INFO("GENERO NUOVO WAYPOINT");
+                                double c_w_x= current_waypoint_world.position.x + delta_x;
+                                int arrivato = 0;
+                                if(segno == 1)
+                                {
+                                    arrivato = c_w_x - gx > 0 ? 1 : 0; 
+                                    c_w_x = c_w_x - gx > 0 ? gx : c_w_x;
+                                }
+                                else
+                                {
+                                    arrivato = c_w_x - gx < 0 ? 1 : 0;
+                                    c_w_x = c_w_x - gx < 0 ? gx : c_w_x;
+                                }
+                                current_waypoint_world.position.x  = c_w_x;
+                                //scelgo di mantenere la y sempre al centro
+                                current_waypoint_world.position.y = gy;
+
+                                //altezza:
+                                double alt_curr_way = current_waypoint_world.position.z;
+                                double alt_des_way = waypoint_world_GOAL.position.z;
+                                if(alt_curr_way > alt_des_way)
+                                    alt_curr_way = alt_curr_way - 0.1;
+                                if(alt_curr_way < alt_des_way)
+                                    alt_curr_way = alt_curr_way + 0.1;
+                                current_waypoint_world.position.z = alt_curr_way;
+                                current_waypoint_world.orientation.z = 0.0;
+                                ROS_INFO("X: %f",current_waypoint_world.position.x );
+                                ROS_INFO("Y: %f",current_waypoint_world.position.y );
+                                //inizializzo PID
+                                //inizializzo i controllori                                
+                                //RIMESSO
+                                pid_controllers.roll.init_PID();
+                                pid_controllers.pitch.init_PID();
+                                //pid_controllers.yaw.init_PID();
+                                pid_controllers.altitude.init_PID();
+
+                                gettimeofday(&way_time, NULL);
+                                elapsed_time_way = 0;
+
+                                if(arrivato == 1)
+                                {
+                                    ROS_INFO("VADO AL PUNTO DI ARRIVO");
+                                    limit_area = 0;
+                                    current_waypoint_world = waypoint_world_GOAL;
+                                    cout << waypoint_world_GOAL.position.x << endl;
+                                    cout << waypoint_world_GOAL.position.y << endl;
+                                    
+                                    drone_state = HOLD_POSITION_STATE;
+                                    //resetto variabile hover time
+                                    elapsed_time_hover = 0;
+                                    gettimeofday(&hover_time, NULL);
+    
+                                }
+
+                            }
+                            break;
+
+                            case 0:
+                            //siamo nell'area a alta velocità
+                            //ROS_INFO("AREA ALTA VELOCITA");
+                            if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) <= 0.2 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.25 && elapsed_time_way > 2000)
+                            {
+                                //calcolo angolo tra la mia posizione e il goal
+                                double gx = waypoint_world_GOAL.position.x;
+                                double gy = waypoint_world_GOAL.position.y;
+                                double px = P_world_body_world.position.x;
+                                double py = P_world_body_world.position.y;
+                                //double alfa = atan2((gx-px),(gy-py));
+                                //double intorno_max = 0.25;
+                                //double delta_y = intorno_max * cos(alfa);
+                                //double delta_x = intorno_max * sin(alfa);
+                                //genero nuovo waypoint
+                                double delta_x = 0;
+                                double segno = 1;
+                                if(gx-px > 0)
+                                    segno = 1;
+                                else
+                                    segno = -1;
+
+                                delta_x = segno*0.15;
+
+                                ROS_INFO("GENERO NUOVO WAYPOINT");
+                                double c_w_x= current_waypoint_world.position.x + delta_x;
+                                if(segno == 1)
+                                {
+                                    limit_area = c_w_x - x_limit_sup_area1 > 0 ? 1 : 0;
+                                    c_w_x = c_w_x - x_limit_sup_area1 > 0 ? x_limit_sup_area1 : c_w_x;
+                                
+                                    
+
+                                }
+                                else
+                                {
+                                    limit_area = c_w_x - x_limit_inf_area1 < 0 ? 1 : 0;
+                                    c_w_x = c_w_x - x_limit_inf_area1 < 0 ? x_limit_inf_area1 : c_w_x;
+                                    
+                                    
+                                }
+                                
+                                current_waypoint_world.position.x  = c_w_x;
+                                //scelgo di mantenere la y sempre al centro
+                                current_waypoint_world.position.y = gy;
+
+                                //altezza:
+                                double alt_curr_way = current_waypoint_world.position.z;
+                                double alt_des_way = waypoint_world_GOAL.position.z;
+                                if(alt_curr_way > alt_des_way)
+                                    alt_curr_way = alt_curr_way - 0.1;
+                                if(alt_curr_way < alt_des_way)
+                                    alt_curr_way = alt_curr_way + 0.1;
+                                current_waypoint_world.position.z = alt_curr_way;
+                                current_waypoint_world.orientation.z = 0.0;
+                                ROS_INFO("X: %f",current_waypoint_world.position.x );
+                                ROS_INFO("Y: %f",current_waypoint_world.position.y );
+                                //inizializzo PID
+                                //inizializzo i controllori                                
+                                //RIMESSO
+                                pid_controllers.roll.init_PID();
+                                pid_controllers.pitch.init_PID();
+                                //pid_controllers.yaw.init_PID();
+                                pid_controllers.altitude.init_PID();
+
+                                gettimeofday(&way_time, NULL);
+                                elapsed_time_way = 0;
+
+
+
+
+                            }
+                            break;
+
+
+                        }
+                        /*if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) <= 0.10 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.15 && elapsed_time_way > 2000)
                         {   
                             //calcolo angolo tra la mia posizione e il goal
                             double gx = waypoint_world_GOAL.position.x;
@@ -375,7 +600,7 @@ int main(int argc, char **argv)
                             if(abs(gx -px) <=0.7 && abs(gx -px) > 0.4)
                                 delta_x = segno*0.10;
                             if(abs(gx -px) <= 0.4 )
-                                delta_x = segno*0.5;
+                                delta_x = segno*0.05;
 
                             ROS_INFO("GENERO NUOVO WAYPOINT");
                             double c_w_x= current_waypoint_world.position.x + delta_x;
@@ -430,7 +655,7 @@ int main(int argc, char **argv)
                         else
                         {
                             //..sto andando nel punto
-                        }
+                        }*/
 
                     }
                     else
@@ -438,6 +663,7 @@ int main(int argc, char **argv)
  
                         //sono sul punto: devo vedere se quello finale allora vado in hold position state
                         ROS_INFO("VADO AL PUNTO DI ARRIVO");
+                        limit_area = 0;
                         current_waypoint_world = waypoint_world_GOAL;
                         cout << waypoint_world_GOAL.position.x << endl;
                         cout << waypoint_world_GOAL.position.y << endl;
@@ -482,20 +708,20 @@ int main(int argc, char **argv)
                     //qui devo gestire l'atterraggio
                     //devo variare l altrezza di atterraggio
 
-                    if(land_req == 1 && elapsed_time_land > 2000){
+                    if(land_req == 1 && elapsed_time_land > 1000){
                         current_waypoint_world.position.z = -0.9;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 2;
                     }
 
-                    if(elapsed_time_land > 4000  && land_req == 2){
+                    if(elapsed_time_land > 2000  && land_req == 2){
                         current_waypoint_world.position.z = -0.8;
                         pid_controllers.altitude.init_PID();
                         ROS_INFO("nuova quota %f", current_waypoint_world.position.z);
                         land_req = 3;}
 
-                    if(elapsed_time_land > 6000 && land_req ==3)
+                    if(elapsed_time_land > 4000 && land_req ==3)
                     {
                         current_waypoint_world.position.z = -0.75;
                         pid_controllers.altitude.init_PID();
@@ -514,7 +740,7 @@ int main(int argc, char **argv)
                         //pubblico sul topc
                         buzzer_topic.publish(msg_buzz);
 
-                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.1)
+                        if(abs(P_world_body_world.position.x - current_waypoint_world.position.x ) < 0.1 && abs(P_world_body_world.position.y-current_waypoint_world.position.y ) < 0.08)
                             if(elapsed_time_hover >= 700)
                              {   
                                 drone_state = LANDING_STATE;
@@ -561,7 +787,8 @@ int main(int argc, char **argv)
             //se il drone è in emergency state atterro:
             if(drone_state == EMERGENCY_STATE)
             {
-                warning_stop(PWM_MEDIUM_THROTTLE - 100);   
+//                warning_stop(PWM_MEDIUM_THROTTLE - 100);
+                cout << "sono qui "  << endl;  
             }
             
             //il drone è comandato via radio: do nothing

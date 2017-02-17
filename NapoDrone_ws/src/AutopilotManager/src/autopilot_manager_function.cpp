@@ -679,7 +679,7 @@ void emergency_stop_and_land()
 {
   //devo atterrare prima possibile
   drone_state = EMERGENCY_STATE;
-  manual_mode = true;
+  //manual_mode = true;
 
   return;
 }
@@ -702,7 +702,9 @@ bool arm_vehicle()
 	//funzione richiamata per armare il veicolo
 	mavros_msgs::CommandBool arm_cmd;
   arm_cmd.request.value = true;
-    
+  
+  drone_state = LANDED_STATE;
+  manual_mode = false;
   //provo a armare
   arming_client.call(arm_cmd);
 
@@ -799,6 +801,8 @@ bool takeoff_vehicle()
     //stato_takeoff = 1;
     //prendo il tempo in cui è arrivta la richiesta di takeoff
     gettimeofday(&takeoff_time, NULL);
+    //resetto tempo di ruota
+    gettimeofday(&ruota_time, NULL);
 		//inizializzo l'altezza desiderata di takeoff
     current_waypoint_world.position.x = 0;
     current_waypoint_world.position.y = 0;
@@ -811,6 +815,7 @@ bool takeoff_vehicle()
     drone_state = TAKEOFF_STATE;
     manual_mode = 0;
     land_req = 0;
+    scarico_req = 0;
     ROS_INFO("RICHIESTA DI TAKEOFF RICEVUTA: ALT %f HEADIND %f", alt_takeoff_target, 0.0);
 
 		return true;	
@@ -1044,6 +1049,7 @@ void init_global_variables()
   init_pressure = 0;
   alt_from_barometer = 0;
   new_pose_recv = 0;
+  limit_area = 0;
   secs_0 =ros::Time::now().toSec();
   std::string str_path  = "";
   FILE* fd;
@@ -1290,6 +1296,13 @@ void update_control()
     radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
     radio_pwm.channels[RC_THROTTLE] = throttle_command;
     radio_pwm.channels[RC_YAW] = yaw_command;
+  }
+  if(drone_state == EMERGENCY_STATE)
+  {
+    radio_pwm.channels[RC_ROLL] = NO_OVERRIDE;
+    radio_pwm.channels[RC_PITCH] = NO_OVERRIDE;
+    radio_pwm.channels[RC_THROTTLE] = PWM_MEDIUM_THROTTLE - 100;
+    radio_pwm.channels[RC_YAW] = NO_OVERRIDE;
   }
   rc_pub.publish(radio_pwm);
   
@@ -1567,6 +1580,7 @@ void goto_waypoint(char position)
     //inizializzo i suoi controllori
     pid_controllers.roll.init_PID();
     pid_controllers.pitch.init_PID();
+    pid_controllers.yaw.init_PID();
     pid_controllers.altitude.init_PID();
 
     //imposto il goal al carico
@@ -1575,6 +1589,9 @@ void goto_waypoint(char position)
     drone_state = GOTO_STATE;
     //imposto la richiesta di atterraggio in quel punto
     land_req = 1;
+    scarico_req = 0;
+    //resetto bit limit_area
+    limit_area = 0;
   }
   if(position == 2)
   {
@@ -1589,6 +1606,7 @@ void goto_waypoint(char position)
     //inizializzo i suoi controllori
     pid_controllers.roll.init_PID();
     pid_controllers.pitch.init_PID();
+    pid_controllers.yaw.init_PID();
     pid_controllers.altitude.init_PID();
 
     //imposto il goal al carico
@@ -1597,6 +1615,9 @@ void goto_waypoint(char position)
     drone_state = GOTO_STATE;
     //imposto la richiesta di atterraggio in quel punto
     land_req = 1;
+    scarico_req = 0;
+    //resetto bit limit_area
+    limit_area = 0;
   }
   if(position == 3)
   {
@@ -1611,6 +1632,7 @@ void goto_waypoint(char position)
     //inizializzo i suoi controllori
     pid_controllers.roll.init_PID();
     pid_controllers.pitch.init_PID();
+    pid_controllers.yaw.init_PID();
     pid_controllers.altitude.init_PID();
 
     //imposto il goal al carico
@@ -1619,6 +1641,9 @@ void goto_waypoint(char position)
     drone_state = GOTO_STATE;
     //richiesta apertura pinza
     scarico_req = 1;
+    land_req = 0;
+    //resetto bit limit_area
+    limit_area = 0;
   }
 
 
