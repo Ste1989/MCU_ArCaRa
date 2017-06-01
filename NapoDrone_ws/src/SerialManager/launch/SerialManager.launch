@@ -14,7 +14,7 @@
 		<param name="y_m_LimitMin" type="double" value="0" />
 		<param name="z_m_LimitMax" type="double" value="5" />
 		<param name="z_m_LimitMin" type="double" value="0" />
-		<param name="soglia_batteria" type="double" value="13.6" />
+		<param name="soglia_batteria" type="double" value="11" />
     </node>
 
         

@@ -20,7 +20,7 @@
 			<param name="y_scarico" type="double" value="0.94" />
 			<param name="z_scarico" type="double" value="-1" />
 			
-			<param name="x_limit_inf_area1" type="double" value="1.2" />
+			<param name="x_limit_inf_area1" type="double" value="1.1" />
 			<param name="x_limit_sup_area1" type="double" value="3.1" /> 
     </node>
 
