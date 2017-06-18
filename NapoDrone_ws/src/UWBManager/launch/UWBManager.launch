@@ -1,0 +1,12 @@
+<launch>
+ 
+
+
+    <node pkg="uwb_manager" type="UWBManager" name="UWBManager" output="screen" >
+	    
+		<param name="dev" type="string" value="/dev/ttyUSB0" />
+
+    </node>
+
+        
+</launch>
