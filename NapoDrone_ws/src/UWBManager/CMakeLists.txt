@@ -12,7 +12,7 @@ find_package(Boost REQUIRED COMPONENTS thread)
 
 
 ###################################
-## catkin specific configuration ##
+## catkin specific configuration ## 
 ###################################
 ## The catkin_package macro generates cmake config files for your package
 ## Declare things to be passed to dependent projects
