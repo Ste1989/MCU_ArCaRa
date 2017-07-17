@@ -18,14 +18,20 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg)
            state_pub.publish(msg);
            ROS_INFO("SONO CONNESSO ALL'AUTOPILOTA");
 
-          //una volta connesso avvio lo stream dati dal drone
+          //una volta connesso avvio lo stream dati dal drone dell'IMU (id = 1)
           mavros_msgs::StreamRate srv_rate;
-          srv_rate.request.stream_id = 0;
-          srv_rate.request.message_rate = 1000;//stream_rate
+          srv_rate.request.stream_id = 1;
+          srv_rate.request.message_rate = 100;//stream_rate
           srv_rate.request.on_off = 1;
-
           set_stream_rate_client.call(srv_rate);
-          ROS_INFO("STREAM DATI AVVIATO");
+          ROS_INFO("STREAM IMU AVVIATO");
+
+          //una volta connesso avvio lo stream dati dal drone della stima di assetto (id = 10)
+          srv_rate.request.stream_id = 10;
+          srv_rate.request.message_rate = 100;//stream_rate
+          srv_rate.request.on_off = 1;
+          set_stream_rate_client.call(srv_rate);
+          ROS_INFO("STREAM STIMA ASSETTO AVVIATO");
     
         }   
         else
