@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
-    n.param<std::string>("/UWBManager/dev", seriale_dev, "/dev/ttyUSB0");
+    n.param<std::string>("/UWBManager/dev", seriale_dev, "/dev/ttyACM0");
     
     
     int serial;
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     {
         while(ros::ok())
         {
-
+          gettimeofday(&current_time, NULL);
           /*LEGGO LA SERIALE*************************************************************************/  
           read_from_serial(&serial);
         

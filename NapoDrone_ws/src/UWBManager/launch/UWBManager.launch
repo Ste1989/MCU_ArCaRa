@@ -4,7 +4,7 @@
 
     <node pkg="uwb_manager" type="UWBManager" name="UWBManager" output="screen" >
 	    
-		<param name="dev" type="string" value="/dev/ttyUSB0" />
+		<param name="dev" type="string" value="/dev/ttyACM0" />
 
     </node>
 

@@ -18,6 +18,7 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Int32.h"
 
+
 using std::cout;
 using std::endl;
 /*************************************************************/
@@ -112,7 +113,8 @@ std::queue<unsigned char> coda_recv_seriale;
 ros::Publisher uwb_topic;
 /******************GLOBAL VAR***********************************************************************/
 int new_packet = 0;
-
+timeval current_time, recv_time;
+double elapsed_time_recv;
 /*****************************************************************************************************/
 double range_uwb[4];
 struct trian_position{

@@ -4,7 +4,7 @@ project(uwb_manager)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp  message_generation)
+find_package(catkin REQUIRED COMPONENTS roscpp )
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -31,27 +31,19 @@ find_package(Boost REQUIRED COMPONENTS thread)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS} 
-  ${SDFormat_INCLUDE_DIRS}
+  #${Boost_INCLUDE_DIRS} 
+  #${SDFormat_INCLUDE_DIRS}
 )
-
-
-
-
-
 
 
 add_library(UWBManagerFunction  src/uwb_manager_function.cpp)
 target_link_libraries(UWBManagerFunction   ${catkin_LIBRARIES})
 
-add_executable(UWBManager src/uwb_manager_node.cpp)
-target_link_libraries(UWBManager UWBManagerFunction ${catkin_LIBRARIES} )
+add_executable(uwb_manager src/uwb_manager_node.cpp)
+target_link_libraries(uwb_manager UWBManagerFunction ${catkin_LIBRARIES} )
 
 
 
 
-catkin_package( 
-	DEPENDS system_lib
-	
-	)
+catkin_package()
 

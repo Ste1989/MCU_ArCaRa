@@ -21,7 +21,6 @@
 //funzione che riceve e decodifica i pacchetti in arrivo da PC
 void parser_mess(unsigned char buffer){
 
-
     //implementazione della macchina a stati
     switch(state_msg){
         case HEADER_1:
@@ -176,7 +175,11 @@ void parser_mess(unsigned char buffer){
             //arriva il range ancora 4 -byte 4
         case PAYLOAD_1_19:
             coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_20;
+            //state_msg = PAYLOAD_1_20;
+            //notifico che è arrivato un nuovo pacchetto 
+            new_packet ++;
+            state_msg = HEADER_1;
+            cout << " qui si" << endl;
             break; 
 
 
@@ -324,6 +327,7 @@ void parser_mess(unsigned char buffer){
             coda_recv_seriale.push(buffer);
             //notifico che è arrivato un nuovo pacchetto 
             new_packet ++;
+            cout << " qui no" << endl;
             state_msg = HEADER_1;
             break; 
 
@@ -370,13 +374,14 @@ void decode_packet()
     range_uwb[2] = decode_payload();
     range_uwb[3] = decode_payload();
     //
-    trian_solution_1.x = decode_payload();
-    trian_solution_1.y = decode_payload();
-    trian_solution_1.z = decode_payload();
+    //trian_solution_1.x = decode_payload();
+    //trian_solution_1.y = decode_payload();
+    //trian_solution_1.z = decode_payload();
     //
-    trian_solution_2.x = decode_payload();
-    trian_solution_2.y = decode_payload();
-    trian_solution_2.z = decode_payload();
+    //trian_solution_2.x = decode_payload();
+    //trian_solution_2.y = decode_payload();
+    //trian_solution_2.z = decode_payload();
+    new_packet --;
 }
 
 
@@ -405,6 +410,11 @@ void read_from_serial(int* serial)
     {
         cout << "pacchetti da elaborare: " << new_packet << endl;
         decode_packet();
+        //calcolo tempo di controllo
+        gettimeofday(&recv_time, NULL);
+        elapsed_time_recv = (current_time.tv_sec - recv_time.tv_sec) * 1000;
+        elapsed_time_recv += (current_time.tv_usec - recv_time.tv_usec) / 1000;
+        cout << "freq :" << 1/(-elapsed_time_recv/1000) << endl;
     }
 
 }
