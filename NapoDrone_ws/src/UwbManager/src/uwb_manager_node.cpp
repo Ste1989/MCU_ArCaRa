@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
-    n.param<std::string>("/UWBManager/dev", seriale_dev, "/dev/ttyACM0");
+    n.param<std::string>("/UwbManager/dev", seriale_dev, "/dev/ttyACM0");
     
     
     int serial;
