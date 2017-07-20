@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
+#include "autopilot_manager/init_time.h"
 
 using namespace std;
 
@@ -14,7 +15,8 @@ using namespace std;
 ros::Subscriber imu_sub;
 ros::Subscriber mag_sub;
 ros::Subscriber attitude_sub;
-
+//client
+ros::ServiceClient get_time_sec0;
 
 sensor_msgs::Imu imu_state;
 char new_imu_packet;

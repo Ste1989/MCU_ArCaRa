@@ -24,22 +24,30 @@ int main(int argc, char **argv)
    * NodeHandle destructed will close down the node.
    */
     ros::NodeHandle n;
-    uwb_topic = n.advertise<std_msgs::Int32>("napodrone/uwb", 1);
+    //publisher
+    uwb_topic = n.advertise<uwb_manager::RangeUwb>("/uwb/range", 1);
+    //client service
+    get_time_sec0 = n.serviceClient<autopilot_manager::init_time>("/get_time_t0");
     
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
     n.param<std::string>("/UwbManager/dev", seriale_dev, "/dev/ttyACM0");
+    n.param<bool>("/UwbManager/enable_log", enable_log, false);
+
+
     
-    
+    //init variabili gloabli
+    init_global_var();
     int serial;
     // init della seriale
     int result = serial_init(&serial, seriale_dev.c_str());
     
     
     
-    ROS_INFO("seriale uwb aperta");
+
     if (result == 1)
     {
+        ROS_INFO("seriale uwb aperta");
         while(ros::ok())
         {
           gettimeofday(&current_time, NULL);

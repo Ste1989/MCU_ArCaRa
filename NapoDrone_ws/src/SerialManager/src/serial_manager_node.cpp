@@ -35,6 +35,10 @@ int main(int argc, char **argv)
     pose_topic = n.subscribe<geometry_msgs::PoseStamped>("/napodrone_pose", 1, &Pose_cb);
     battery_topic = n.subscribe<mavros_msgs::BatteryStatus>("/mavros/battery", 1, &Battery_cb);
 
+
+    //service client
+    get_time_sec0 = n.serviceClient<autopilot_manager::init_time>("/get_time_t0");
+
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
     n.param<std::string>("/SerialManager/dev", seriale_dev, "/dev/ttyUSB0");
@@ -71,7 +75,21 @@ int main(int argc, char **argv)
     gettimeofday(&stream_pose_time, NULL);
     gettimeofday(&stream_battery_time, NULL);
     //ros::Rate loop_rate(100); // 100 Hz
-    secs_0 = ros::Time::now().toSec();
+     //tempo 0
+    //per inizializzare secs_0 richiamo il client
+    autopilot_manager::init_time srv_msg;
+    bool res = get_time_sec0.call(srv_msg);
+
+    if(res)
+    {
+        secs_0 = srv_msg.response.sec0;
+    }
+    else
+    {   
+        ROS_WARN("ATTENZIONE TEMPO NON INIZIALIZZATO CORRETTAMENTE");
+        secs_0 = ros::Time::now().toSec();    
+    }
+
     std::string str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/battery.txt";
     FILE* fd;
     fd = fopen(str_path.c_str(), "w");

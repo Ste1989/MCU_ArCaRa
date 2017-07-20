@@ -7,6 +7,7 @@ project(uwb_manager)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   message_generation
+  std_msgs
 )
 
 
@@ -22,7 +23,7 @@ add_message_files(
   FILES
   RangeUwb.msg 
 )
-generate_messages()
+generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(	DEPENDS system_lib
 	CATKIN_DEPENDS message_runtime)

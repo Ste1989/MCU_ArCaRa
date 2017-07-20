@@ -24,6 +24,7 @@
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/BatteryStatus.h>
+#include "autopilot_manager/init_time.h"
 /*************************************************************/
 //
 //modulo che preposto alla ricezione e alla decodifica dei messaggi
@@ -352,7 +353,8 @@ ros::Publisher mode_topic;
 ros::Publisher waypoint_topic;
 ros::Publisher gripper_topic;
 ros::Publisher buzzer_topic;
-
+//client
+ros::ServiceClient get_time_sec0;
 /******************GLOBAL VAR***********************************************************************/
 int count = 0;
 double param = 0.0;

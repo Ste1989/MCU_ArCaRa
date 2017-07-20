@@ -15,7 +15,19 @@ void init_global_var()
 
 
   //tempo 0
-  secs_0 = ros::Time::now().toSec();
+  //per inizializzare secs_0 richiamo il client
+  autopilot_manager::init_time srv_msg;
+  bool res = get_time_sec0.call(srv_msg);
+
+  if(res)
+  {
+      secs_0 = srv_msg.response.sec0;
+  }
+  else
+  {   
+      ROS_WARN("ATTENZIONE TEMPO NON INIZIALIZZATO CORRETTAMENTE");
+      secs_0 = ros::Time::now().toSec();    
+  }
   //path log file
   log_imu_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/imu.txt";
   log_mag_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/mag.txt";
@@ -76,7 +88,7 @@ void imu_cb(const sensor_msgs::Imu::ConstPtr& msg)
   {
 
     double secs = ros::Time::now().toSec(); //mettere questo tempo o quello con cui è arrivato?
-    double secs_cb = imu_state.header.stamp.sec  + ((double)(imu_state.header.stamp.sec ))/1000000000; 
+    double secs_cb = imu_state.header.stamp.sec  + ((double)(imu_state.header.stamp.nsec ))/1000000000; 
     cout << "diff_temp_imu: " << secs- secs_cb << endl;
     fd = fopen(log_imu_path.c_str(), "a");
     fprintf(fd, "%f", secs -  secs_0);

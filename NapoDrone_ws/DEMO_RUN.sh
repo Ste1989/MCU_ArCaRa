@@ -14,6 +14,10 @@ xterm -T "R200" -n "R200" -hold -e "roslaunch realsense_camera r200_autec.launch
 
 sleep 1
 
+xterm -T "AUTOPILOT MANAGER" -n "AUTOPILOT MANAGER" -hold -e "roslaunch autopilot_manager AutopilotManagerMavros.launch" &
+
+sleep 5
+
 xterm -T "ARUCO MAPPING" -n "ARUCO MAPPING" -hold -e "roslaunch aruco_mapping aruco_mapping_autec_640x480_2.launch" &
 
 sleep 2
@@ -30,9 +34,6 @@ xterm -T "BUZZER MANAGER" -n "BUZZER MANAGER" -hold -e "roslaunch gripper_manage
 
 sleep 1
 
-xterm -T "AUTOPILOT MANAGER" -n "AUTOPILOT MANAGER" -hold -e "roslaunch autopilot_manager AutopilotManagerMavros.launch" &
-
-sleep 5
 
 xterm -T "MAVROS" -n "MAVROS" -hold -e "roslaunch mavros dji550_autec.launch" &
 

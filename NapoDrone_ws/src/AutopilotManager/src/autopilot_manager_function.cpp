@@ -2,6 +2,16 @@
 
 /********************************************************************************************/
 /*                                                                                         */
+/*    SERVIZIO PER OTTENERE IL TEMPO INIZIALE                                              */
+/*                                                                                         */
+/*******************************************************************************************/
+bool get_time_t0(autopilot_manager::init_time::Request& request, autopilot_manager::init_time::Response& response)
+{
+  response.sec0 = secs_0;
+  return true;
+}
+/********************************************************************************************/
+/*                                                                                         */
 /*    CALBACK PER LEGGERE LO STATO DEL DRONE                                               */
 /*                                                                                         */
 /*******************************************************************************************/
@@ -1059,9 +1069,13 @@ void init_global_variables()
   secs_0 =ros::Time::now().toSec();
   std::string str_path  = "";
   FILE* fd;
-  str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/control.txt";
-  fd = fopen(str_path.c_str(), "w");
-  fclose(fd);
+  if(enable_log)
+  {
+    str_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/control.txt";
+    fd = fopen(str_path.c_str(), "w");
+    fclose(fd);
+  }
+
   drone_state = LANDED_STATE;
   //inizializzo i controllori
   pid_controllers.roll.init_PID();

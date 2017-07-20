@@ -15,6 +15,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
+add_service_files(
+  FILES
+  init_time.srv
+)
 
 
 #catkin_install_python(PROGRAMS bin/hello DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
@@ -23,7 +27,6 @@ catkin_install_python(PROGRAMS
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/bin
  )
 
-catkin_package()
 
 ###########
 ## Build ##
@@ -44,3 +47,6 @@ add_executable(AutopilotManager_Node src/autopilot_manager_node.cpp)
 target_link_libraries(AutopilotManager_Node AutopilotManagerFunction ${catkin_LIBRARIES})
 
 catkin_python_setup()
+generate_messages(DEPENDENCIES std_msgs)
+
+catkin_package(CATKIN_DEPENDS message_runtime)

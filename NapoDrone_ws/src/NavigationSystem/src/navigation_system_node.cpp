@@ -29,6 +29,8 @@ int main(int argc, char **argv)
     if(enable_attitude)
         attitude_sub = nh.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 1, attitude_cb);
     
+    //service client
+    get_time_sec0 = nh.serviceClient<autopilot_manager::init_time>("/get_time_t0");
     
     init_global_var();
     
