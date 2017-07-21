@@ -17,6 +17,9 @@
 #include <termios.h>
 #include "std_msgs/String.h"
 #include "std_msgs/Int32.h"
+#include "uwb_manager/RangeUwb.h"
+#include "autopilot_manager/init_time.h"
+
 
 using std::cout;
 using std::endl;
@@ -28,8 +31,13 @@ using std::endl;
 /************************************************************/
 // PACCHETTI IN RICEZIONE
 //1-comandi
+
+//     __________________________________________________________
+//     | HEADER_A |HEADER_B|  HEADER_POSE    | PAYLOAD_RANGE x4 | 
+//     _________________________________________________________
+
 //     _________________________________________________________________________________________________________
-//     | HEADER_A |HEADER_B|  HEADER_POSE    | B | B | PAYLOAD_RANGE | PAYLOAD_SOLUTION_1 | PAYLOAD_SOLUTION_2 |
+//     | HEADER_A |HEADER_B|  HEADER_POSE    | PAYLOAD_RANGE | PAYLOAD_SOLUTION_1 | PAYLOAD_SOLUTION_2 |
 //     _________________________________________________________________________________________________________
 
 
@@ -95,7 +103,7 @@ waiting_msg state_msg;
 #define HEADER_A_UWB  (int)0x1A
 #define HEADER_B_UWB  (int)0x1B
 #define PAYLOAD_UWB  (int)0x2C
-#define HEADER_POSE_UWB (int)0x0B
+
 
 
 
@@ -110,9 +118,17 @@ std::queue<unsigned char> coda_recv_seriale;
 /**********************TOPIC ROS********************************************************************/
 //ros topic publisher
 ros::Publisher uwb_topic;
+//client
+ros::ServiceClient get_time_sec0;
 /******************GLOBAL VAR***********************************************************************/
 int new_packet = 0;
-
+int idx_msg_range = 0;
+timeval current_time, recv_time;
+double elapsed_time_recv;
+bool enable_log ;
+std::string log_range_uwb_path;
+FILE* file;
+double secs_0;
 /*****************************************************************************************************/
 double range_uwb[4];
 struct trian_position{
@@ -131,4 +147,5 @@ void read_from_serial(int* serial);
 int set_interface_attribs (int fd, int speed, int parity);
 void set_blocking (int fd, int should_block);
 int serial_init(int* fd,const char* seriale_dev);
+void init_global_var();
 

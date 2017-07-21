@@ -1,0 +1,9 @@
+<launch>
+
+    <node pkg="uwb_manager" type="UwbManager_Node" name="UwbManager" output="screen" >
+		<param name="dev" type="string" value="/dev/ttyACM0" />
+		<param name="enable_log" type="bool" value="true" />
+
+    </node>
+
+</launch>

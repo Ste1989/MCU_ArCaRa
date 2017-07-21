@@ -21,7 +21,6 @@
 //funzione che riceve e decodifica i pacchetti in arrivo da PC
 void parser_mess(unsigned char buffer){
 
-
     //implementazione della macchina a stati
     switch(state_msg){
         case HEADER_1:
@@ -54,133 +53,112 @@ void parser_mess(unsigned char buffer){
             break;
 
             
-            
-        case PAYLOAD_1_2:
-            //arriva 'B'
-            if(buffer == HEADER_POSE_UWB)
-            {
-                state_msg = PAYLOAD_1_3;
-            }
-            else
-            {
-                state_msg=HEADER_1;
-            }
-            break;
-
-        case PAYLOAD_1_3:
-            //arriva 'B'
-            if(buffer == HEADER_POSE_UWB)
-            {
-                state_msg = PAYLOAD_1_4;
-            }
-            else
-            {
-                state_msg=HEADER_1;
-            }
-            break;
-
+        
         //arriva il range ancora 1 -byte 1
+        case PAYLOAD_1_2:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_1_3;
+            break;
+   
+            //arriva il range ancora 1 -byte 2
+        case PAYLOAD_1_3:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_1_4;
+            break;
+  
+            //arriva il range ancora 1 -byte 3
         case PAYLOAD_1_4:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_5;
             break;
-   
-            //arriva il range ancora 1 -byte 2
+    
+            //arriva il range ancora 1 -byte 4
         case PAYLOAD_1_5:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_6;
             break;
-  
-            //arriva il range ancora 1 -byte 3
+      
+      /////////////////////////////////////////////////////////////
+        //arriva il range ancora 2 -byte 1
         case PAYLOAD_1_6:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_7;
             break;
-    
-            //arriva il range ancora 1 -byte 4
+   
+            //arriva il range ancora 2 -byte 2
         case PAYLOAD_1_7:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_8;
             break;
-      
-      /////////////////////////////////////////////////////////////
-        //arriva il range ancora 2 -byte 1
+  
+            //arriva il range ancora 2 -byte 3
         case PAYLOAD_1_8:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_9;
             break;
-   
-            //arriva il range ancora 2 -byte 2
+    
+            //arriva il range ancora 2 -byte 4
         case PAYLOAD_1_9:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_10;
-            break;
-  
-            //arriva il range ancora 2 -byte 3
-        case PAYLOAD_1_10:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_11;
-            break;
-    
-            //arriva il range ancora 2 -byte 4
-        case PAYLOAD_1_11:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_12;
             break;
 
 
       ///////////////////PAYLOAD_1_41,//////////////////////////////////////////
         //arriva il range ancora 3 -byte 1
+        case PAYLOAD_1_10:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_1_11;
+            break;
+   
+            //arriva il range ancora 3 -byte 2
+        case PAYLOAD_1_11:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_1_12;
+            break;
+  
+            //arriva il range ancora 3 -byte 3
         case PAYLOAD_1_12:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_13;
             break;
-   
-            //arriva il range ancora 3 -byte 2
+    
+            //arriva il range ancora 3 -byte 4
         case PAYLOAD_1_13:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_14;
-            break;
-  
-            //arriva il range ancora 3 -byte 3
-        case PAYLOAD_1_14:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_15;
-            break;
-    
-            //arriva il range ancora 3 -byte 4
-        case PAYLOAD_1_15:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_16;
             break; 
 
         /////////////////////////////////////////////////////////////
         //arriva il range ancora 4 -byte 1
+        case PAYLOAD_1_14:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_1_15;
+            break;
+   
+            //arriva il range ancora 4 -byte 2
+        case PAYLOAD_1_15:
+            coda_recv_seriale.push(buffer);
+            state_msg = PAYLOAD_1_16;
+            break;
+  
+            //arriva il range ancora 4 -byte 3
         case PAYLOAD_1_16:
             coda_recv_seriale.push(buffer);
             state_msg = PAYLOAD_1_17;
             break;
-   
-            //arriva il range ancora 4 -byte 2
-        case PAYLOAD_1_17:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_18;
-            break;
-  
-            //arriva il range ancora 4 -byte 3
-        case PAYLOAD_1_18:
-            coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_19;
-            break;
     
             //arriva il range ancora 4 -byte 4
-        case PAYLOAD_1_19:
+        case PAYLOAD_1_17:
             coda_recv_seriale.push(buffer);
-            state_msg = PAYLOAD_1_20;
+            //state_msg = PAYLOAD_1_20;
+            //notifico che è arrivato un nuovo pacchetto 
+            new_packet ++;
+            state_msg = HEADER_1;
             break; 
 
 
-        /////////////////////////////////////////////////////////////
+        ////////////////////////////NON UTILIZZATO/////////////////////////////////
         //arriva  x solution 1 byte 1
         case PAYLOAD_1_20:
             coda_recv_seriale.push(buffer);
@@ -324,6 +302,7 @@ void parser_mess(unsigned char buffer){
             coda_recv_seriale.push(buffer);
             //notifico che è arrivato un nuovo pacchetto 
             new_packet ++;
+            cout << " qui no" << endl;
             state_msg = HEADER_1;
             break; 
 
@@ -354,7 +333,42 @@ double decode_payload()
     cout << "ricevuto payload : " << param_ << endl;
     return param_;
 }
+/*****************************************************************/
+/*                                                               */
+/*                 INIT GLOBAL V                                 */
+/*****************************************************************/
+void init_global_var()
+{
 
+    /*inizializzazione macchina a stati*/
+    //inizializzazone della macchina a stati con il primo stato
+    state_msg = HEADER_1;
+    idx_msg_range = 0;
+    new_packet = 0;
+    log_range_uwb_path = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt";
+    if(enable_log)
+    {
+      //apro il file in scrittura
+      file = fopen(log_range_uwb_path.c_str(), "w");
+      fclose(file);
+    }
+    //per inizializzare secs_0 richiamo il client
+    autopilot_manager::init_time srv_msg;
+    bool res = get_time_sec0.call(srv_msg);
+
+    if(res)
+    {
+        secs_0 = srv_msg.response.sec0;
+    }
+    else
+    {   
+        ROS_WARN("ATTENZIONE TEMPO NON INIZIALIZZATO CORRETTAMENTE");
+        secs_0 = ros::Time::now().toSec();    
+    }
+    
+
+
+}
 /*****************************************************************/
 /*                                                               */
 /*                 DECODE PACKET                                 */
@@ -370,13 +384,15 @@ void decode_packet()
     range_uwb[2] = decode_payload();
     range_uwb[3] = decode_payload();
     //
-    trian_solution_1.x = decode_payload();
-    trian_solution_1.y = decode_payload();
-    trian_solution_1.z = decode_payload();
+    //trian_solution_1.x = decode_payload();
+    //trian_solution_1.y = decode_payload();
+    //trian_solution_1.z = decode_payload();
     //
-    trian_solution_2.x = decode_payload();
-    trian_solution_2.y = decode_payload();
-    trian_solution_2.z = decode_payload();
+    //trian_solution_2.x = decode_payload();
+    //trian_solution_2.y = decode_payload();
+    //trian_solution_2.z = decode_payload();
+    new_packet --;
+    idx_msg_range ++;
 }
 
 
@@ -403,8 +419,46 @@ void read_from_serial(int* serial)
     }
     while(new_packet)
     {
+
         cout << "pacchetti da elaborare: " << new_packet << endl;
         decode_packet();
+
+        //pubblico su topic i valori ottenuti da pacchetto
+        uwb_manager::RangeUwb msg;
+        msg.header.seq = idx_msg_range;
+        msg.header.stamp = ros::Time::now();
+        msg.ancor1 = range_uwb[0];
+        msg.ancor2 = range_uwb[1];
+        msg.ancor3 = range_uwb[2];
+        msg.ancor4 = range_uwb[3];
+        uwb_topic.publish(msg);
+
+        //scrittura su file 
+        if(enable_log)
+        {
+
+            double secs = msg.header.stamp.sec  + ((double)(msg.header.stamp.nsec ))/1000000000; 
+            file = fopen(log_range_uwb_path.c_str(), "a");
+            fprintf(file, "%f", secs -  secs_0);
+            fprintf(file, "%s", " ");
+            fprintf(file, "%f", msg.ancor1); //2
+            fprintf(file, "%s", " ");
+            fprintf(file, "%f", msg.ancor2); //3
+            fprintf(file, "%s", " ");
+            fprintf(file, "%f", msg.ancor3); //4
+            fprintf(file, "%s", " ");
+            fprintf(file, "%f\n", msg.ancor4); //5
+            fclose(file);
+
+
+        }
+
+
+        //calcolo tempo di controllo
+        gettimeofday(&recv_time, NULL);
+        elapsed_time_recv = (current_time.tv_sec - recv_time.tv_sec) * 1000;
+        elapsed_time_recv += (current_time.tv_usec - recv_time.tv_usec) / 1000;
+        cout << "freq :" << 1/(-elapsed_time_recv/1000) << endl;
     }
 
 }
@@ -495,9 +549,7 @@ int serial_init(int* fd,const char* seriale_dev)
     set_blocking (*fd, 0);
 
 
-    /*inizializzazione macchina a stati*/
-    //inizializzazone della macchina a stati con il primo stato
-    state_msg = HEADER_1;
+
     
     return 1;
 }

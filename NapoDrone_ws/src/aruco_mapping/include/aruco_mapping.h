@@ -67,6 +67,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <geometry_msgs/Vector3Stamped.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/PoseStamped.h>
+
+#include "autopilot_manager/init_time.h"
 /** \brief Aruco mapping namespace */
 namespace aruco_mapping
 {
@@ -142,6 +144,8 @@ private:
   /*publisher */
   ros::Publisher transform_pub; 
 
+  //client
+  ros::ServiceClient get_time_sec0;
 
   /** \brief Compute TF from marker detector result*/
   tf::Transform arucoMarker2Tf(const aruco::Marker &marker);

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>autopilot_manager</name>
+  <name>uwb_manager</name>
   <version>0.0.0</version>
-  <description>The PixhawkManager package</description>
+  <description>The navigation node (IMU+UWB)</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -39,11 +39,11 @@
   <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>rospy</build_depend>
-  <run_depend>rospy</run_depend>
+    <build_depend>message_generation</build_depend>
+  <run_depend>message_generation</run_depend>
   <run_depend>message_runtime</run_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
 
 
   <!-- The export tag contains other, unspecified, tags -->

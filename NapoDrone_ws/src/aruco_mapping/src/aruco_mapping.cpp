@@ -129,7 +129,10 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   pose_cam_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose_cam_from_board", 100);
   pose_body_pub = nh->advertise<geometry_msgs::PoseStamped>("/aruco/pose_body_from_board", 100);
   transform_pub = nh->advertise<geometry_msgs::TransformStamped>("/aruco/transform", 100);
-     
+    
+  //service client
+  get_time_sec0 = nh->serviceClient<autopilot_manager::init_time>("/get_time_t0");
+
   //Parse data from calibration file
   parseCalibrationFile(calib_filename_);
 
@@ -155,7 +158,20 @@ ArucoMapping::ArucoMapping(ros::NodeHandle *nh) :
   the_board_config.readFromFile(board_config.c_str());
   ROS_INFO("Letta configurazione board %s", board_config.c_str());
 
-  secs_0 =ros::Time::now().toSec();
+   //tempo 0
+  //per inizializzare secs_0 richiamo il client
+  autopilot_manager::init_time srv_msg;
+  bool res = get_time_sec0.call(srv_msg);
+
+  if(res)
+  {
+      secs_0 = srv_msg.response.sec0;
+  }
+  else
+  {   
+      ROS_WARN("ATTENZIONE TEMPO NON INIZIALIZZATO CORRETTAMENTE");
+      secs_0 = ros::Time::now().toSec();    
+  }
 
   //initiliazer pose old
   initialize_pose_old = 1;

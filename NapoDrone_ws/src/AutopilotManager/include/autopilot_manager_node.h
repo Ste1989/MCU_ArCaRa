@@ -12,7 +12,8 @@
 #include <geometry_msgs/Pose.h>
 #include <serial_manager/Param.h>
 #include <sys/time.h>
-
+#include <std_srvs/Empty.h>
+#include "autopilot_manager/init_time.h"
 
 using namespace std;
 
@@ -55,7 +56,7 @@ double alt_takeoff_target;
 double alt_takeoff_partenza;
 double x_limit_inf_area1, x_limit_sup_area1;
 int limit_area;
-
+bool enable_log;
 //struttura per la memorizzazione della posa della camera nel frame world
 struct NapodronePose
 {
@@ -94,6 +95,8 @@ ros::Publisher buzzer_topic;
 ros::ServiceClient arming_client;
 ros::ServiceClient set_mode_client;
 ros::ServiceClient set_stream_rate_client;
+//ros service
+ros::ServiceServer service_time_t0;
 
 
 //RC_MAP è la mappa dei segnali radio
@@ -313,3 +316,4 @@ void step_test();
 void check_request();
 void goto_waypoint(char position);
 void emergency_stop_and_land();
+bool get_time_t0(autopilot_manager::init_time::Request& request, autopilot_manager::init_time::Response& response);

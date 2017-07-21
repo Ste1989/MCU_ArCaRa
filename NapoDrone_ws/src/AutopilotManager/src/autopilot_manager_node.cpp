@@ -2,6 +2,7 @@
 #include "autopilot_manager_node.h"
 
 
+
 /********************************************************************************************/
 /*                                                                                         */
 /*    MAIN                                                                                 */
@@ -11,6 +12,9 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "pix_manager_node");
     ros::NodeHandle nh;
+
+    //servizio di tempo
+    service_time_t0 = nh.advertiseService("get_time_t0", get_time_t0);
 
     //stato del drone
     state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 1, state_cb);
@@ -67,6 +71,9 @@ int main(int argc, char **argv)
 
     //PID file
     nh.param<std::string>("/AutopilotManager/pid_file", PID_file, "");
+
+    //enalble log
+    nh.param<bool>("/AutopilotManager/enable_log", enable_log, false);
 
     ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_target);
     ROS_INFO("ALTEZZA DI TAKEOFF: %f", alt_takeoff_partenza);
