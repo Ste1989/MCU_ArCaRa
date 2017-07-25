@@ -345,7 +345,7 @@ void init_global_var()
     state_msg = HEADER_1;
     idx_msg_range = 0;
     new_packet = 0;
-    log_range_uwb_path = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt";
+    log_range_uwb_path = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt";
     if(enable_log)
     {
       //apro il file in scrittura

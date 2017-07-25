@@ -8,7 +8,7 @@
 	        <param name="alt_takeoff" type="double" value="-0.8" />
 	        <param name="alt_partenza" type="double" value="-0.45" />
 	        <param name="pid_file" type="string" value="$(find autopilot_manager)/data/PID_iris.txt" />
-	        <param name="enable_log" type="bool" value="false" />
+	        <param name="enable_log" type="bool" value="true" />
 
 	        <!--SISTEMA DI RIFERIMENTO NED!!!! Z NEGATIVA-->
 	        <param name="x_carico" type="double" value="1.0" />
