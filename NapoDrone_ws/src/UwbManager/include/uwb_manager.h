@@ -129,6 +129,7 @@ bool enable_log ;
 std::string log_range_uwb_path;
 FILE* file;
 double secs_0;
+int freq_ros_node;
 /*****************************************************************************************************/
 double range_uwb[4];
 struct trian_position{

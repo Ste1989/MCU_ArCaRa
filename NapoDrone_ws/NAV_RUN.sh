@@ -7,6 +7,7 @@ sudo chmod 777 /dev/ttyS4
 sudo chmod 777 /dev/ttyUSB0
 
 sudo chmod 777 /dev/ttyACM0
+sudo chmod 777 /dev/ttyACM1
 
 xterm -T "ROSCORE" -n "ROSCORE" -hold -e "roscore" &
 

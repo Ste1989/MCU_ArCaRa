@@ -26,6 +26,10 @@ sensor_msgs::MagneticField mag_state;
 char new_mag_packet;
 
 
+//calcola tempo
+timeval current_time, imu_time, mag_time, attitude_time;
+double elapsed_time_imu, elapsed_time_mag, elapsed_time_attitude;
+
 //log file:
 //0: nessun sensore
 //1: solo imu
@@ -35,6 +39,7 @@ char new_mag_packet;
 //5 : imu+mag+assetto
 int log_file;
 double secs_0;
+int freq_ros_node;
 //scrittirua su file
 std::string log_imu_path;
 std::string log_mag_path;

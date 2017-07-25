@@ -5,6 +5,7 @@
     	<param name="mag_enable" type="bool" value="true" />
     	<param name="attitude_enable" type="bool" value="true" />
     	<param name="log_file" type="int" value="5" />
+    	<param name="freq_ros_node" type="int" value="50" />
     </node>
 
 </launch>

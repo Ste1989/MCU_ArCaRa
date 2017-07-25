@@ -84,12 +84,20 @@ void imu_cb(const sensor_msgs::Imu::ConstPtr& msg)
   imu_state = *msg;
   new_imu_packet = 1;
 
+
+  
+  gettimeofday(&current_time, NULL);
+  elapsed_time_imu = (current_time.tv_sec - imu_time.tv_sec) * 1000;
+  elapsed_time_imu += (current_time.tv_usec - imu_time.tv_usec) / 1000;
+  cout << "freq IMU:" << 1/(elapsed_time_imu/1000) << endl;
+  gettimeofday(&imu_time, NULL);
+
+  cout << "***********************************"<< endl;
   if(log_file == 1 || log_file == 3 || log_file == 5 )
   {
 
     double secs = ros::Time::now().toSec(); //mettere questo tempo o quello con cui è arrivato?
-    double secs_cb = imu_state.header.stamp.sec  + ((double)(imu_state.header.stamp.nsec ))/1000000000; 
-    cout << "diff_temp_imu: " << secs- secs_cb << endl;
+    secs = imu_state.header.stamp.sec + ((double)imu_state.header.stamp.nsec)/1000000000;
     fd = fopen(log_imu_path.c_str(), "a");
     fprintf(fd, "%f", secs -  secs_0);
     fprintf(fd, "%s", " ");
@@ -119,9 +127,18 @@ void attitude_cb(const sensor_msgs::Imu::ConstPtr& msg)
   attitude_state = *msg;
   new_attitude_packet = 1;
 
+    
+  gettimeofday(&current_time, NULL);
+  elapsed_time_attitude = (current_time.tv_sec - attitude_time.tv_sec) * 1000;
+  elapsed_time_attitude += (current_time.tv_usec - attitude_time.tv_usec) / 1000;
+  cout << "freq ATT:" << 1/(elapsed_time_attitude/1000) << endl;
+  gettimeofday(&attitude_time, NULL);
+
   if(log_file == 4 || log_file == 5 )
   {
     double secs = ros::Time::now().toSec();
+    secs = attitude_state.header.stamp.sec + ((double)attitude_state.header.stamp.nsec)/1000000000;
+
     fd = fopen(log_attitude_path.c_str(), "a");
     fprintf(fd, "%f", secs -  secs_0);
     fprintf(fd, "%s", " ");
@@ -147,10 +164,16 @@ void mag_cb(const sensor_msgs::MagneticField::ConstPtr& msg)
   mag_state = *msg;
   new_mag_packet = 1;
 
+  gettimeofday(&current_time, NULL);
+  elapsed_time_mag = (current_time.tv_sec - mag_time.tv_sec) * 1000;
+  elapsed_time_mag += (current_time.tv_usec - mag_time.tv_usec) / 1000;
+  cout << "freq MAG:" << 1/(elapsed_time_mag/1000) << endl;
+  gettimeofday(&mag_time, NULL);
 
   if(log_file == 2 || log_file == 3 || log_file == 5 )
   {
     double secs = ros::Time::now().toSec();
+    secs = mag_state.header.stamp.sec + ((double)mag_state.header.stamp.nsec)/1000000000;
     fd = fopen(log_mag_path.c_str(), "a");
     fprintf(fd, "%f", secs -  secs_0);
     fprintf(fd, "%s", " ");

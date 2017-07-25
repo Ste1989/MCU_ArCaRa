@@ -47,6 +47,7 @@ int main(int argc, char **argv)
     n.param<int>("/SerialManager/pose_el_time", pose_el_time, 500);
     n.param<int>("/SerialManager/battery_el_time", battery_el_time, 500);
     n.param<double>("/SerialManager/soglia_batteria", soglia_batteria, 13.3);
+    n.param<int>("/SerialManager/freq_ros_node", freq_ros_node, 50);
     //limiti area di lavoro
     n.param<double>("/SerialManager/x_m_LimitMax", x_m_LimitMax, 5);
     n.param<double>("/SerialManager/y_m_LimitMax", y_m_LimitMax, 5);
@@ -74,7 +75,7 @@ int main(int argc, char **argv)
     gettimeofday(&ping_time, NULL);
     gettimeofday(&stream_pose_time, NULL);
     gettimeofday(&stream_battery_time, NULL);
-    //ros::Rate loop_rate(100); // 100 Hz
+    ros::Rate loop_rate(freq_ros_node); 
      //tempo 0
     //per inizializzare secs_0 richiamo il client
     autopilot_manager::init_time srv_msg;
@@ -204,7 +205,7 @@ int main(int argc, char **argv)
           write_to_serial(&serial);
 
 
-            //loop_rate.sleep();
+          loop_rate.sleep();
         }
 
     }

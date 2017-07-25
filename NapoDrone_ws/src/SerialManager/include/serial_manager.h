@@ -357,6 +357,7 @@ ros::Publisher buzzer_topic;
 ros::ServiceClient get_time_sec0;
 /******************GLOBAL VAR***********************************************************************/
 int count = 0;
+int freq_ros_node;
 double param = 0.0;
 double waypoint_data = 0.0;
 int new_packet = 0;

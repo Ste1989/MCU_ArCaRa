@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     std::string seriale_dev;
     n.param<std::string>("/UwbManager/dev", seriale_dev, "/dev/ttyACM0");
     n.param<bool>("/UwbManager/enable_log", enable_log, false);
-
+    n.param<int>("/UwbManager/freq_ros_node", freq_ros_node, 50);
 
     
     //init variabili gloabli
@@ -41,7 +41,9 @@ int main(int argc, char **argv)
     int serial;
     // init della seriale
     int result = serial_init(&serial, seriale_dev.c_str());
-    
+
+    //frequenza a cui far girare il nodo
+    ros::Rate loop_rate(freq_ros_node);
     
     
 
@@ -53,7 +55,9 @@ int main(int argc, char **argv)
           gettimeofday(&current_time, NULL);
           /*LEGGO LA SERIALE*************************************************************************/  
           read_from_serial(&serial);
-        
+          
+          //loop rate
+          loop_rate.sleep();
         }
 
     }

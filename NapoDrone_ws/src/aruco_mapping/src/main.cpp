@@ -50,9 +50,17 @@ main(int argc, char **argv)
   //scommentare per sottoscriversi al topic imu
   //ros::Subscriber imu_topic_sub = nh.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 1, &aruco_mapping::ArucoMapping::imu_cb, &obj);
 
+  //frequenza a cui far girare il nodo
+  ros::Rate loop_rate(30);
 
+  while(ros::ok)
+  {
 
-  ros::spin();
+    ros::spin();
+    loop_rate.sleep();
+
+  }
+
 
   return(EXIT_SUCCESS);
 }
