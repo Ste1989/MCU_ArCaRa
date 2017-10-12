@@ -38,4 +38,7 @@ target_link_libraries(NavigationSystemFunction ${catkin_LIBRARIES})
 add_executable(NavigationSystem_Node src/navigation_system_node.cpp)
 target_link_libraries(NavigationSystem_Node NavigationSystemFunction ${catkin_LIBRARIES})
 
+add_executable(Listener src/listener.cpp)
+target_link_libraries(Listener  ${catkin_LIBRARIES})
+
 

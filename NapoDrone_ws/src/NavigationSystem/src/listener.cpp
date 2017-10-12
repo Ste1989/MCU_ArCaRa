@@ -72,7 +72,7 @@ void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
     roll, pitch, yaw);
   //ho una stima buona della posizione della camera
   FILE* fd1;
-  fd1 = fopen("/home/sistema/aruco_data.txt","a");
+  fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/aruco_data.txt","a");
   fprintf(fd1, "%i", msg->header.stamp.sec);
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%i", msg->header.stamp.nsec);

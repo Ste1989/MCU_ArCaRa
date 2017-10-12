@@ -151,10 +151,10 @@ void parser_mess(unsigned char buffer){
             //arriva il range ancora 4 -byte 4
         case PAYLOAD_1_17:
             coda_recv_seriale.push(buffer);
-            //state_msg = PAYLOAD_1_20;
+            state_msg = PAYLOAD_1_20;
             //notifico che è arrivato un nuovo pacchetto 
-            new_packet ++;
-            state_msg = HEADER_1;
+            //new_packet ++;
+            //state_msg = HEADER_1;
             break; 
 
 
@@ -302,7 +302,7 @@ void parser_mess(unsigned char buffer){
             coda_recv_seriale.push(buffer);
             //notifico che è arrivato un nuovo pacchetto 
             new_packet ++;
-            cout << " qui no" << endl;
+            cout << "è arrivato un pacchetto comlpeto" << endl;
             state_msg = HEADER_1;
             break; 
 
@@ -384,13 +384,13 @@ void decode_packet()
     range_uwb[2] = decode_payload();
     range_uwb[3] = decode_payload();
     //
-    //trian_solution_1.x = decode_payload();
-    //trian_solution_1.y = decode_payload();
-    //trian_solution_1.z = decode_payload();
+    trian_solution_1.x = decode_payload();
+    trian_solution_1.y = decode_payload();
+    trian_solution_1.z = decode_payload();
     //
-    //trian_solution_2.x = decode_payload();
-    //trian_solution_2.y = decode_payload();
-    //trian_solution_2.z = decode_payload();
+    trian_solution_2.x = decode_payload();
+    trian_solution_2.y = decode_payload();
+    trian_solution_2.z = decode_payload();
     new_packet --;
     idx_msg_range ++;
 }
@@ -545,7 +545,7 @@ int serial_init(int* fd,const char* seriale_dev)
         return -1;
     }
     /*imposto baud rate*/
-    set_interface_attribs (*fd, B57600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+    set_interface_attribs (*fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
     set_blocking (*fd, 0);
 
 
