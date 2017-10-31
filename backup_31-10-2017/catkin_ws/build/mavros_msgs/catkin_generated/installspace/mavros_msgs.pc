@@ -1,0 +1,8 @@
+prefix=/home/robot/catkin_ws/install
+
+Name: mavros_msgs
+Description: Description of mavros_msgs
+Version: 0.17.4
+Cflags: -I/home/robot/catkin_ws/install/include
+Libs: -L/home/robot/catkin_ws/install/lib 
+Requires: geometry_msgs message_runtime std_msgs

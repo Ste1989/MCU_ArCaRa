@@ -1,0 +1,7 @@
+Symlinking /home/robot/catkin_ws/devel/lib/libmavros_extras.so
+Symlinking /home/robot/catkin_ws/devel/lib/pkgconfig/mavros_extras.pc
+Symlinking /home/robot/catkin_ws/devel/lib/mavros_extras/copter_visualization
+Symlinking /home/robot/catkin_ws/devel/lib/mavros_extras/servo_state_publisher
+Symlinking /home/robot/catkin_ws/devel/lib/mavros_extras/gcs_image_bridge
+Symlinking /home/robot/catkin_ws/devel/share/mavros_extras/cmake/mavros_extrasConfig-version.cmake
+Symlinking /home/robot/catkin_ws/devel/share/mavros_extras/cmake/mavros_extrasConfig.cmake

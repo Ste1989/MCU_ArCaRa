@@ -1,0 +1,8 @@
+prefix=/home/robot/catkin_ws/devel/.private/mavros
+
+Name: mavros
+Description: Description of mavros
+Version: 0.17.4
+Cflags: -I/home/robot/catkin_ws/src/mavros/mavros/include -I/usr/include
+Libs: -L/home/robot/catkin_ws/devel/.private/mavros/lib -lmavros -l:/usr/lib/x86_64-linux-gnu/libboost_system.so
+Requires: diagnostic_msgs diagnostic_updater pluginlib roscpp sensor_msgs nav_msgs std_msgs tf2_ros geometry_msgs libmavconn message_runtime eigen_conversions mavros_msgs
