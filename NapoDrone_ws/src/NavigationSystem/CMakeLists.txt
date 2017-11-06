@@ -31,13 +31,22 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
-
+#NAV SYSTEM
 add_library(NavigationSystemFunction  src/navigation_system_function.cpp)
 target_link_libraries(NavigationSystemFunction ${catkin_LIBRARIES})
 
 add_executable(NavigationSystem_Node src/navigation_system_node.cpp)
 target_link_libraries(NavigationSystem_Node NavigationSystemFunction ${catkin_LIBRARIES})
 
+
+#NAV SYSTEM SOLO UWB
+add_library(UWBSystemFunction  src/uwb_system_function.cpp)
+target_link_libraries(UWBSystemFunction ${catkin_LIBRARIES})
+
+add_executable(UWBSystem_Node src/uwb_system_node.cpp)
+target_link_libraries(UWBSystem_Node UWBSystemFunction ${catkin_LIBRARIES})
+
+#LISTENER
 add_executable(Listener src/listener.cpp)
 target_link_libraries(Listener  ${catkin_LIBRARIES})
 
