@@ -427,10 +427,10 @@ void read_from_serial(int* serial)
         uwb_manager::RangeUwb msg;
         msg.header.seq = idx_msg_range;
         msg.header.stamp = ros::Time::now();
-        msg.ancor1 = range_uwb[0];
-        msg.ancor2 = range_uwb[1];
-        msg.ancor3 = range_uwb[2];
-        msg.ancor4 = range_uwb[3];
+        msg.anchor0 = range_uwb[0];
+        msg.anchor1 = range_uwb[1];
+        msg.anchor2 = range_uwb[2];
+        msg.anchor3 = range_uwb[3];
         uwb_topic.publish(msg);
 
         //scrittura su file 
@@ -441,13 +441,13 @@ void read_from_serial(int* serial)
             file = fopen(log_range_uwb_path.c_str(), "a");
             fprintf(file, "%f", secs -  secs_0);
             fprintf(file, "%s", " ");
-            fprintf(file, "%f", msg.ancor1); //2
+            fprintf(file, "%f", msg.anchor0); //2
             fprintf(file, "%s", " ");
-            fprintf(file, "%f", msg.ancor2); //3
+            fprintf(file, "%f", msg.anchor0); //3
             fprintf(file, "%s", " ");
-            fprintf(file, "%f", msg.ancor3); //4
+            fprintf(file, "%f", msg.anchor0); //4
             fprintf(file, "%s", " ");
-            fprintf(file, "%f\n", msg.ancor4); //5
+            fprintf(file, "%f\n", msg.anchor0); //5
             fclose(file);
 
 

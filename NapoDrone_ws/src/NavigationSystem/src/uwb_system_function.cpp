@@ -11,6 +11,11 @@ void init_global_var()
   //new packet from the callback
   new_range_packet = 0;
 
+  //init
+  sum_range_dt.anchor0 = 0.0;
+  sum_range_dt.anchor1 = 0.0;
+  sum_range_dt.anchor2 = 0.0;
+  sum_range_dt.anchor3 = 0.0;
 
   //tempo 0
   //per inizializzare secs_0 richiamo il client
@@ -43,10 +48,18 @@ void init_global_var()
 /******************************************************************************************/
 void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg)
 {
-  //imu_state = *msg;
-  new_range_packet = 1;
-
-
+  uwb_manager::RangeUwb app = *msg;
+  //rimozione eventuali outlier
+  if(abs(app.anchor0) > 0.05 && abs(app.anchor1) > 0.05 && abs(app.anchor2) > 0.05 && abs(app.anchor3) > 0.05  )
+  { 
+    sum_range_dt.anchor0 = sum_range_dt.anchor0 + app.anchor0;
+    sum_range_dt.anchor1 = sum_range_dt.anchor1 + app.anchor1;
+    sum_range_dt.anchor2 = sum_range_dt.anchor2 + app.anchor2;
+    sum_range_dt.anchor3 = sum_range_dt.anchor3 + app.anchor3;
+    //incremento il numero di pacchetti arrivati nell'intervlo di tempo
+    new_range_packet ++;
+  }else
+    ROS_WARN("ALMENO UN RANGE UGUALE a 0");
   
   //gettimeofday(&current_time, NULL);
   //elapsed_time_imu = (current_time.tv_sec - imu_time.tv_sec) * 1000;
@@ -57,6 +70,18 @@ void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg)
   //cout << "***********************************"<< endl;
   
 }
+/******************************************************************************************/
+/*                                                                                        */
+/*                  EKF                                                                   */
+/*                                                                                        */
+/******************************************************************************************/
 
-
- 
+void EKF_solo_range(double range0,double range1,double range2, double range3,double dt)
+{
+  MatrixXd m(2,2);
+  m(0,0) = 3;
+  m(1,0) = 2.5;
+  m(0,1) = -1;
+  m(1,1) = m(1,0) + m(0,1);
+  
+}

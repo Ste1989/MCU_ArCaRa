@@ -1,6 +1,6 @@
 Header header
-float32 ancor1
-float32 ancor2
-float32 ancor3
-float32 ancor4
+float32 anchor0
+float32 anchor1
+float32 anchor2
+float32 anchor3
 

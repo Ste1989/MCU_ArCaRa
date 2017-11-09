@@ -4,10 +4,11 @@ project(navigation_system)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
+find_package(catkin  REQUIRED COMPONENTS
   roscpp
+  cmake_modules
 )
-
+find_package(Eigen REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -18,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 #catkin_install_python(PROGRAMS bin/hello DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 
-catkin_package()
+catkin_package(DEPENDS Eigen)
 
 ###########
 ## Build ##
@@ -30,6 +31,7 @@ catkin_package()
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
 )
 #NAV SYSTEM
 add_library(NavigationSystemFunction  src/navigation_system_function.cpp)
