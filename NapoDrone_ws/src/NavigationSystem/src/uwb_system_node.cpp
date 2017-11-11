@@ -10,36 +10,67 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "uwb_system_node");
     ros::NodeHandle nh;
 
-    int freq_filter;
+    
     //leggo i parametri dal lauch file
-    nh.param<bool>("/UWBSystem_Node/log_file", log_file, 1);
+    nh.param<bool>("/UWBSystem_Node/debug", debug, false);
+    nh.param<bool>("/UWBSystem_Node/log_file", log_file, false);
     nh.param<int>("/UWBSystem_Node/freq_filter", freq_filter, 100);
     //coordinate delle ancore
     //anchor0 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor0_X", anchor0[0], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor0_Y", anchor0[1], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor0_Z", anchor0[2], 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor0_X", anchor0(0), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor0_Y", anchor0(1), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor0_Z", anchor0(2), 0.0);
     //anchor1 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor1_X", anchor1[0], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor1_Y", anchor1[1], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor1_Z", anchor1[2], 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor1_X", anchor1(0), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor1_Y", anchor1(1), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor1_Z", anchor1(2), 0.0);
     //anchor2 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor2_X", anchor2[0], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor2_Y", anchor2[1], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor2_Z", anchor2[2], 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor2_X", anchor2(0), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor2_Y", anchor2(1), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor2_Z", anchor2(2), 0.0);
     //anchor3 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor3_X", anchor3[0], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor3_Y", anchor3[1], 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor3_Z", anchor3[2], 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor3_X", anchor3(0), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor3_Y", anchor3(1), 0.0);
+    nh.param<double>("/UWBSystem_Node/anchor3_Z", anchor3(2), 0.0);
+
+    R = MatrixXd::Zero(4,4);
+    P = MatrixXd::Zero(6,6);
+    Q = MatrixXd::Zero(6,6);
+    K = MatrixXd::Zero(6,4);
+    //R
+    nh.param<double>("/UWBSystem_Node/R1", R(0,0), 0.0);
+    nh.param<double>("/UWBSystem_Node/R2", R(1,1), 0.0);
+    nh.param<double>("/UWBSystem_Node/R3", R(2,2), 0.0);
+    nh.param<double>("/UWBSystem_Node/R4", R(3,3), 0.0);
+    //P
+    nh.param<double>("/UWBSystem_Node/P1", P(0,0), 0.0);
+    nh.param<double>("/UWBSystem_Node/P2", P(1,1), 0.0);
+    nh.param<double>("/UWBSystem_Node/P3", P(2,2), 0.0);
+    nh.param<double>("/UWBSystem_Node/P4", P(3,3), 0.0);
+    nh.param<double>("/UWBSystem_Node/P5", P(4,4), 0.0);
+    nh.param<double>("/UWBSystem_Node/P6", P(5,5), 0.0);
+    //Q
+    nh.param<double>("/UWBSystem_Node/Q1", Q(0,0), 0.0);
+    nh.param<double>("/UWBSystem_Node/Q2", Q(1,1), 0.0);
+    nh.param<double>("/UWBSystem_Node/Q3", Q(2,2), 0.0);
+    nh.param<double>("/UWBSystem_Node/Q4", Q(3,3), 0.0);
+    nh.param<double>("/UWBSystem_Node/Q5", Q(4,4), 0.0);
+    nh.param<double>("/UWBSystem_Node/Q6", Q(5,5), 0.0);
+
     //sottoscrizione al topic dei range
     rangeUWB_sub = nh.subscribe<uwb_manager::RangeUwb>("/uwb/range", 1, rangeUWB_cb);
     
     //service client
     get_time_sec0 = nh.serviceClient<autopilot_manager::init_time>("/get_time_t0");
     
+    //init variabili globali
     init_global_var();
     
-    double time_ms = (1000.0/freq_filter);
+
+    //se debug è uguale true leggo il file uwb_range.txt
+    if(debug)
+        leggi_file_debug();
+    
     //frequenza a cui far girare il nodo
     ros::Rate loop_rate(100);
     gettimeofday(&filter_time, NULL);
@@ -66,14 +97,19 @@ int main(int argc, char **argv)
          
 
             //sottocampiono il segnale dei range
-            double range0 = sum_range_dt.anchor0/new_range_packet;
-            double range1 = sum_range_dt.anchor1/new_range_packet;
-            double range2 = sum_range_dt.anchor2/new_range_packet;
-            double range3 = sum_range_dt.anchor3/new_range_packet;
+            VectorXd range(4);
+            range(0) = sum_range_dt.anchor0/new_range_packet;
+            range(1) = sum_range_dt.anchor1/new_range_packet;
+            range(2) = sum_range_dt.anchor2/new_range_packet;
+            range(3) = sum_range_dt.anchor3/new_range_packet;
 
+            range(0) = 5.49;
+            range(1) = 5.129;
+            range(2) = 12.928;
+            range(3) = 5.34;
             //update filtro
-            EKF_solo_range(range0,range1,range2,range3, time_ms/1000);
-
+            VectorXd position_estimated(3);
+            EKF_solo_range(range,  dt_filter, position_estimated);
 
             //resetto elapsed_time_filter
             gettimeofday(&filter_time, NULL);
