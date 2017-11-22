@@ -7,6 +7,8 @@
 #include "uwb_manager/RangeUwb.h"
 #include "autopilot_manager/init_time.h"
 #include <Eigen/Dense>
+#include <fstream>
+#include <malloc.h>
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -27,6 +29,10 @@ char new_range_packet;
 timeval  current_time, filter_time, range_time;
 double elapsed_time_filter, elapsed_time_range;
 
+
+//per lettura file log
+int Num_measure;
+double* time_log, *range1_log, *range2_log, *range3_log, *range4_log;
 
 //ancore
 Vector3d anchor0;

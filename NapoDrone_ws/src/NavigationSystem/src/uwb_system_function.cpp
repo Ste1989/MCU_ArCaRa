@@ -1,5 +1,6 @@
 #include "uwb_system_node.h"
-#include <fstream>
+
+
 /******************************************************************************************/
 /*                                                                                        */
 /*                  INIT                                                                  */
@@ -200,17 +201,40 @@ void leggi_file_debug()
 
   FILE* fd;
   float* num;
-   FILE *fp;
-  
-   fp = fopen("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_manager","r");
-   while(1) {
-      fscanf(fd, "%g", num); 
-     /* if( feof(fp) ) { 
-         break ;
-      }
-      printf("%f", num);*/
-   }
-   fclose(fp);
+  FILE *fp;
 
+
+  ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt");
+  Num_measure =0 ;
+  double temp1, temp2, temp3, temp4, temp5;
+  while(!OpenFile.eof())
+  {
+    OpenFile >> temp1 >> temp2 >> temp3 >> temp4 >> temp5;
+    Num_measure ++;
+    
+  }
+  OpenFile.close();
+  cout << "Numero di misure" << Num_measure << endl;
+
+  //ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt");
+  time_log = (double *) malloc(sizeof(double) * Num_measure);
+  range1_log = (double *) malloc(sizeof(double) * Num_measure);
+  range2_log = (double *) malloc(sizeof(double) * Num_measure);
+  range3_log = (double *) malloc(sizeof(double) * Num_measure);
+  range4_log = (double *) malloc(sizeof(double) * Num_measure);
+
+  double f1,f2,f3,f4,f5;
+  int i =0 ;
+  ifstream OpenFile1("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt");
+  while(!OpenFile1.eof())
+  {
+    OpenFile1 >> time_log[i] >> range1_log[i] >> range2_log[i] >> range3_log[i] >> range4_log[i];
+   // cout << time_log[i]  << " " << range1_log[i] << " " << range2_log[i] << " " << range3_log[i] << " " << range4_log[i] << endl;
+    i++;
+  }
+  OpenFile1.close();
+
+
+//free(array);
 
 }

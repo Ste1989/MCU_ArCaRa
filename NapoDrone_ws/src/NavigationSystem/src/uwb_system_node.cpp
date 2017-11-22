@@ -68,12 +68,21 @@ int main(int argc, char **argv)
     
 
     //se debug è uguale true leggo il file uwb_range.txt
+   
     if(debug)
+    {
         leggi_file_debug();
     
+    }
+    timeval time_0;
     //frequenza a cui far girare il nodo
     ros::Rate loop_rate(100);
     gettimeofday(&filter_time, NULL);
+    if(debug)
+    {
+        gettimeofday(&time_0, NULL);
+        
+    }
     while(ros::ok())
     {
         //loop rate
@@ -81,11 +90,13 @@ int main(int argc, char **argv)
         //calolo tempo attuale
         gettimeofday(&current_time, NULL);
         //calcolo tempo di controllo
-
         elapsed_time_filter = (current_time.tv_sec - filter_time.tv_sec) * 1000;
         elapsed_time_filter += (current_time.tv_usec - filter_time.tv_usec) / 1000;
         //elapsed_time_filter = 500 ---> 0.5 s
         
+      
+        cout << (current_time.tv_sec-time_0.tv_sec) << endl;// + current_time.tv_usec /1000 << endl;
+
         //A)leggo i topic
         ros::spinOnce();
 
@@ -103,10 +114,6 @@ int main(int argc, char **argv)
             range(2) = sum_range_dt.anchor2/new_range_packet;
             range(3) = sum_range_dt.anchor3/new_range_packet;
 
-            range(0) = 5.49;
-            range(1) = 5.129;
-            range(2) = 12.928;
-            range(3) = 5.34;
             //update filtro
             VectorXd position_estimated(3);
             EKF_solo_range(range,  dt_filter, position_estimated);
