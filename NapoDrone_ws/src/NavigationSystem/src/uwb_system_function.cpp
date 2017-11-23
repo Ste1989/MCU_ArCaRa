@@ -11,7 +11,8 @@ void init_global_var()
 
   //EKF
   first_cycle_EKF = true;
-  time_ms = (1000.0/freq_filter);
+  //time_ms = (1000.0/freq_filter);
+  time_ms = (1.0/freq_filter);
   dt_filter = time_ms/1000.0;
   A << 1,0,0,dt_filter,0,0,
        0,1,0,0,dt_filter,0,

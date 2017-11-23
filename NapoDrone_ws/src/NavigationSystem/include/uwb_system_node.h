@@ -26,9 +26,9 @@ char new_range_packet;
 
 
 //timeval
-timeval  current_time, filter_time, range_time;
+//timeval  current_time, filter_time, range_time;
 double elapsed_time_filter, elapsed_time_range;
-
+ros::Time current_time, filter_time, range_time;
 
 //per lettura file log
 int Num_measure;
