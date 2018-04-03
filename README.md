@@ -17,8 +17,13 @@
     cd build
     cmake ..
     sudo make install
--installato libreria mraa scaricandola da git
--installato MAVROS da http://dev.px4.io/ros-mavros-installation.html:
+-installato libreria mraa scaricandola da git https://github.com/intel-iot-devkit/mraa.git
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+-installato MAVROS da http://dev.px4.io/ros-mavros-installation.html    :
 	$ mkdir -p ~/catkin_ws/src
 	$ cd ~/catkin_ws
 	$ catkin_init_workspace
