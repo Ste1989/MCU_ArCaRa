@@ -63,23 +63,23 @@ void poses_cb(const geometry_msgs::Pose::ConstPtr& msg)
 {
 
 
-/*
+
   double roll, pitch, yaw;
-  quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
-    msg->pose.orientation.z,msg->pose.orientation.w, 
+  quaternion_2_euler(msg->orientation.x,msg->orientation.y,
+    msg->orientation.z,msg->orientation.w, 
     roll, pitch, yaw);
   //ho una stima buona della posizione della camera
   FILE* fd1;
-  fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/aruco_data.txt","a");
-  fprintf(fd1, "%i", msg->header.stamp.sec);
+  fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx.txt","a");
+  /*fprintf(fd1, "%i", msg->stamp.sec);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%i", msg->header.stamp.nsec);
+  fprintf(fd1, "%i", msg->stamp.nsec);
+  fprintf(fd1, "%s", "  ");*/
+  fprintf(fd1, "%f", msg->position.x);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->pose.position.x);
+  fprintf(fd1, "%f", msg->position.y);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->pose.position.y);
-  fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->pose.position.z);
+  fprintf(fd1, "%f", msg->position.z);
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%f", roll);
   fprintf(fd1, "%s", "  ");
@@ -87,7 +87,7 @@ void poses_cb(const geometry_msgs::Pose::ConstPtr& msg)
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%f\n", yaw);
   fclose(fd1);
-*/
+
 
 
 }
