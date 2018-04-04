@@ -6,14 +6,14 @@ import rospy
 from pozyxmanager.msg import DeviceRange
 
 remote_id = None
-destination_id = 0x6036
+destination_id = 0xA002
 
 
 def pozyx_ranging_pub():
     pub = rospy.Publisher('pozyx_device_range', DeviceRange, queue_size=100)
     rospy.init_node('range_info_pub')
     try:
-        pozyx = pypozyx.PozyxSerial(pypozyx.get_serial_ports()[0].device)
+        pozyx = pypozyx.PozyxSerial('/dev/ttyACM0')
     except:
         rospy.loginfo("Pozyx not connected")
         return
