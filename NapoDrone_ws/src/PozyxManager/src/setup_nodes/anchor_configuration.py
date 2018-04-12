@@ -15,10 +15,12 @@ import rospy
 # adding None will cause the local device to be configured for the anchors as well.
 tag_ids = [None, 0x0001, 0x0002, 0x0003, 0x0004]
 
-anchors = [pypozyx.DeviceCoordinates(0x0001, 1, pypozyx.Coordinates(0, 0, 1000)),
-           pypozyx.DeviceCoordinates(0x0002, 1, pypozyx.Coordinates(5000, 0, 1000)),
-           pypozyx.DeviceCoordinates(0x0003, 1, pypozyx.Coordinates(0, 5000, 1000)),
-           pypozyx.DeviceCoordinates(0x0004, 1, pypozyx.Coordinates(5000, 5000, 1000))]
+
+anchors = [pypozyx.DeviceCoordinates(0xA000, 1, pypozyx.Coordinates(0, 0, 1445)),
+           pypozyx.DeviceCoordinates(0xA001, 1, pypozyx.Coordinates(4620, 0, 2641)),
+           pypozyx.DeviceCoordinates(0xA002, 1, pypozyx.Coordinates(0, 3250, 2110)),
+           pypozyx.DeviceCoordinates(0xA003, 1, pypozyx.Coordinates(4620, 2690, 1760))]
+
 
 
 def set_anchor_configuration():

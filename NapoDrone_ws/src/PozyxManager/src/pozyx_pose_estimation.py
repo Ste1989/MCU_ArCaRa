@@ -1,13 +1,7 @@
 #!/usr/bin/env python
-"""
-The Pozyx ready to localize tutorial (c) Pozyx Labs
-Please read the tutorial that accompanies this sketch:
-https://www.pozyx.io/Documentation/Tutorials/ready_to_localize/Python
+import rospy
 
-This tutorial requires at least the contents of the Pozyx Ready to Localize kit. It demonstrates the positioning capabilities
-of the Pozyx device both locally and remotely. Follow the steps to correctly set up your environment in the link, change the
-parameters and upload this sketch. Watch the coordinates change as you move your device around!
-"""
+
 from time import sleep
 
 from pypozyx import (POZYX_POS_ALG_UWB_ONLY, POZYX_3D, Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,

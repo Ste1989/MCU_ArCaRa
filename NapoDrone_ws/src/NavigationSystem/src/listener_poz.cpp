@@ -64,10 +64,11 @@ void poses_cb(const geometry_msgs::Pose::ConstPtr& msg)
 
 
 
-  double roll, pitch, yaw;
+  double rool, pitch, yaw;
   quaternion_2_euler(msg->orientation.x,msg->orientation.y,
     msg->orientation.z,msg->orientation.w, 
-    roll, pitch, yaw);
+    rool, pitch, yaw);
+  std::cout << "ROOL: " << rool*180/3.14 << "PITCH: " << pitch*180/3.14 << "YAW: " << yaw*180/3.14 << std::endl;
   //ho una stima buona della posizione della camera
   FILE* fd1;
   fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx.txt","a");
@@ -81,7 +82,7 @@ void poses_cb(const geometry_msgs::Pose::ConstPtr& msg)
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%f", msg->position.z);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", roll);
+  fprintf(fd1, "%f", rool);
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%f", pitch);
   fprintf(fd1, "%s", "  ");
@@ -117,7 +118,7 @@ int main(int argc, char **argv)
    */
     ros::NodeHandle n;
     //ros::Subscriber imu_topic = n.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 10, imu_cb);
-    ros::Subscriber aruco_pose_topic = n.subscribe<geometry_msgs::Pose>("/pozyx_pose_node/pozyx_pose", 100, poses_cb);
+    ros::Subscriber aruco_pose_topic = n.subscribe<geometry_msgs::Pose>("/pozyx_pose", 100, poses_cb);
 
 
 
