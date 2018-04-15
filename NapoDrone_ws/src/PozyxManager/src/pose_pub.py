@@ -196,6 +196,7 @@ class ReadyToLocalize(object):
             device_range_2 = DeviceRange()
             device_range_3 = DeviceRange()
             device_range_4 = DeviceRange()
+            time_range_0 = rospy.Time.now()
             destination_id = 0xA000 
             status = self.pozyx.doRanging(destination_id, device_range_1, self.remote_id)
             destination_id = 0xA001 
@@ -205,7 +206,8 @@ class ReadyToLocalize(object):
             destination_id = 0xA003 
             status = self.pozyx.doRanging(destination_id, device_range_4, self.remote_id)
             time_range = rospy.Time.now()
-            
+            print("tempo tra range 1 e 4")
+            print(time_range - time_range_0)
 
             range_msg = Imu()
             range_msg.header.stamp = time_range

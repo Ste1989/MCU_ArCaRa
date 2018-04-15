@@ -19,6 +19,7 @@
 #include <sensor_msgs/MagneticField.h>
 #include <sensor_msgs/Imu.h>
 
+double time_0 = -1;
 /********************************************************************************************/
 /*                                                                                         */
 /*    QUATERNION_2_EULER                                                                    */
@@ -61,13 +62,17 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 /*******************************************************************************************/
 void range_cb(const sensor_msgs::Imu::ConstPtr& imu)
 {
+    double time = imu->header.stamp.sec + imu->header.stamp.nsec/10^9;
+    if (time_0 == -1)
+    {
+      time_0 = time;
+    }
+    time = time - time_0;
     double roll, pitch, yaw;
     
     FILE* fd1;
     fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt","a");
-    fprintf(fd1, "%i", imu->header.stamp.sec);
-    fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%i", imu->header.stamp.nsec);
+    fprintf(fd1, "%f", time);
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f", imu->orientation.x);
     fprintf(fd1, "%s", "  ");
@@ -77,11 +82,11 @@ void range_cb(const sensor_msgs::Imu::ConstPtr& imu)
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f", imu->orientation.w);
     fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%f", imu->angular_velocity.x);
+    fprintf(fd1, "%f", imu->angular_velocity.x);  //anchor 1 -7 
     fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%f", imu->angular_velocity.y);
+    fprintf(fd1, "%f", imu->angular_velocity.y); //anchor 2 -8
     fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%f", imu->angular_velocity.z);
+    fprintf(fd1, "%f", imu->angular_velocity.z); //anchor 3 -9
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f", imu->linear_acceleration.x);
     fprintf(fd1, "%s", "  ");
@@ -100,15 +105,20 @@ void range_cb(const sensor_msgs::Imu::ConstPtr& imu)
 /*******************************************************************************************/
 void magnetic_cb(const sensor_msgs::MagneticField::ConstPtr& msg)
 {
+
+    double time = msg->header.stamp.sec + msg->header.stamp.nsec/10^9;
+    if (time_0 == -1)
+    {
+      time_0 = time;
+    }
+    time = time - time_0;
     FILE* fd1;
     fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_magnetic.txt","a");
-    fprintf(fd1, "%i", msg->header.stamp.sec);
+    fprintf(fd1, "%f", time);
     fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%i", msg->header.stamp.nsec);
+    fprintf(fd1, "%f", msg->magnetic_field.x);
     fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%f\n", msg->magnetic_field.x);
-    fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%f\n", msg->magnetic_field.y);
+    fprintf(fd1, "%f", msg->magnetic_field.y);
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f\n", msg->magnetic_field.z);
      
@@ -123,11 +133,16 @@ void magnetic_cb(const sensor_msgs::MagneticField::ConstPtr& msg)
 /*******************************************************************************************/
 void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg)
 {
+
+    double time = msg->header.stamp.sec + msg->header.stamp.nsec/10^9;
+    if (time_0 == -1)
+    {
+      time_0 = time;
+    }
+    time = time - time_0;
     FILE* fd1;
     fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_perssure.txt","a");
-    fprintf(fd1, "%i", msg->header.stamp.sec);
-    fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%i", msg->header.stamp.nsec);
+    fprintf(fd1, "%f", time);
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f\n", msg->fluid_pressure);
     fclose(fd1);
@@ -140,13 +155,18 @@ void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg)
 /*******************************************************************************************/
 void imu_cb(const sensor_msgs::Imu::ConstPtr& imu)
 {
+    double time = imu->header.stamp.sec + imu->header.stamp.nsec/10^9;
+    if (time_0 == -1)
+    {
+      time_0 = time;
+    }
+    time = time - time_0;
+
     double roll, pitch, yaw;
     quaternion_2_euler(imu->orientation.x, imu->orientation.y, imu->orientation.z, imu->orientation.w, roll, pitch, yaw);
     FILE* fd1;
     fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_imu.txt","a");
-    fprintf(fd1, "%i", imu->header.stamp.sec);
-    fprintf(fd1, "%s", "  ");
-    fprintf(fd1, "%i", imu->header.stamp.nsec);
+    fprintf(fd1, "%f", time);
     fprintf(fd1, "%s", "  ");
     fprintf(fd1, "%f", roll);
     fprintf(fd1, "%s", "  ");
@@ -178,6 +198,13 @@ void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
 
 
+  double time = msg->header.stamp.sec + msg->header.stamp.nsec/10^9;
+  if (time_0 == -1)
+  {
+    time_0 = time;
+  }
+  time = time - time_0;
+
 
   double rool, pitch, yaw;
   quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
@@ -187,9 +214,7 @@ void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
   //ho una stima buona della posizione della camera
   FILE* fd1;
   fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_position.txt","a");
-  fprintf(fd1, "%i", msg->header.stamp.sec);
-  fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%i", msg->header.stamp.nsec);
+  fprintf(fd1, "%f", time);
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%f", msg->pose.position.x);
   fprintf(fd1, "%s", "  ");
@@ -245,7 +270,7 @@ int main(int argc, char **argv)
     ros::Subscriber range_topic = n.subscribe<sensor_msgs::Imu>("/pozyx_range", 100, range_cb);
 
 
-
+    time_0 = -1;
     while(ros::ok())
    {
 
