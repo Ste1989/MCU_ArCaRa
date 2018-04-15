@@ -44,6 +44,19 @@ sudo make install
 	export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/sistema/catkin_ws/src
 - la prima volta commentare nei CMakeLists.s.txt di SerialManager, AutopilotMAnager, ObjectDetction e Object3Detection gli eseguibili
 
+
+#VNC
+sudo apt-get install openssh-client
+sudo apt-get install openssh-server
+(non so se necessari)
+avviare desktop remoto: condivisione tutte le spunte, sicurezza la prima e seconda (password autec), mostra notifica SEMPRE
+su terminale:
+sudo apt-get install dconf-editor -y
+sudo dconf-editor
+CTRL+F ...> cerca Vnc
+levar la spunta a require encryption
+a password mettere "autec"
+
 #GNUPLOT
 sudo apt-get install gnuplot
 sudo apt-get install gnuplot-x11
