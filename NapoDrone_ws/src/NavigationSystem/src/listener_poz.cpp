@@ -14,12 +14,10 @@
 #include <iostream>
 #include <queue>
 #include <sys/time.h>
-#include <geometry_msgs/Pose.h>
-
-
-
-
-
+#include <geometry_msgs/PoseStamped.h>
+#include <sensor_msgs/FluidPressure.h>
+#include <sensor_msgs/MagneticField.h>
+#include <sensor_msgs/Imu.h>
 
 /********************************************************************************************/
 /*                                                                                         */
@@ -54,33 +52,150 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
   pitch = -asin(rt13);
   yaw = atan2(rt12,rt11);
 }
+
+
+/********************************************************************************************/
+/*                                                                                         */
+/*    CALBACK STIMA DI PIMU                                                            */
+/*                                                                                         */
+/*******************************************************************************************/
+void range_cb(const sensor_msgs::Imu::ConstPtr& imu)
+{
+    double roll, pitch, yaw;
+    
+    FILE* fd1;
+    fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt","a");
+    fprintf(fd1, "%i", imu->header.stamp.sec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%i", imu->header.stamp.nsec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->orientation.x);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->orientation.y);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->orientation.z);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->orientation.w);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->angular_velocity.x);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->angular_velocity.y);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->angular_velocity.z);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->linear_acceleration.x);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->linear_acceleration.y);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f\n", imu->linear_acceleration.z);
+    fclose(fd1);
+
+}
+
+
+/********************************************************************************************/
+/*                                                                                         */
+/*    CALBACK STIMA DI CAMPO MAGNETUICO                                                          */
+/*                                                                                         */
+/*******************************************************************************************/
+void magnetic_cb(const sensor_msgs::MagneticField::ConstPtr& msg)
+{
+    FILE* fd1;
+    fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_magnetic.txt","a");
+    fprintf(fd1, "%i", msg->header.stamp.sec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%i", msg->header.stamp.nsec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f\n", msg->magnetic_field.x);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f\n", msg->magnetic_field.y);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f\n", msg->magnetic_field.z);
+     
+    fclose(fd1);
+
+}
+
+/********************************************************************************************/
+/*                                                                                         */
+/*    CALBACK STIMA DI PRESSIONE                                                           */
+/*                                                                                         */
+/*******************************************************************************************/
+void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg)
+{
+    FILE* fd1;
+    fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_perssure.txt","a");
+    fprintf(fd1, "%i", msg->header.stamp.sec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%i", msg->header.stamp.nsec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f\n", msg->fluid_pressure);
+    fclose(fd1);
+
+}
+/********************************************************************************************/
+/*                                                                                         */
+/*    CALBACK STIMA DI PIMU                                                            */
+/*                                                                                         */
+/*******************************************************************************************/
+void imu_cb(const sensor_msgs::Imu::ConstPtr& imu)
+{
+    double roll, pitch, yaw;
+    quaternion_2_euler(imu->orientation.x, imu->orientation.y, imu->orientation.z, imu->orientation.w, roll, pitch, yaw);
+    FILE* fd1;
+    fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_imu.txt","a");
+    fprintf(fd1, "%i", imu->header.stamp.sec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%i", imu->header.stamp.nsec);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", roll);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", pitch);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", yaw);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->angular_velocity.x);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->angular_velocity.y);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->angular_velocity.z);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->linear_acceleration.x);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f", imu->linear_acceleration.y);
+    fprintf(fd1, "%s", "  ");
+    fprintf(fd1, "%f\n", imu->linear_acceleration.z);
+    fclose(fd1);
+
+}
+
 /********************************************************************************************/
 /*                                                                                         */
 /*    CALBACK STIMA DI POSA                                                            */
 /*                                                                                         */
 /*******************************************************************************************/
-void poses_cb(const geometry_msgs::Pose::ConstPtr& msg)
+void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
 
 
 
   double rool, pitch, yaw;
-  quaternion_2_euler(msg->orientation.x,msg->orientation.y,
-    msg->orientation.z,msg->orientation.w, 
+  quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
+    msg->pose.orientation.z,msg->pose.orientation.w, 
     rool, pitch, yaw);
   std::cout << "ROOL: " << rool*180/3.14 << "PITCH: " << pitch*180/3.14 << "YAW: " << yaw*180/3.14 << std::endl;
   //ho una stima buona della posizione della camera
   FILE* fd1;
-  fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx.txt","a");
-  /*fprintf(fd1, "%i", msg->stamp.sec);
+  fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_position.txt","a");
+  fprintf(fd1, "%i", msg->header.stamp.sec);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%i", msg->stamp.nsec);
-  fprintf(fd1, "%s", "  ");*/
-  fprintf(fd1, "%f", msg->position.x);
+  fprintf(fd1, "%i", msg->header.stamp.nsec);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->position.y);
+  fprintf(fd1, "%f", msg->pose.position.x);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->position.z);
+  fprintf(fd1, "%f", msg->pose.position.y);
+  fprintf(fd1, "%s", "  ");
+  fprintf(fd1, "%f", msg->pose.position.z);
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%f", rool);
   fprintf(fd1, "%s", "  ");
@@ -117,9 +232,17 @@ int main(int argc, char **argv)
    * NodeHandle destructed will close down the node.
    */
     ros::NodeHandle n;
-    //ros::Subscriber imu_topic = n.subscribe<sensor_msgs::Imu>("/mavros/imu/data", 10, imu_cb);
-    ros::Subscriber aruco_pose_topic = n.subscribe<geometry_msgs::Pose>("/pozyx_pose", 100, poses_cb);
+    
 
+    
+    
+    ros::Subscriber pressione_topic = n.subscribe<sensor_msgs::FluidPressure>("/pozyx_pressure", 100, pressure_cb);
+    ros::Subscriber imu_topic = n.subscribe<sensor_msgs::Imu>("/pozyx_imu", 100, imu_cb);
+    ros::Subscriber magnetic_topic = n.subscribe<sensor_msgs::MagneticField>("/pozyx_magnetic", 100, magnetic_cb);
+
+    ros::Subscriber aruco_pose_topic = n.subscribe<geometry_msgs::PoseStamped>("/pozyx_pose", 100, poses_cb);
+    
+    ros::Subscriber range_topic = n.subscribe<sensor_msgs::Imu>("/pozyx_range", 100, range_cb);
 
 
 

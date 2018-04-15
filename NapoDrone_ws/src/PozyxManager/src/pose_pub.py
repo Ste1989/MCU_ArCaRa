@@ -11,16 +11,23 @@ data comes from integers. Suggestions to replace this are quite welcomed.
 
 import pypozyx
 import rospy
-from geometry_msgs.msg import Point, Pose, Quaternion
-from pypozyx import (POZYX_POS_ALG_UWB_ONLY, POZYX_3D,POZYX_POS_ALG_TRACKING,POZYX_FAILURE, POZYX_2D,Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,
-                     DeviceCoordinates, PozyxSerial, get_first_pozyx_serial_port, SingleRegister, DeviceList)
+from geometry_msgs.msg import Point, PoseStamped, Quaternion
+from std_msgs.msg import Header, Float32
+from sensor_msgs.msg import FluidPressure, Imu,MagneticField 
+from pypozyx import (DeviceRange,POZYX_POS_ALG_UWB_ONLY, POZYX_3D,POZYX_POS_ALG_TRACKING,POZYX_FAILURE, POZYX_2D,Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,
+                     DeviceCoordinates, PozyxSerial, get_first_pozyx_serial_port, SingleRegister, DeviceList,SensorData, SingleRegister)
+from pypozyx.definitions.bitmasks import POZYX_INT_MASK_IMU
+
 from pythonosc.udp_client import SimpleUDPClient
 remote_id = None
 
 anchors_ids = [0xA000,0xA001,0xA002,0xA003];
-height_anchor = [2000,2000,2000,2000];
+height_anchor = [1440,2150,250,570];
 
 enable_auto_calibration = False
+imu_log = True
+pos_log = False
+range_log = True
 class ReadyToLocalize(object):
     """Continuously calls the Pozyx positioning function and prints its position."""
 #########################################################################################################
@@ -113,19 +120,109 @@ class ReadyToLocalize(object):
 #
 ########################################################################################################
     def loop(self):
-        #Performs positioning and displays/exports the results.
-        print("sono qui")
+        #dichiaro le variabili
         position = Coordinates()
         quat = pypozyx.Quaternion()
-        status = self.pozyx.doPositioning(
-            position, self.dimension, self.height, self.algorithm, remote_id=self.remote_id)
-        self.pozyx.getQuaternion(quat, remote_id=remote_id)
-        if status == POZYX_SUCCESS:
-            self.printPublishPosition(position)
-            pub.publish(Point(position.x, position.y, position.z),
-                    Quaternion(quat.x, quat.y, quat.z, quat.w))
-        else:
-            self.printPublishErrorCode("positioning")
+        sensor_data = SensorData()
+        calibration_status = SingleRegister()
+        #lego dati IMU ####################################################################################################
+        if imu_log == True:
+            if self.remote_id is not None or self.pozyx.checkForFlag(POZYX_INT_MASK_IMU, 0.01) == POZYX_SUCCESS:
+
+                status = self.pozyx.getAllSensorData(sensor_data, self.remote_id)
+                status &= self.pozyx.getCalibrationStatus(calibration_status, self.remote_id)
+                if status == POZYX_SUCCESS:
+                    time_dt = Header()
+                    time_dt = rospy.Time.now()
+                    #self.publishSensorData(sensor_data, calibration_status)
+                    
+                    
+                    #Pubblico Pressione
+                    pressure_msg = FluidPressure()
+                    pressure_msg.header.stamp = rospy.Time.now()
+                    pressure_msg.fluid_pressure = float(sensor_data.pressure.value)
+                    pub_pressure.publish(pressure_msg)
+
+                    #imu msg
+                  
+                    imu_msg = Imu()
+                    imu_msg.header.stamp = time_dt
+                    imu_msg.angular_velocity.x = sensor_data.angular_vel.x
+                    imu_msg.angular_velocity.y = sensor_data.angular_vel.y
+                    imu_msg.angular_velocity.z = sensor_data.angular_vel.z
+                    imu_msg.linear_acceleration.x = sensor_data.linear_acceleration.x
+                    imu_msg.linear_acceleration.y = sensor_data.linear_acceleration.y
+                    imu_msg.linear_acceleration.z = sensor_data.linear_acceleration.z
+                    imu_msg.orientation.x = sensor_data.quaternion.x
+                    imu_msg.orientation.y = sensor_data.quaternion.y
+                    imu_msg.orientation.z = sensor_data.quaternion.z
+                    imu_msg.orientation.w = sensor_data.quaternion.w
+                    pub_imu.publish(imu_msg)
+
+                    #bussola
+                    magnetic_msg = MagneticField()
+                    magnetic_msg.header.stamp = time_dt
+                    magnetic_msg.magnetic_field.x = sensor_data.magnetic.x
+                    magnetic_msg.magnetic_field.y = sensor_data.magnetic.y
+                    magnetic_msg.magnetic_field.z = sensor_data.magnetic.z
+                    pub_magnetic.publish(magnetic_msg)
+
+
+        #faccio la stima di poszione #######################################################################################         
+        if pos_log == True:
+            status = self.pozyx.doPositioning(position, self.dimension, self.height, self.algorithm, remote_id=self.remote_id)
+            self.pozyx.getQuaternion(quat, remote_id=remote_id)
+            if status == POZYX_SUCCESS:
+                pos_stamped = PoseStamped()
+                pos_stamped.header.frame_id = "/pozyx_frame"
+                pos_stamped.header.stamp = rospy.Time.now()
+                pos_stamped.pose.position.z = position.x
+                pos_stamped.pose.position.x = position.y
+                pos_stamped.pose.position.y = position.z
+                pos_stamped.pose.orientation.x = quat.x
+                pos_stamped.pose.orientation.y = quat.y
+                pos_stamped.pose.orientation.z = quat.z
+                pos_stamped.pose.orientation.w = quat.w
+                self.printPublishPosition(position)
+                #pub on topic
+                pub.publish(pos_stamped)
+            else:
+                self.printPublishErrorCode("positioning")
+
+        #faccio la stima di poszione #######################################################################################         
+        if range_log == True:
+           
+            device_range_1 = DeviceRange()
+            device_range_2 = DeviceRange()
+            device_range_3 = DeviceRange()
+            device_range_4 = DeviceRange()
+            destination_id = 0xA000 
+            status = self.pozyx.doRanging(destination_id, device_range_1, self.remote_id)
+            destination_id = 0xA001 
+            status = self.pozyx.doRanging(destination_id, device_range_2, self.remote_id)
+            destination_id = 0xA002
+            status = self.pozyx.doRanging(destination_id, device_range_3, self.remote_id)
+            destination_id = 0xA003 
+            status = self.pozyx.doRanging(destination_id, device_range_4, self.remote_id)
+            time_range = rospy.Time.now()
+            
+
+            range_msg = Imu()
+            range_msg.header.stamp = time_range
+            range_msg.angular_velocity.x = device_range_1.distance
+            range_msg.angular_velocity.y = device_range_2.distance
+            range_msg.angular_velocity.z = device_range_3.distance
+            range_msg.linear_acceleration.x = device_range_4.distance
+            range_msg.linear_acceleration.y = device_range_1.RSS
+            range_msg.linear_acceleration.z = device_range_2.RSS
+            range_msg.orientation.x = device_range_3.RSS
+            range_msg.orientation.y = device_range_4.RSS
+            range_msg.orientation.z = 0
+            range_msg.orientation.w = 0
+            pub_range.publish(range_msg)
+
+
+
         
 
 
@@ -256,10 +353,10 @@ if __name__ == '__main__':
     if use_processing:
         osc_udp_client = SimpleUDPClient(ip, network_port)
     # necessary data for calibration, change the IDs and coordinates yourself
-    anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, 2000)),
-               DeviceCoordinates(0xA001, 1, Coordinates(4560, 0, 2000)),
-               DeviceCoordinates(0xA002, 1, Coordinates(4040, 3323, 2000)),
-               DeviceCoordinates(0xA003, 1, Coordinates(716, 1559, 2000))]
+    anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, 1440)),
+               DeviceCoordinates(0xA001, 1, Coordinates(8226, 0, 2150)),
+               DeviceCoordinates(0xA002, 1, Coordinates(163, 4255, 250)),
+               DeviceCoordinates(0xA003, 1, Coordinates(8127, 3158, 570))]
 
     algorithm = POZYX_POS_ALG_TRACKING  # positioning algorithm to use
     dimension = POZYX_3D               # positioning dimension
@@ -269,7 +366,11 @@ if __name__ == '__main__':
     r = ReadyToLocalize(pozyx, osc_udp_client, anchors, algorithm, dimension, height, remote_id)
     r.setup()
     rospy.init_node('pozyx_pose_node')
-    pub = rospy.Publisher('pozyx_pose', Pose, queue_size=40)
+    pub = rospy.Publisher('pozyx_pose', PoseStamped, queue_size=40)
+    pub_pressure = rospy.Publisher('pozyx_pressure', FluidPressure, queue_size=100)
+    pub_imu = rospy.Publisher('pozyx_imu', Imu, queue_size=100)
+    pub_magnetic = rospy.Publisher('pozyx_magnetic', MagneticField, queue_size=100)
+    pub_range = rospy.Publisher('pozyx_range', Imu, queue_size=1)
     while not rospy.is_shutdown():
         try:
             r.loop()
