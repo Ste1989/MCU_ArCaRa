@@ -22,13 +22,14 @@ from pythonosc.udp_client import SimpleUDPClient
 remote_id = None
 
 anchors_ids = [0xA000,0xA001,0xA002,0xA003];
-height_anchor = [1440,2150,250,570];
-
+height_anchor = [1878,1454,1525,2115];
+import time
 enable_auto_calibration = False
 imu_log = True
-pos_log = False
+pos_log =False
 range_log = True
 class ReadyToLocalize(object):
+
     """Continuously calls the Pozyx positioning function and prints its position."""
 #########################################################################################################
 #
@@ -176,9 +177,9 @@ class ReadyToLocalize(object):
                 pos_stamped = PoseStamped()
                 pos_stamped.header.frame_id = "/pozyx_frame"
                 pos_stamped.header.stamp = rospy.Time.now()
-                pos_stamped.pose.position.z = position.x
-                pos_stamped.pose.position.x = position.y
-                pos_stamped.pose.position.y = position.z
+                pos_stamped.pose.position.x = position.x
+                pos_stamped.pose.position.y = position.y
+                pos_stamped.pose.position.z = position.z
                 pos_stamped.pose.orientation.x = quat.x
                 pos_stamped.pose.orientation.y = quat.y
                 pos_stamped.pose.orientation.z = quat.z
@@ -196,7 +197,7 @@ class ReadyToLocalize(object):
             device_range_2 = DeviceRange()
             device_range_3 = DeviceRange()
             device_range_4 = DeviceRange()
-            time_range_0 = rospy.Time.now()
+            time_range_0 =time.time()
             destination_id = 0xA000 
             status = self.pozyx.doRanging(destination_id, device_range_1, self.remote_id)
             destination_id = 0xA001 
@@ -205,12 +206,12 @@ class ReadyToLocalize(object):
             status = self.pozyx.doRanging(destination_id, device_range_3, self.remote_id)
             destination_id = 0xA003 
             status = self.pozyx.doRanging(destination_id, device_range_4, self.remote_id)
-            time_range = rospy.Time.now()
+            time_range =time.time()
             print("tempo tra range 1 e 4")
             print(time_range - time_range_0)
 
             range_msg = Imu()
-            range_msg.header.stamp = time_range
+            range_msg.header.stamp = rospy.Time.now()
             range_msg.angular_velocity.x = device_range_1.distance
             range_msg.angular_velocity.y = device_range_2.distance
             range_msg.angular_velocity.z = device_range_3.distance
@@ -355,10 +356,10 @@ if __name__ == '__main__':
     if use_processing:
         osc_udp_client = SimpleUDPClient(ip, network_port)
     # necessary data for calibration, change the IDs and coordinates yourself
-    anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, 1440)),
-               DeviceCoordinates(0xA001, 1, Coordinates(8226, 0, 2150)),
-               DeviceCoordinates(0xA002, 1, Coordinates(163, 4255, 250)),
-               DeviceCoordinates(0xA003, 1, Coordinates(8127, 3158, 570))]
+    anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
+               DeviceCoordinates(0xA001, 1, Coordinates(8571, 0, height_anchor[1])),
+               DeviceCoordinates(0xA002, 1, Coordinates(1363, 7847, height_anchor[2])),
+               DeviceCoordinates(0xA003, 1, Coordinates(9280, 4100, height_anchor[3]))]
 
     algorithm = POZYX_POS_ALG_TRACKING  # positioning algorithm to use
     dimension = POZYX_3D               # positioning dimension

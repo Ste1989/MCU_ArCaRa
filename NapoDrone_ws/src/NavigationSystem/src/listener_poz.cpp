@@ -62,12 +62,16 @@ void quaternion_2_euler(double xquat, double yquat, double zquat, double wquat, 
 /*******************************************************************************************/
 void range_cb(const sensor_msgs::Imu::ConstPtr& imu)
 {
-    double time = imu->header.stamp.sec + imu->header.stamp.nsec/10^9;
-    if (time_0 == -1)
-    {
-      time_0 = time;
-    }
-    time = time - time_0;
+  double nsec = (double)imu->header.stamp.nsec;
+  nsec = nsec / 1000000000.0;
+  double time = imu->header.stamp.sec +nsec ;
+  if (time_0 == -1)
+  {
+    time_0 = time;
+    std::cout << time_0 << std::endl;
+  }
+  time = time - time_0;
+
     double roll, pitch, yaw;
     
     FILE* fd1;
@@ -106,12 +110,15 @@ void range_cb(const sensor_msgs::Imu::ConstPtr& imu)
 void magnetic_cb(const sensor_msgs::MagneticField::ConstPtr& msg)
 {
 
-    double time = msg->header.stamp.sec + msg->header.stamp.nsec/10^9;
-    if (time_0 == -1)
-    {
-      time_0 = time;
-    }
-    time = time - time_0;
+    double nsec = (double)msg->header.stamp.nsec;
+  nsec = nsec / 1000000000.0;
+  double time = msg->header.stamp.sec +nsec ;
+  if (time_0 == -1)
+  {
+    time_0 = time;
+    std::cout << time_0 << std::endl;
+  }
+  time = time - time_0;
     FILE* fd1;
     fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_magnetic.txt","a");
     fprintf(fd1, "%f", time);
@@ -134,12 +141,15 @@ void magnetic_cb(const sensor_msgs::MagneticField::ConstPtr& msg)
 void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg)
 {
 
-    double time = msg->header.stamp.sec + msg->header.stamp.nsec/10^9;
-    if (time_0 == -1)
-    {
-      time_0 = time;
-    }
-    time = time - time_0;
+     double nsec = (double)msg->header.stamp.nsec;
+  nsec = nsec / 1000000000.0;
+  double time = msg->header.stamp.sec +nsec ;
+  if (time_0 == -1)
+  {
+    time_0 = time;
+    std::cout << time_0 << std::endl;
+  }
+  time = time - time_0;
     FILE* fd1;
     fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_perssure.txt","a");
     fprintf(fd1, "%f", time);
@@ -155,12 +165,15 @@ void pressure_cb(const sensor_msgs::FluidPressure::ConstPtr& msg)
 /*******************************************************************************************/
 void imu_cb(const sensor_msgs::Imu::ConstPtr& imu)
 {
-    double time = imu->header.stamp.sec + imu->header.stamp.nsec/10^9;
-    if (time_0 == -1)
-    {
-      time_0 = time;
-    }
-    time = time - time_0;
+    double nsec = (double)imu->header.stamp.nsec;
+  nsec = nsec / 1000000000.0;
+  double time = imu->header.stamp.sec +nsec ;
+  if (time_0 == -1)
+  {
+    time_0 = time;
+    std::cout << time_0 << std::endl;
+  }
+  time = time - time_0;
 
     double roll, pitch, yaw;
     quaternion_2_euler(imu->orientation.x, imu->orientation.y, imu->orientation.z, imu->orientation.w, roll, pitch, yaw);
@@ -197,30 +210,33 @@ void imu_cb(const sensor_msgs::Imu::ConstPtr& imu)
 void poses_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
 
-
-  double time = msg->header.stamp.sec + msg->header.stamp.nsec/10^9;
+  double nsec = (double)msg->header.stamp.nsec;
+  nsec = nsec / 1000000000.0;
+  double time = msg->header.stamp.sec +nsec ;
   if (time_0 == -1)
   {
     time_0 = time;
+    std::cout << time_0 << std::endl;
   }
   time = time - time_0;
+
 
 
   double rool, pitch, yaw;
   quaternion_2_euler(msg->pose.orientation.x,msg->pose.orientation.y,
     msg->pose.orientation.z,msg->pose.orientation.w, 
     rool, pitch, yaw);
-  std::cout << "ROOL: " << rool*180/3.14 << "PITCH: " << pitch*180/3.14 << "YAW: " << yaw*180/3.14 << std::endl;
+  std::cout << "ROLL: " << rool*180/3.14 << "PITCH: " << pitch*180/3.14 << "YAW: " << yaw*180/3.14 << std::endl;
   //ho una stima buona della posizione della camera
   FILE* fd1;
   fd1 = fopen("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_position.txt","a");
   fprintf(fd1, "%f", time);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->pose.position.x);
+  fprintf(fd1, "%f", double(msg->pose.position.x)/1000.0);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->pose.position.y);
+  fprintf(fd1, "%f", double(msg->pose.position.y)/1000.0);
   fprintf(fd1, "%s", "  ");
-  fprintf(fd1, "%f", msg->pose.position.z);
+  fprintf(fd1, "%f", double(msg->pose.position.z)/1000.0);
   fprintf(fd1, "%s", "  ");
   fprintf(fd1, "%f", rool);
   fprintf(fd1, "%s", "  ");
