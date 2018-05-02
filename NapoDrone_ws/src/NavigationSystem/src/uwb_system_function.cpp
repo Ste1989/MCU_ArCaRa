@@ -204,13 +204,24 @@ void leggi_file_debug()
   float* num;
   FILE *fp;
 
-
-  ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt");
+  
+  ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
   Num_measure =0 ;
-  double temp1, temp2, temp3, temp4, temp5;
+  double temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11;
   while(!OpenFile.eof())
   {
-    OpenFile >> temp1 >> temp2 >> temp3 >> temp4 >> temp5;
+    OpenFile >> temp1 >> temp2 >> temp3 >> temp4 >> temp5>> temp6 >> temp7 >> temp8 >> temp9 >> temp10 >> temp11 ;
+   /* cout << temp1 << endl;
+    cout << temp2 << endl;
+    cout << temp3 << endl;
+    cout << temp4 << endl;
+    cout << temp5 << endl;
+    cout << temp6 << endl;
+    cout << temp7 << endl;
+    cout << temp8 << endl;
+    cout << temp9 << endl;
+    cout << temp10 << endl;
+    cout << temp11 << endl;*/
     Num_measure ++;
     
   }
@@ -224,17 +235,22 @@ void leggi_file_debug()
   range3_log = (double *) malloc(sizeof(double) * Num_measure);
   range4_log = (double *) malloc(sizeof(double) * Num_measure);
 
+  double * app_1 = (double *) malloc(sizeof(double) * Num_measure);
+  double *app_2 = (double *) malloc(sizeof(double) * Num_measure);
+  double *app_3 = (double *) malloc(sizeof(double) * Num_measure);
+  double *app_4 = (double *) malloc(sizeof(double) * Num_measure);
+  double *app_5 = (double *) malloc(sizeof(double) * Num_measure);
+  double *app_6 = (double *) malloc(sizeof(double) * Num_measure);
   double f1,f2,f3,f4,f5;
   int i =0 ;
-  ifstream OpenFile1("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt");
+  ifstream OpenFile1("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_rangetxt");
   while(!OpenFile1.eof())
   {
-    OpenFile1 >> time_log[i] >> range1_log[i] >> range2_log[i] >> range3_log[i] >> range4_log[i];
-   // cout << time_log[i]  << " " << range1_log[i] << " " << range2_log[i] << " " << range3_log[i] << " " << range4_log[i] << endl;
+    OpenFile1 >> time_log[i] >> app_1[i]   >> app_2[i]  >> app_3[i]  >> app_4[i]  >> range1_log[i] >> range2_log[i] >> range3_log[i] >> range4_log[i] >> app_5[i]  >> app_6[i];
+    cout << time_log[i]  << " " << range1_log[i] << " " << range2_log[i] << " " << range3_log[i] << " " << range4_log[i] << endl;
     i++;
   }
   OpenFile1.close();
-
 
 //free(array);
 

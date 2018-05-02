@@ -57,6 +57,7 @@ int main(int argc, char **argv)
     nh.param<double>("/UWBSystem_Node/Q5", Q(4,4), 0.0);
     nh.param<double>("/UWBSystem_Node/Q6", Q(5,5), 0.0);
 
+    
     //sottoscrizione al topic dei range
     rangeUWB_sub = nh.subscribe<uwb_manager::RangeUwb>("/uwb/range", 1, rangeUWB_cb);
     
