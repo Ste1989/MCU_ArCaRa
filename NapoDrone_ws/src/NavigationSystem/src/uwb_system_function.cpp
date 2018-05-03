@@ -299,7 +299,7 @@ void resample_data_range(ros::Time begin_time)
   range4_log_rs = (double *) malloc(sizeof(double) * num_samples);
   int index_range = 0;
   
-
+  double range1, range2, range3, range4;
   for(int i = 0; i < num_samples ; i++)
   {
     double time = time_ms * (i+1);
@@ -307,10 +307,27 @@ void resample_data_range(ros::Time begin_time)
     for(int j = index_range; time_log[j] <= time ; j++)
     {
       //sommo i valori se non ho buchi
-      sum_range_dt.anchor0 = sum_range_dt.anchor0 + range1_log[index_range]/1000.0;
-      sum_range_dt.anchor1 = sum_range_dt.anchor1 + range2_log[index_range]/1000.0;
-      sum_range_dt.anchor2 = sum_range_dt.anchor2 + range3_log[index_range]/1000.0;
-      sum_range_dt.anchor3 = sum_range_dt.anchor3 + range4_log[index_range]/1000.0;
+      if(abs(range1_log[index_range]) > 0.1 && abs(range2_log[index_range]) > 0.1 && abs(range3_log[index_range]) > 0.1 && abs(range4_log[index_range]) > 0.1)
+      {
+        sum_range_dt.anchor0 = sum_range_dt.anchor0 + range1_log[index_range]/1000.0;
+        sum_range_dt.anchor1 = sum_range_dt.anchor1 + range2_log[index_range]/1000.0;
+        sum_range_dt.anchor2 = sum_range_dt.anchor2 + range3_log[index_range]/1000.0;
+        sum_range_dt.anchor3 = sum_range_dt.anchor3 + range4_log[index_range]/1000.0;
+        range1 = range1_log[index_range];
+        range2 = range2_log[index_range];
+        range3 = range3_log[index_range];
+        range4 = range4_log[index_range];
+        
+      }else
+      {
+        sum_range_dt.anchor0 = sum_range_dt.anchor0 + range1/1000.0;
+        sum_range_dt.anchor1 = sum_range_dt.anchor1 + range2/1000.0;
+        sum_range_dt.anchor2 = sum_range_dt.anchor2 + range3/1000.0;
+        sum_range_dt.anchor3 = sum_range_dt.anchor3 + range4/1000.0;
+
+      }
+
+
       new_range_packet ++;
       index_range ++;
 
@@ -333,8 +350,8 @@ void resample_data_range(ros::Time begin_time)
     
   }
 
-  //COLLAUDATO, DEVO ELIMINARE I BUCHI CON ZERO
-  /* 
+  /*
+   
   for (int k = 0; k < Num_measure ; k++)
   {
 
