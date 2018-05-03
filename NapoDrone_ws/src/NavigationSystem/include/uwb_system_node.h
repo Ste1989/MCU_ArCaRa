@@ -33,6 +33,7 @@ ros::Time current_time, filter_time, range_time;
 //per lettura file log
 int Num_measure;
 double* time_log, *range1_log, *range2_log, *range3_log, *range4_log;
+double* time_log_rs, *range1_log_rs, *range2_log_rs, *range3_log_rs, *range4_log_rs;
 
 //ancore
 Vector3d anchor0;
@@ -43,6 +44,9 @@ Vector3d anchor3;
 //somma nell'intervallo dei range
 uwb_manager::RangeUwb sum_range_dt;
 
+//per debug
+int index_range ;
+double time_next;
 //EKF///////////////////////////////////////
 bool first_cycle_EKF;
 MatrixXd A(6,6);
@@ -72,5 +76,6 @@ void init_global_var();
 void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated);
 void triangolazione_range(VectorXd range,  Vector3d& pos_triangolata);
 void leggi_file_debug();
+void resample_data_range(ros::Time begin_time);
 
 //#endif

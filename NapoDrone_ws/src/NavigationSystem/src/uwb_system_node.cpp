@@ -15,6 +15,8 @@ int main(int argc, char **argv)
     nh.param<bool>("/UWBSystem_Node/debug", debug, false);
     nh.param<bool>("/UWBSystem_Node/log_file", log_file, false);
     nh.param<int>("/UWBSystem_Node/freq_filter", freq_filter, 100);
+    cout << freq_filter << endl;
+    cout << "CIAO" << endl;
     //coordinate delle ancore
     //anchor0 X-Y-Z
     nh.param<double>("/UWBSystem_Node/anchor0_X", anchor0(0), 0.0);
@@ -68,7 +70,7 @@ int main(int argc, char **argv)
     init_global_var();
     
 
-    //se debug è uguale true leggo il file uwb_range.txt
+    //se debug è uguale true leggo il file txt
     bool init_time0 = false;
     if(debug)
     {
@@ -82,33 +84,48 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(100);
     //gettimeofday(&filter_time, NULL);
     filter_time = ros::Time::now();
-   
+    
+
+
+
+
     while(ros::ok())
     {
         //loop rate
         //loop_rate.sleep();
+
         //calolo tempo attuale
         //gettimeofday(&current_time, NULL);
         //current_time = ros::Time::now();
+
         //calcolo tempo di controllo
         //elapsed_time_filter = (current_time.tv_sec - filter_time.tv_sec) * 1000;
         //elapsed_time_filter += (current_time.tv_usec - filter_time.tv_usec) / 1000;
         ros::Duration elapsed_time = ros::Time::now() - filter_time;
         elapsed_time_filter  = elapsed_time.toSec();
-        cout << elapsed_time_filter << endl;
+        //cout << elapsed_time_filter << endl;
         //elapsed_time_filter = 500 ---> 0.5 s
-        
+        //cout << (current_time.tv_sec-time_0.tv_sec) << endl;//;+ ((current_time.tv_usec-time_0.tv_usec) /1000) << endl;
+
         if(debug && init_time0)
         {
+            //il file di debug ha il tempo che iniza da 0, devo inizializzare a 0 anceh il tempo di ROS
+            sum_range_dt.anchor0 = 0;
+            sum_range_dt.anchor1 = 0;
+            sum_range_dt.anchor2 = 0;
+            sum_range_dt.anchor3 = 0;
+            new_range_packet = 0;
+            
             begin = ros::Time::now();
             cout << "OK" << endl;
             cout << begin << endl;
             init_time0 = false;
-        
+            
+            resample_data_range(begin);
         }
         
+
         
-        //cout << (current_time.tv_sec-time_0.tv_sec) << endl;//;+ ((current_time.tv_usec-time_0.tv_usec) /1000) << endl;
 
         //A)leggo i topic
         ros::spinOnce();
@@ -116,10 +133,11 @@ int main(int argc, char **argv)
         //EKF_solo_range
         if(elapsed_time_filter >= time_ms)
         {
-            //cout << begin << endl;
+            
+            //cout << "***************************************************************************" << endl;
             //cout << ros::Time::now() -  begin << endl<< endl;
-            if(elapsed_time_filter > time_ms)
-                ROS_WARN("FREQUENZA FILTRO %f ", 1/(elapsed_time_filter/1000));
+            //if(elapsed_time_filter > time_ms)
+            //    ROS_WARN("FREQUENZA FILTRO %f ", 1/(elapsed_time_filter/1000));
          
 
             //sottocampiono il segnale dei range

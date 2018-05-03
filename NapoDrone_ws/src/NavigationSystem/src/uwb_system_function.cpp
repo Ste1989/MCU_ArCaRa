@@ -13,7 +13,11 @@ void init_global_var()
   first_cycle_EKF = true;
   //time_ms = (1000.0/freq_filter);
   time_ms = (1.0/freq_filter);
+  cout << freq_filter << endl;
+  cout << time_ms << endl;
+
   dt_filter = time_ms/1000.0;
+
   A << 1,0,0,dt_filter,0,0,
        0,1,0,0,dt_filter,0,
        0,0,1,0,0,dt_filter,
@@ -33,6 +37,9 @@ void init_global_var()
   sum_range_dt.anchor1 = 0.0;
   sum_range_dt.anchor2 = 0.0;
   sum_range_dt.anchor3 = 0.0;
+
+  //per debug
+  index_range = 0;
 
   //tempo 0
   //per inizializzare secs_0 richiamo il client
@@ -211,7 +218,7 @@ void leggi_file_debug()
   while(!OpenFile.eof())
   {
     OpenFile >> temp1 >> temp2 >> temp3 >> temp4 >> temp5>> temp6 >> temp7 >> temp8 >> temp9 >> temp10 >> temp11 ;
-   /* cout << temp1 << endl;
+    /*cout << temp1 << endl;
     cout << temp2 << endl;
     cout << temp3 << endl;
     cout << temp4 << endl;
@@ -226,6 +233,7 @@ void leggi_file_debug()
     
   }
   OpenFile.close();
+  Num_measure--;
   cout << "Numero di misure" << Num_measure << endl;
 
   //ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/uwb_range.txt");
@@ -243,15 +251,100 @@ void leggi_file_debug()
   double *app_6 = (double *) malloc(sizeof(double) * Num_measure);
   double f1,f2,f3,f4,f5;
   int i =0 ;
-  ifstream OpenFile1("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_rangetxt");
+  ifstream OpenFile1("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
   while(!OpenFile1.eof())
   {
     OpenFile1 >> time_log[i] >> app_1[i]   >> app_2[i]  >> app_3[i]  >> app_4[i]  >> range1_log[i] >> range2_log[i] >> range3_log[i] >> range4_log[i] >> app_5[i]  >> app_6[i];
-    cout << time_log[i]  << " " << range1_log[i] << " " << range2_log[i] << " " << range3_log[i] << " " << range4_log[i] << endl;
+    
     i++;
   }
   OpenFile1.close();
+  
+  /*for (i = 0; i < Num_measure ; i++)
+  {
 
-//free(array);
+    cout << time_log[i]  << " " << range1_log[i] << " " << range2_log[i] << " " << range3_log[i] << " " << range4_log[i] << endl;
+  }*/
 
+
+
+  free(app_1);
+  free(app_2);
+  free(app_3);
+  free(app_4);
+  free(app_5);
+  free(app_6);
+
+}
+/******************************************************************************************/
+/*                                                                                        */
+/*                  Resample data                                                         */
+/*                                                                                        */
+/******************************************************************************************/
+void resample_data_range(ros::Time begin_time)
+{
+  
+  //ricampiono i dati 
+
+  //calolo quanti campioni ci vogliono
+  //cout << (time_log[Num_measure-1] - time_log[0])  << endl;
+  int num_samples = (int)((time_log[Num_measure-1] - time_log[0]) / time_ms)-1;
+  
+
+
+  time_log_rs = (double *) malloc(sizeof(double) * num_samples);
+  range1_log_rs = (double *) malloc(sizeof(double) * num_samples);
+  range2_log_rs = (double *) malloc(sizeof(double) * num_samples);
+  range3_log_rs = (double *) malloc(sizeof(double) * num_samples);
+  range4_log_rs = (double *) malloc(sizeof(double) * num_samples);
+  int index_range = 0;
+  
+
+  for(int i = 0; i < num_samples ; i++)
+  {
+    double time = time_ms * (i+1);
+ 
+    for(int j = index_range; time_log[j] <= time ; j++)
+    {
+      //sommo i valori se non ho buchi
+      sum_range_dt.anchor0 = sum_range_dt.anchor0 + range1_log[index_range]/1000.0;
+      sum_range_dt.anchor1 = sum_range_dt.anchor1 + range2_log[index_range]/1000.0;
+      sum_range_dt.anchor2 = sum_range_dt.anchor2 + range3_log[index_range]/1000.0;
+      sum_range_dt.anchor3 = sum_range_dt.anchor3 + range4_log[index_range]/1000.0;
+      new_range_packet ++;
+      index_range ++;
+
+    }
+    
+    //qua devo prepare il segnale ricampionato
+    time_log_rs[i] = time ; /// qua devo sommare il tempo inziale begin_time
+    range1_log_rs[i] = sum_range_dt.anchor0 / new_range_packet;
+    range2_log_rs[i] = sum_range_dt.anchor1 / new_range_packet;
+    range3_log_rs[i] = sum_range_dt.anchor2 / new_range_packet;
+    range4_log_rs[i] = sum_range_dt.anchor3 / new_range_packet;
+
+
+    sum_range_dt.anchor0 = 0;
+    sum_range_dt.anchor1 = 0;
+    sum_range_dt.anchor2 = 0;
+    sum_range_dt.anchor3 = 0;
+    new_range_packet = 0;
+
+    
+  }
+
+  //COLLAUDATO, DEVO ELIMINARE I BUCHI CON ZERO
+  /* 
+  for (int k = 0; k < Num_measure ; k++)
+  {
+
+    cout << time_log[k]  << " " << range1_log[k] << " " << range2_log[k] << " " << range3_log[k] << " " << range4_log[k] << endl;
+  }
+  cout << "********************+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  for (int k = 0; k < num_samples ; k++)
+  {
+
+    cout << time_log_rs[k]  << " " << range1_log_rs[k] << " " << range2_log_rs[k] << " " << range3_log_rs[k] << " " << range4_log_rs[k] << endl;
+  }
+*/
 }
