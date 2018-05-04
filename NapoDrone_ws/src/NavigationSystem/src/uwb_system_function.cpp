@@ -13,10 +13,9 @@ void init_global_var()
   first_cycle_EKF = true;
   //time_ms = (1000.0/freq_filter);
   time_ms = (1.0/freq_filter);
-  cout << freq_filter << endl;
-  cout << time_ms << endl;
 
-  dt_filter = time_ms/1000.0;
+
+  dt_filter = time_ms;
 
   A << 1,0,0,dt_filter,0,0,
        0,1,0,0,dt_filter,0,
@@ -59,7 +58,7 @@ void init_global_var()
   //path log file
   if(log_file)
   { 
-    log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
+    log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
     fd = fopen(log_uwb_path.c_str(), "w");
     fclose(fd);
   }
@@ -96,47 +95,70 @@ void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg)
 }
 /******************************************************************************************/
 /*                                                                                        */
+/*                  INIT EKF                                                                   */
+/*                                                                                        */
+/******************************************************************************************/
+void EKF_solo_range_init(VectorXd range)
+{
+/*
+ range(0) = 6.316;
+  range(1) = 3.13;
+  range(2) = 8.232;
+  range(3) = 5.149;
+*/
+  //inizializzo il filtro
+  Vector3d pos_init;
+  pos_init << 0,0,0;
+ 
+
+  triangolazione_range(range, pos_init);
+  x_k(0) = pos_init(0);
+  x_k(1) = pos_init(1);
+  x_k(2) = pos_init(2);
+  
+
+  cout << " POS TRIANG INIT: " << x_k(0) << " " <<x_k(1) << " " << x_k(2) << endl;  
+
+}
+/******************************************************************************************/
+/*                                                                                        */
 /*                  EKF                                                                   */
 /*                                                                                        */
 /******************************************************************************************/
 
 void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
 {
-  if(first_cycle_EKF)
-  {
+  
 
-    //inizializzo il filtro
-    Vector3d pos_init;
-    pos_init << 0,0,0;
-    triangolazione_range(range, pos_init);
-    x_k(0) = pos_init(0);
-    x_k(1) = pos_init(1);
-    x_k(2) = pos_init(2);
-    first_cycle_EKF = false;
+
+
+  //da tirare fuori dall EKF l init
+  //costrusico la matrice delle distanze
+  d_hat(0) = ((x_k(0)-anchor_pos(0,0))*(x_k(0)-anchor_pos(0,0)) + (x_k(1)-anchor_pos(0,1))*(x_k(1)-anchor_pos(0,1)) +(x_k(2)-anchor_pos(0,2))*(x_k(2)-anchor_pos(0,2)));
+  d_hat(1) = ((x_k(0)-anchor_pos(1,0))*(x_k(0)-anchor_pos(1,0)) + (x_k(1)-anchor_pos(1,1))*(x_k(1)-anchor_pos(1,1)) +(x_k(2)-anchor_pos(1,2))*(x_k(2)-anchor_pos(1,2)));
+  d_hat(2) = ((x_k(0)-anchor_pos(2,0))*(x_k(0)-anchor_pos(2,0)) + (x_k(1)-anchor_pos(2,1))*(x_k(1)-anchor_pos(2,1)) +(x_k(2)-anchor_pos(2,2))*(x_k(2)-anchor_pos(2,2)));
+  d_hat(3) = ((x_k(0)-anchor_pos(3,0))*(x_k(0)-anchor_pos(3,0)) + (x_k(1)-anchor_pos(3,1))*(x_k(1)-anchor_pos(3,1)) +(x_k(2)-anchor_pos(3,2))*(x_k(2)-anchor_pos(3,2)));
+  d_hat = d_hat.abs().sqrt();
+
+  
+  for(int i=0;i<4;i++)
+  {
+    for(int j=0;j<3;j++)
+      //jacobiano di misura
+      H(i,j) = ( 1/d_hat(i) ) * ( x_k(j) - anchor_pos(i,j) );
+      
   }
-  else
-  {
 
-    //costrusico la matrice delle distanze
-    d_hat(0) = ((x_k(0)-anchor_pos(0,0))*(x_k(0)-anchor_pos(0,0)) + (x_k(1)-anchor_pos(0,1))*(x_k(1)-anchor_pos(0,1)) +(x_k(2)-anchor_pos(0,2))*(x_k(2)-anchor_pos(0,2)));
-    d_hat(1) = ((x_k(0)-anchor_pos(1,0))*(x_k(0)-anchor_pos(1,0)) + (x_k(1)-anchor_pos(1,1))*(x_k(1)-anchor_pos(1,1)) +(x_k(2)-anchor_pos(1,2))*(x_k(2)-anchor_pos(1,2)));
-    d_hat(2) = ((x_k(0)-anchor_pos(2,0))*(x_k(0)-anchor_pos(2,0)) + (x_k(1)-anchor_pos(2,1))*(x_k(1)-anchor_pos(2,1)) +(x_k(2)-anchor_pos(2,2))*(x_k(2)-anchor_pos(2,2)));
-    d_hat(3) = ((x_k(0)-anchor_pos(3,0))*(x_k(0)-anchor_pos(3,0)) + (x_k(1)-anchor_pos(3,1))*(x_k(1)-anchor_pos(3,1)) +(x_k(2)-anchor_pos(3,2))*(x_k(2)-anchor_pos(3,2)));
-    d_hat.abs().sqrt();
-    for(int i=0;i<4;i++)
-    {
-      for(int j=0;j<3;j++)
-        //jacobiano di misura
-        H(i,j) = ( 1/d_hat(i) ) * ( x_k(j) - anchor_pos(i,j) );
-    }
-
+  
   //propago lo stato
   x_k = A*x_k;
   //propago la matrice di covarianza
   P = A*P*A.transpose() + Q;
-
+  
   //Calcolo il guadagno di Kalman
   K = P*H.transpose()*(H*P*H.transpose() + R).inverse(); //6x4
+
+  
 
   VectorXd resid(4);
   //calcolo residuo
@@ -147,10 +169,14 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
 
   //aggiorno lo stato e la covarianza della stima
   x_k = x_k + K*resid;
+
+  
+
   P = (MatrixXd::Identity(6,6)-K*H)*P*(MatrixXd::Identity(6,6)-K*H).transpose() +K*R*K.transpose();
 
 
-  }
+
+  
   //output
   position_estimated(0) = x_k(0);
   position_estimated(1) = x_k(1);
@@ -165,7 +191,9 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
 /******************************************************************************************/
 void triangolazione_range(VectorXd range,  Vector3d& pos_triangolata)
 {
-
+  int triang = 2;
+if( triang == 1)
+  {
   Vector3d diff_distanza;
 
   //distanze tra le ancora
@@ -197,6 +225,49 @@ void triangolazione_range(VectorXd range,  Vector3d& pos_triangolata)
     pos_triangolata = A.inverse() * b;
   else
     pos_triangolata << 0 ,0 ,0 ;
+  } 
+
+  else 
+  {
+    
+
+    double a1 = 2*(anchor1(0)-anchor0(0));
+    double b1 = 2*(anchor1(1)-anchor0(1)); 
+    double c1 = 2*(anchor1(2)-anchor0(2));
+
+    double a2 = 2*(anchor2(0)-anchor1(0));
+    double b2 = 2*(anchor2(1)-anchor1(1)); 
+    double c2 = 2*(anchor2(2)-anchor1(2));
+
+    double a3 = 2*(anchor3(0)-anchor2(0));
+    double b3 = 2*(anchor3(1)-anchor2(1)); 
+    double c3 = 2*(anchor3(2)-anchor2(2));
+
+
+    double blocco1 = c2 - c1*a2/a1;
+    double blocco2 = b2 - b1*a2/a1;
+    double blocco12 = c3 - c1*a3/a1;
+    double blocco22 = b3 - b1*a3/a1;
+
+    double d1 = range(0)*range(0)-range(1)*range(1) - anchor0.norm() * anchor0.norm()  + anchor1.norm() * anchor1.norm();
+    double d2 = range(1)*range(1)-range(2)*range(2) - anchor1.norm() * anchor1.norm()  + anchor2.norm() * anchor2.norm();
+    double d3 = range(2)*range(2)-range(3)*range(3) - anchor2.norm() * anchor2.norm()  + anchor3.norm() * anchor3.norm();
+
+    double blocco3 = d2 - a2*d1/a1;
+    double blocco32 = d3 - a3*d1/a1;
+
+    if (range(0)*range(0) + range(1)*range(1) +range(2)*range(2) +range(3)*range(3) > 0)
+    {
+      pos_triangolata(2) = (blocco32 - blocco3*blocco22/blocco2)/blocco12/(1 - blocco1*blocco22/(blocco2*blocco12));
+      pos_triangolata(1) = (blocco3 - pos_triangolata(2)*blocco1)/blocco2;
+      pos_triangolata(0) = (d1 - b1*pos_triangolata(1) - c1*pos_triangolata(2))/a1;
+      
+    }
+    else
+      pos_triangolata << 0 ,0 ,0 ;
+
+
+  }
 
 }
 /******************************************************************************************/
@@ -281,26 +352,26 @@ void leggi_file_debug()
 /*                  Resample data                                                         */
 /*                                                                                        */
 /******************************************************************************************/
-void resample_data_range(ros::Time begin_time)
+void resample_data_range()
 {
   
   //ricampiono i dati 
 
   //calolo quanti campioni ci vogliono
   //cout << (time_log[Num_measure-1] - time_log[0])  << endl;
-  int num_samples = (int)((time_log[Num_measure-1] - time_log[0]) / time_ms)-1;
+  num_samples_rs = (int)((time_log[Num_measure-1] - time_log[0]) / time_ms)-1;
   
 
 
-  time_log_rs = (double *) malloc(sizeof(double) * num_samples);
-  range1_log_rs = (double *) malloc(sizeof(double) * num_samples);
-  range2_log_rs = (double *) malloc(sizeof(double) * num_samples);
-  range3_log_rs = (double *) malloc(sizeof(double) * num_samples);
-  range4_log_rs = (double *) malloc(sizeof(double) * num_samples);
+  time_log_rs = (double *) malloc(sizeof(double) * num_samples_rs);
+  range1_log_rs = (double *) malloc(sizeof(double) * num_samples_rs);
+  range2_log_rs = (double *) malloc(sizeof(double) * num_samples_rs);
+  range3_log_rs = (double *) malloc(sizeof(double) * num_samples_rs);
+  range4_log_rs = (double *) malloc(sizeof(double) * num_samples_rs);
   int index_range = 0;
   
   double range1, range2, range3, range4;
-  for(int i = 0; i < num_samples ; i++)
+  for(int i = 0; i < num_samples_rs ; i++)
   {
     double time = time_ms * (i+1);
  

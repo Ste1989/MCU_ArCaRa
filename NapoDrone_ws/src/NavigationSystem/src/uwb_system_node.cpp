@@ -15,8 +15,7 @@ int main(int argc, char **argv)
     nh.param<bool>("/UWBSystem_Node/debug", debug, false);
     nh.param<bool>("/UWBSystem_Node/log_file", log_file, false);
     nh.param<int>("/UWBSystem_Node/freq_filter", freq_filter, 100);
-    cout << freq_filter << endl;
-    cout << "CIAO" << endl;
+
     //coordinate delle ancore
     //anchor0 X-Y-Z
     nh.param<double>("/UWBSystem_Node/anchor0_X", anchor0(0), 0.0);
@@ -72,23 +71,61 @@ int main(int argc, char **argv)
 
     //se debug è uguale true leggo il file txt
     bool init_time0 = false;
+    int index_debug = 0;
     if(debug)
     {
         leggi_file_debug();
-        init_time0 = true;
-    
+         //il file di debug ha il tempo che iniza da 0, devo inizializzare a 0 anceh il tempo di ROS
+        sum_range_dt.anchor0 = 0;
+        sum_range_dt.anchor1 = 0;
+        sum_range_dt.anchor2 = 0;
+        sum_range_dt.anchor3 = 0;
+        new_range_packet = 0;
+        //RESAMPLE DATA
+        resample_data_range();
+        
+        //RUN EKF
+        //update filtro
+        VectorXd position_estimated(3);
+        
+        VectorXd range(4);
+        range(0) = range1_log_rs[0];
+        range(1) = range2_log_rs[0];
+        range(2) = range3_log_rs[0];
+        range(3) = range4_log_rs[0];
+        EKF_solo_range_init(range);
+
+        for (int i = 1; i < num_samples_rs ; i++)
+        {
+            range(0) = range1_log_rs[i];
+            range(1) = range2_log_rs[i];
+            range(2) = range3_log_rs[i];
+            range(3) = range4_log_rs[i];
+
+            EKF_solo_range(range,  dt_filter, position_estimated);
+
+            if(log_file)
+            { 
+                log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
+                fd = fopen(log_uwb_path.c_str(), "a");
+                fprintf(fd, "%f", position_estimated(0));
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f", position_estimated(1));
+                fprintf(fd, "%s", "  ");
+                fprintf(fd, "%f\n", position_estimated(2));
+                fclose(fd);
+            }
+        }
+        
+        
     }
-    ros::Time begin ;
+    
    
     //frequenza a cui far girare il nodo
     ros::Rate loop_rate(100);
     //gettimeofday(&filter_time, NULL);
     filter_time = ros::Time::now();
     
-
-
-
-
     while(ros::ok())
     {
         //loop rate
@@ -107,31 +144,16 @@ int main(int argc, char **argv)
         //elapsed_time_filter = 500 ---> 0.5 s
         //cout << (current_time.tv_sec-time_0.tv_sec) << endl;//;+ ((current_time.tv_usec-time_0.tv_usec) /1000) << endl;
 
-        if(debug && init_time0)
-        {
-            //il file di debug ha il tempo che iniza da 0, devo inizializzare a 0 anceh il tempo di ROS
-            sum_range_dt.anchor0 = 0;
-            sum_range_dt.anchor1 = 0;
-            sum_range_dt.anchor2 = 0;
-            sum_range_dt.anchor3 = 0;
-            new_range_packet = 0;
-            
-            begin = ros::Time::now();
-            cout << "OK" << endl;
-            cout << begin << endl;
-            init_time0 = false;
-            
-            resample_data_range(begin);
-        }
+        
         
 
         
 
         //A)leggo i topic
-        ros::spinOnce();
+        //ros::spinOnce();
 
         //EKF_solo_range
-        if(elapsed_time_filter >= time_ms)
+       /* if(elapsed_time_filter >= time_ms)
         {
             
             //cout << "***************************************************************************" << endl;
@@ -161,7 +183,7 @@ int main(int argc, char **argv)
             sum_range_dt.anchor2 = 0;
             sum_range_dt.anchor3 = 0;
         }
-
+*/
         
         
 

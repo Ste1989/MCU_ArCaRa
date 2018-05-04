@@ -61,6 +61,8 @@ MatrixXd anchor_pos(4,3);
 int freq_filter;
 double time_ms;
 double dt_filter ;
+
+int num_samples_rs; 
 /////////////////////////////////////////////
 
 bool log_file;
@@ -73,9 +75,10 @@ std::string log_uwb_path;
 //dichiarazione delle callback
 void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg);
 void init_global_var();
+void EKF_solo_range_init(VectorXd range);
 void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated);
 void triangolazione_range(VectorXd range,  Vector3d& pos_triangolata);
 void leggi_file_debug();
-void resample_data_range(ros::Time begin_time);
+void resample_data_range();
 
 //#endif
