@@ -19,15 +19,24 @@ from pypozyx import (DeviceRange,POZYX_POS_ALG_UWB_ONLY, POZYX_3D,POZYX_POS_ALG_
 from pypozyx.definitions.bitmasks import POZYX_INT_MASK_IMU
 
 from pythonosc.udp_client import SimpleUDPClient
+
+
+
 remote_id = None
 
 anchors_ids = [0xA000,0xA001,0xA002,0xA003];
-height_anchor = [1878,1454,1525,2115];
+height_anchor = [1878,1454,1525,2115]; #mm
 import time
-enable_auto_calibration = False
-imu_log = True
-pos_log =False
-range_log = True
+
+enable_auto_calibration = False;
+num_campioni_auto_ranging = 100;
+y2_positive = True; #Assumiamo y2 positiva o no
+
+imu_log = True;
+pos_log =False;
+range_log = True;
+
+
 class ReadyToLocalize(object):
 
     """Continuously calls the Pozyx positioning function and prints its position."""
@@ -67,6 +76,7 @@ class ReadyToLocalize(object):
         #cancella i devices in memoria
         self.pozyx.clearDevices(self.remote_id)
         #auto range delle ancore
+        Anchor_calibration()
         status = self.setAnchorAuto()
         if status == POZYX_FAILURE:
             print("----------------------")
@@ -77,6 +87,137 @@ class ReadyToLocalize(object):
             print("calibrazione OK")
             print("----------------------")
         self.printPublishConfigurationResult()
+
+
+#########################################################################################################
+#
+#                               calibrazione Automatica STEFANO
+#
+########################################################################################################
+    def Anchor_calibration():
+
+        range_0_1 = [];
+
+        range_0_2 = [];
+        range_1_2 = [];
+
+        range_0_3 = [];
+        range_1_3 = [];
+        range_2_3 = [];
+
+        device_range = DeviceRange();
+        #########################################################################################################################################
+        #doranging tra Anchor 0 e Anchor 1
+        print("Range between Anchor 0 and Anchor 1")
+        i = 0;
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[1];
+        while i < num_campioni_auto_ranging:
+            status = Pozyx.doRemoteRanging(remote_id, device_range , destination_id);
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                range_0_1[i] = device_range.distance;
+                i = i +1;
+            
+        
+        #########################################################################################################################################
+        #doranging tra Anchor 0 e Anchor 2
+        print("Range between Anchor 0 and Anchor 2")
+        i = 0;
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[2];
+        while i < num_campioni_auto_ranging:
+            status = Pozyx.doRemoteRanging(remote_id, device_range , destination_id);
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                range_0_2[i] = device_range.distance;
+                i = i +1;
+
+        #doranging tra Anchor 1 e Anchor 2
+        print("Range between Anchor 1 and Anchor 2")
+        i = 0;
+        remote_id = anchors_ids[1];
+        destination_id = anchors_ids[2];
+        while i < num_campioni_auto_ranging:
+            status = Pozyx.doRemoteRanging(remote_id, device_range , destination_id);
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                range_1_2[i] = device_range.distance;
+                i = i +1;
+
+        #########################################################################################################################################
+        #doranging tra Anchor 0 e Anchor 3
+        print("Range between Anchor 0 and Anchor 3")
+        i = 0;
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[3];
+        while i < num_campioni_auto_ranging:
+            status = Pozyx.doRemoteRanging(remote_id, device_range , destination_id);
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                range_0_3[i] = device_range.distance;
+                i = i +1;
+
+        #doranging tra Anchor 1 e Anchor 3
+        print("Range between Anchor 1 and Anchor 3")
+        i = 0;
+        remote_id = anchors_ids[1];
+        destination_id = anchors_ids[3];
+        while i < num_campioni_auto_ranging:
+            status = Pozyx.doRemoteRanging(remote_id, device_range , destination_id);
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                range_1_3[i] = device_range.distance;
+                i = i +1;
+
+        #doranging tra Anchor 2 e Anchor 3
+        print("Range between Anchor 2 and Anchor 3")
+        i = 0;
+        remote_id = anchors_ids[2];
+        destination_id = anchors_ids[3];
+        while i < num_campioni_auto_ranging:
+            status = Pozyx.doRemoteRanging(remote_id, device_range , destination_id);
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                range_2_3[i] = device_range.distance;
+                i = i +1;
+
+        #########################################################################################################################################
+
+        
+        #####################################################################################################
+        #calolo della componente x e y dell'antenna 1
+        #####################################################################################################
+        x1_stimated = [];
+        sum = 0.0 ;
+        for i = 0 in len(range_0_1):
+            x1_stimated[i] = sqrt(range_0_1[i]*range_0_1[i] - (height_anchor[1]-height_anchor[0])*(height_anchor[1]-height_anchor[0]));
+            sum = x1_stimated[i] + sum;
+        #calolo della media
+        x1 = sum / num_campioni_auto_ranging;
+        #####################################################################################################
+        #calolo della componente x e y dell'antenna 2
+        #####################################################################################################
+        x2_stimated = [];
+        y2_stimated = [];
+        z20_2 = (height_anchor[2]-height_anchor[0])*(height_anchor[2]-height_anchor[0]);
+        z21_2 = (height_anchor[2]-height_anchor[1])*(height_anchor[2]-height_anchor[1]);
+        x1_2 = x1*x1;
+        sum1 = 0;
+        sum2 = 0;
+        for i = 0 in len(range_0_2):
+            d02_2 = range_0_2[i]*range_0_2[i];
+            d12_2 = range_1_2[i]*range_1_2[i];
+            x2_stimated[i] = (z02_2 - z12_2 + x1_2 - z02_2 + z12_2)/(2*x1);
+            if y2_positive:
+                y2_stimated[i] = sqrt(d02_2 - (x2_stimated[i]*x2_stimated[i]) - z02_2);    
+            else:
+                y2_stimated[i] = -sqrt(d02_2 - (x2_stimated[i]*x2_stimated[i]) - z02_2);
+            sum1 = sum1 + x2_stimated[i];
+            sum2 = sum2 + x2_stimated[i];
+
+        #calcolo con la media 
+        x2 = sum1 / num_campioni_auto_ranging;
+        y2 = sum2 / num_campioni_auto_ranging;
+        #####################################################################################################
+        #calolo della componente x e y e z  dell'antenna 3
+        #####################################################################################################
+        
+
 
 #########################################################################################################
 #
