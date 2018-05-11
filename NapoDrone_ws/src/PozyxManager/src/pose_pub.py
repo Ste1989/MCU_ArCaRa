@@ -36,6 +36,11 @@ imu_log = True;
 pos_log =False;
 range_log = True;
 
+anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
+           DeviceCoordinates(0xA001, 1, Coordinates(8571, 0, height_anchor[1])),
+           DeviceCoordinates(0xA002, 1, Coordinates(1363, 7847, height_anchor[2])),
+           DeviceCoordinates(0xA003, 1, Coordinates(9280, 4100, height_anchor[3]))];
+
 
 class ReadyToLocalize(object):
 
@@ -178,45 +183,109 @@ class ReadyToLocalize(object):
 
         #########################################################################################################################################
 
+      
+        #Stampo a video le media delle distanze
+
+        sum = 0.0;
+
+        for i in range(0,num_campioni_auto_ranging-1):
+            sum = range_0_1[i] + sum
+
+        #calcolo della media
+        d01_mean = sum / num_campioni_auto_ranging;
+        print("d01")
+        print(d01_mean);
+
+        #Stampo a video le media delle distanze
+        sum = 0.0;
+        for i in range(0,num_campioni_auto_ranging-1):
+            sum = range_0_2[i] + sum;
+
+        #calcolo della media
+        d02_mean = sum / num_campioni_auto_ranging;
+        print("d02")
+        print(d02_mean);
+
+        #Stampo a video le media delle distanze
+        sum = 0.0;
+        for i in range(0,num_campioni_auto_ranging-1):
+            sum = range_1_2[i] + sum;
+
+        #calcolo della media
+        d12_mean = sum / num_campioni_auto_ranging;
+        print("d12")
+        print(d12_mean);
         
+
+        #Stampo a video le media delle distanze
+        sum = 0.0;
+        for i in range(0,num_campioni_auto_ranging-1):
+            sum = range_0_3[i] + sum;
+
+        #calcolo della media
+        d02_mean = sum / num_campioni_auto_ranging;
+        print("d03")
+        print(d03_mean);
+
+        #Stampo a video le media delle distanze
+        sum = 0.0;
+        for i in range(0,num_campioni_auto_ranging-1):
+            sum = range_1_3[i] + sum;
+
+        #calcolo della media
+        d02_mean = sum / num_campioni_auto_ranging;
+        print("d13")
+        print(d13_mean);
+
+
+        #Stampo a video le media delle distanze
+        sum = 0.0;
+        for i in range(0,num_campioni_auto_ranging-1):
+            sum = range_2_3[i] + sum;
+
+        #calcolo della media
+        d02_mean = sum / num_campioni_auto_ranging;
+        print("d23")
+        print(d23_mean);
         #####################################################################################################
-        #calolo della componente x e y dell'antenna 1
+        #calolo della componente x  dell'antenna 1
         #####################################################################################################
-        x1_stimated = [];
-        sum = 0.0 ;
-        for i = 0 in len(range_0_1):
-            x1_stimated[i] = sqrt(range_0_1[i]*range_0_1[i] - (height_anchor[1]-height_anchor[0])*(height_anchor[1]-height_anchor[0]));
-            sum = x1_stimated[i] + sum;
+        #x1_stimated = [];
+        #sum = 0.0 ;
+        #for i = 0 in len(range_0_1):
+        #    x1_stimated[i] = sqrt(range_0_1[i]*range_0_1[i] - (height_anchor[1]-height_anchor[0])*(height_anchor[1]-height_anchor[0]));
+        #    sum = x1_stimated[i] + sum;
         #calolo della media
-        x1 = sum / num_campioni_auto_ranging;
+        #x1 = sum / num_campioni_auto_ranging;
         #####################################################################################################
         #calolo della componente x e y dell'antenna 2
         #####################################################################################################
-        x2_stimated = [];
-        y2_stimated = [];
-        z20_2 = (height_anchor[2]-height_anchor[0])*(height_anchor[2]-height_anchor[0]);
-        z21_2 = (height_anchor[2]-height_anchor[1])*(height_anchor[2]-height_anchor[1]);
-        x1_2 = x1*x1;
-        sum1 = 0;
-        sum2 = 0;
-        for i = 0 in len(range_0_2):
-            d02_2 = range_0_2[i]*range_0_2[i];
-            d12_2 = range_1_2[i]*range_1_2[i];
-            x2_stimated[i] = (z02_2 - z12_2 + x1_2 - z02_2 + z12_2)/(2*x1);
-            if y2_positive:
-                y2_stimated[i] = sqrt(d02_2 - (x2_stimated[i]*x2_stimated[i]) - z02_2);    
-            else:
-                y2_stimated[i] = -sqrt(d02_2 - (x2_stimated[i]*x2_stimated[i]) - z02_2);
-            sum1 = sum1 + x2_stimated[i];
-            sum2 = sum2 + x2_stimated[i];
+        #x2_stimated = [];
+        #y2_stimated = [];
+        #z20_2 = (height_anchor[2]-height_anchor[0])*(height_anchor[2]-height_anchor[0]);
+        #z21_2 = (height_anchor[2]-height_anchor[1])*(height_anchor[2]-height_anchor[1]);
+        #x1_2 = x1*x1;
+        #sum1 = 0;
+        #sum2 = 0;
+        #for i = 0 in len(range_0_2):
+        #    d02_2 = range_0_2[i]*range_0_2[i];
+        #    d12_2 = range_1_2[i]*range_1_2[i];
+        #    x2_stimated[i] = (z02_2 - z12_2 + x1_2 - z02_2 + z12_2)/(2*x1);
+        #    if y2_positive:
+        #        y2_stimated[i] = sqrt(d02_2 - (x2_stimated[i]*x2_stimated[i]) - z02_2);    
+         #   else:
+         #       y2_stimated[i] = -sqrt(d02_2 - (x2_stimated[i]*x2_stimated[i]) - z02_2);
+         #   sum1 = sum1 + x2_stimated[i];
+        #    sum2 = sum2 + x2_stimated[i];
 
         #calcolo con la media 
-        x2 = sum1 / num_campioni_auto_ranging;
-        y2 = sum2 / num_campioni_auto_ranging;
+        #x2 = sum1 / num_campioni_auto_ranging;
+        #y2 = sum2 / num_campioni_auto_ranging;
         #####################################################################################################
         #calolo della componente x e y e z  dell'antenna 3
         #####################################################################################################
         
+
 
 
 #########################################################################################################
@@ -497,10 +566,10 @@ if __name__ == '__main__':
     if use_processing:
         osc_udp_client = SimpleUDPClient(ip, network_port)
     # necessary data for calibration, change the IDs and coordinates yourself
-    anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
-               DeviceCoordinates(0xA001, 1, Coordinates(8571, 0, height_anchor[1])),
-               DeviceCoordinates(0xA002, 1, Coordinates(1363, 7847, height_anchor[2])),
-               DeviceCoordinates(0xA003, 1, Coordinates(9280, 4100, height_anchor[3]))]
+    #anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
+    #           DeviceCoordinates(0xA001, 1, Coordinates(8571, 0, height_anchor[1])),
+    #           DeviceCoordinates(0xA002, 1, Coordinates(1363, 7847, height_anchor[2])),
+    #           DeviceCoordinates(0xA003, 1, Coordinates(9280, 4100, height_anchor[3]))]
 
     algorithm = POZYX_POS_ALG_TRACKING  # positioning algorithm to use
     dimension = POZYX_3D               # positioning dimension
