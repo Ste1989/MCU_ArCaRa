@@ -15,7 +15,7 @@ from geometry_msgs.msg import Point, PoseStamped, Quaternion
 from std_msgs.msg import Header, Float32
 from sensor_msgs.msg import FluidPressure, Imu,MagneticField 
 from pypozyx import (DeviceRange,POZYX_POS_ALG_UWB_ONLY, POZYX_3D,POZYX_POS_ALG_TRACKING,POZYX_FAILURE, POZYX_2D,Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,
-                     DeviceCoordinates, PozyxSerial, get_first_pozyx_serial_port, SingleRegister, DeviceList,SensorData, SingleRegister)
+                     DeviceCoordinates, POZYX_RANGE_PROTOCOL_PRECISION,PozyxSerial, get_first_pozyx_serial_port, SingleRegister, DeviceList,SensorData, SingleRegister)
 from pypozyx.definitions.bitmasks import POZYX_INT_MASK_IMU
 
 from pythonosc.udp_client import SimpleUDPClient
@@ -25,7 +25,7 @@ from pythonosc.udp_client import SimpleUDPClient
 remote_id = None
 
 anchors_ids = [0xA000,0xA001,0xA002,0xA003];
-height_anchor = [1878,1454,1525,2115]; #mm
+height_anchor = [1772,1806,1055,1030]; #mm
 import time
 
 enable_auto_calibration = False;
@@ -33,13 +33,13 @@ num_campioni_auto_ranging = 100;
 y2_positive = True; #Assumiamo y2 positiva o no
 
 imu_log = True;
-pos_log =False;
-range_log = True;
+pos_log =True;
+range_log = False;
 
 anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
-           DeviceCoordinates(0xA001, 1, Coordinates(8571, 0, height_anchor[1])),
-           DeviceCoordinates(0xA002, 1, Coordinates(1363, 7847, height_anchor[2])),
-           DeviceCoordinates(0xA003, 1, Coordinates(9280, 4100, height_anchor[3]))];
+           DeviceCoordinates(0xA001, 1, Coordinates(8771, 0, height_anchor[1])),
+           DeviceCoordinates(0xA002, 1, Coordinates(1194, 10814, height_anchor[2])),
+           DeviceCoordinates(0xA003, 1, Coordinates(10336, 9872, height_anchor[3]))];
 
 
 class ReadyToLocalize(object):
@@ -59,39 +59,6 @@ class ReadyToLocalize(object):
         self.dimension = dimension
         self.height = height
         self.remote_id = remote_id
-#########################################################################################################
-#
-#                               SETUP
-#
-########################################################################################################
-    def setup(self):
-        """Sets up the Pozyx for positioning by calibrating its anchor list."""
-        print("------------POZYX POSITIONING V1.1 -------------")
-        print("NOTES: ")
-        print("- No parameters required.")
-        print()
-        print("- System will auto start configuration")
-        print()
-        print("- System will auto start positioning")
-        print()
-        self.pozyx.printDeviceInfo(self.remote_id)
-        print()
-        print("------------POZYX POSITIONING V1.1 --------------")
-        print()
-        #cancella i devices in memoria
-        self.pozyx.clearDevices(self.remote_id)
-        #auto range delle ancore
-        Anchor_calibration()
-        status = self.setAnchorAuto()
-        if status == POZYX_FAILURE:
-            print("----------------------")
-            print("fai calibrazione manuale")
-            print("----------------------")            
-        else:
-            print("----------------------")
-            print("calibrazione OK")
-            print("----------------------")
-        self.printPublishConfigurationResult()
 
 
 #########################################################################################################
@@ -99,7 +66,7 @@ class ReadyToLocalize(object):
 #                               calibrazione Automatica STEFANO
 #
 ########################################################################################################
-    def Anchor_calibration():
+    def Anchor_calibration(self):
 
         range_0_1 = [];
 
@@ -285,6 +252,177 @@ class ReadyToLocalize(object):
         #calolo della componente x e y e z  dell'antenna 3
         #####################################################################################################
         
+
+#########################################################################################################
+#
+#                               SETUP
+#
+########################################################################################################
+    def setup(self):
+        """Sets up the Pozyx for positioning by calibrating its anchor list."""
+        print("------------POZYX POSITIONING V1.1 -------------")
+        print("NOTES: ")
+        print("- No parameters required.")
+        print()
+        print("- System will auto start configuration")
+        print()
+        print("- System will auto start positioning")
+        print()
+        self.pozyx.printDeviceInfo(self.remote_id)
+        print()
+        print("------------POZYX POSITIONING V1.1 --------------")
+        print()
+        #cancella i devices in memoria
+        self.pozyx.clearDevices(self.remote_id)
+        #auto range delle ancore
+        range_0_1 = [];
+
+        range_0_2 = [];
+        range_1_2 = [];
+
+        range_0_3 = [];
+        range_1_3 = [];
+        range_2_3 = [];
+
+        device_range = DeviceRange();
+        #########################################################################################################################################
+        #doranging tra Anchor 0 e Anchor 1
+        print("Range between Anchor 0 and Anchor 1")
+        i = 0;
+        #self.remote_id  = 0xA001
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[1];
+        sum = 0;
+        while i < num_campioni_auto_ranging:
+            #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
+            #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
+            status = self.pozyx.doRanging(0xA001, device_range, 0xA000)
+            
+            #print(status)
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                #range_0_1[i] = device_range.distance;
+                sum = sum + device_range.distance
+                i = i +1;
+        print("***")
+        print(sum/i)
+        print("***")
+        
+
+        #########################################################################################################################################
+  #doranging tra Anchor 0 e Anchor 1
+        print("Range between Anchor 0 and Anchor 1")
+        i = 1;
+        #self.remote_id  = 0xA001
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[1];
+        sum = 0;
+        while i < num_campioni_auto_ranging:
+            #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
+            #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
+            status = self.pozyx.doRanging(0xA002, device_range, 0xA000)
+            
+            #print(status)
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                #range_0_1[i] = device_range.distance;
+                sum = sum + device_range.distance
+                i = i +1;
+        print("***")
+        print(sum/i)
+        print("***")
+
+  #doranging tra Anchor 0 e Anchor 1
+        print("Range between Anchor 0 and Anchor 1")
+        i = 1;
+        #self.remote_id  = 0xA001
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[1];
+        sum = 0;
+        while i < num_campioni_auto_ranging:
+            #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
+            #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
+            status = self.pozyx.doRanging(0xA002, device_range, 0xA001)
+            
+            #print(status)
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                #range_0_1[i] = device_range.distance;
+                sum = sum + device_range.distance
+                i = i +1;
+        print("***")
+        print(sum/i)
+        print("***")
+  #doranging tra Anchor 0 e Anchor 1
+        print("Range between Anchor 0 and Anchor 1")
+        i = 1;
+        #self.remote_id  = 0xA001
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[1];
+        sum = 0;
+        while i < num_campioni_auto_ranging:
+            #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
+            #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
+            status = self.pozyx.doRanging(0xA003, device_range, 0xA000)
+            
+            #print(status)
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                #range_0_1[i] = device_range.distance;
+                sum = sum + device_range.distance
+                i = i +1;
+        print("***")
+        print(sum/i)
+        print("***")
+
+  #doranging tra Anchor 0 e Anchor 1
+        print("Range between Anchor 0 and Anchor 1")
+        i = 1;
+        #self.remote_id  = 0xA001
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[1];
+        sum = 0;
+        while i < num_campioni_auto_ranging:
+            #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
+            #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
+            status = self.pozyx.doRanging(0xA003, device_range, 0xA001)
+            
+            #print(status)
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                #range_0_1[i] = device_range.distance;
+                sum = sum + device_range.distance
+                i = i +1;
+        print("***")
+        print(sum/i)
+        print("***")
+
+          #doranging tra Anchor 0 e Anchor 1
+        print("Range between Anchor 0 and Anchor 1")
+        i = 1;
+        #self.remote_id  = 0xA001
+        remote_id = anchors_ids[0];
+        destination_id = anchors_ids[1];
+        sum = 0;
+        while i < num_campioni_auto_ranging:
+            #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
+            #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
+            status = self.pozyx.doRanging(0xA002, device_range, 0xA003)
+            
+            #print(status)
+            if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+                #range_0_1[i] = device_range.distance;
+                sum = sum + device_range.distance
+                i = i +1;
+        print("***")
+        print(sum/i)
+        print("***")
+        status = self.setAnchorAuto()
+        if status == POZYX_FAILURE:
+            print("----------------------")
+            print("fai calibrazione manuale")
+            print("----------------------")            
+        else:
+            print("----------------------")
+            print("calibrazione OK")
+            print("----------------------")
+        self.printPublishConfigurationResult()
+
 
 
 
