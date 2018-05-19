@@ -25,11 +25,11 @@ from pythonosc.udp_client import SimpleUDPClient
 remote_id = None
 
 anchors_ids = [0xA000,0xA001,0xA002,0xA003];
-height_anchor = [1772,1806,1055,1030]; #mm
+height_anchor = [2010,2015,1295,1640]; #mm
 import time
 
 enable_auto_calibration = True;
-num_campioni_auto_ranging = 100;
+num_campioni_auto_ranging = 1;
 y2_positive = True; #Assumiamo y2 positiva o no
 
 imu_log = True;
@@ -37,9 +37,9 @@ pos_log =True;
 range_log = False;
 
 anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
-           DeviceCoordinates(0xA001, 1, Coordinates(8771, 0, height_anchor[1])),
-           DeviceCoordinates(0xA002, 1, Coordinates(1194, 10814, height_anchor[2])),
-           DeviceCoordinates(0xA003, 1, Coordinates(10336, 9872, height_anchor[3]))];
+           DeviceCoordinates(0xA001, 1, Coordinates(9822, 0, height_anchor[1])),
+           DeviceCoordinates(0xA002, 1, Coordinates(765, 13064, height_anchor[2])),
+           DeviceCoordinates(0xA003, 1, Coordinates(10581, 7978, height_anchor[3]))];
 #########################################################################################################
 #
 #                               calibrazione Automatica STEFANO
@@ -76,7 +76,7 @@ def Anchor_calibration(self):
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
             
         #print(status)
-        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_0_1[i] = device_range.distance;
             sum = sum + device_range.distance
             i = i +1;
@@ -97,7 +97,7 @@ def Anchor_calibration(self):
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
             
         #print(status)
-        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_0_2[i] = device_range.distance;
             sum = sum + device_range.distance
             i = i +1;
@@ -115,10 +115,10 @@ def Anchor_calibration(self):
     while i < num_campioni_auto_ranging:
         #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
         #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
-        status = self.pozyx.doRanging(destination_id, device_range, remote_id)
+        status = self.pozyx.doRanging(0xA001, device_range, 0xA002)
             
         #print(device_range.distance)
-        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_1_2[i] = device_range.distance;
             sum = sum + device_range.distance
             i = i +1;
@@ -136,10 +136,10 @@ def Anchor_calibration(self):
     while i < num_campioni_auto_ranging:
         #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
         #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
-        status = self.pozyx.doRanging(destination_id, device_range, remote_id)
+        status = self.pozyx.doRanging(0xA000, device_range, 0xA003)
             
         #print(status)
-        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_0_3[i] = device_range.distance;
             sum = sum + device_range.distance
             i = i +1;
@@ -160,7 +160,7 @@ def Anchor_calibration(self):
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
             
         #print(status)
-        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_1_3[i] = device_range.distance;
             sum = sum + device_range.distance
             i = i +1;
@@ -172,8 +172,8 @@ def Anchor_calibration(self):
     print("Range between Anchor 2 and Anchor 3")
     i = 0;
     #self.remote_id  = 0xA001
-    remote_id = anchors_ids[1];
-    destination_id = anchors_ids[2];
+    remote_id = anchors_ids[2];
+    destination_id = anchors_ids[3];
     sum = 0;
     while i < num_campioni_auto_ranging:
         #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
@@ -181,7 +181,7 @@ def Anchor_calibration(self):
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
             
         #print(status)
-        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103:
+        if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_2_3[i] = device_range.distance;
             sum = sum + device_range.distance
             i = i +1;
@@ -404,7 +404,7 @@ class ReadyToLocalize(object):
                 pos_stamped.pose.orientation.y = quat.y
                 pos_stamped.pose.orientation.z = quat.z
                 pos_stamped.pose.orientation.w = quat.w
-                self.printPublishPosition(position)
+                #self.printPublishPosition(position)
                 #pub on topic
                 pub.publish(pos_stamped)
             else:

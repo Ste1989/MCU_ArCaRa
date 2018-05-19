@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 
             if(log_file)
             { 
-                log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
+                log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
                 fd = fopen(log_uwb_path.c_str(), "a");
                 fprintf(fd, "%f", position_estimated(0));
                 fprintf(fd, "%s", "  ");

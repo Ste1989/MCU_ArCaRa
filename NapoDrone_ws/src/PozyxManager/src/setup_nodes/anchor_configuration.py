@@ -16,10 +16,10 @@ import rospy
 tag_ids = [None, 0x0001, 0x0002, 0x0003, 0x0004]
 
 
-anchors = [pypozyx.DeviceCoordinates(0xA000, 1, pypozyx.Coordinates(0, 0, 1445)),
-           pypozyx.DeviceCoordinates(0xA001, 1, pypozyx.Coordinates(4620, 0, 2641)),
-           pypozyx.DeviceCoordinates(0xA002, 1, pypozyx.Coordinates(0, 3250, 2110)),
-           pypozyx.DeviceCoordinates(0xA003, 1, pypozyx.Coordinates(4620, 2690, 1760))]
+anchors = [pypozyx.DeviceCoordinates(0xA000, 1, pypozyx.Coordinates(0, 0, 0)),
+           pypozyx.DeviceCoordinates(0xA001, 1, pypozyx.Coordinates(7987, 0, 0)),
+           pypozyx.DeviceCoordinates(0xA002, 1, pypozyx.Coordinates(2180,10103 ,0)),
+           pypozyx.DeviceCoordinates(0xA003, 1, pypozyx.Coordinates(8384, 7137, 1847))]
 
 
 
