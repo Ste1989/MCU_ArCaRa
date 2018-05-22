@@ -25,15 +25,15 @@ from pythonosc.udp_client import SimpleUDPClient
 remote_id = None
 
 anchors_ids = [0xA000,0xA001,0xA002,0xA003];
-height_anchor = [2010,2015,1295,1640]; #mm
+height_anchor = [500,500,500,500]; #mm
 import time
 
 enable_auto_calibration = True;
-num_campioni_auto_ranging = 1;
+num_campioni_auto_ranging = 10;
 y2_positive = True; #Assumiamo y2 positiva o no
 
-imu_log = True;
-pos_log =True;
+imu_log = False;
+pos_log =False;
 range_log = False;
 
 anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
@@ -70,12 +70,15 @@ def Anchor_calibration(self):
     remote_id = anchors_ids[0];
     destination_id = anchors_ids[1];
     sum = 0;
+    print(destination_id-40960)    
+    print(remote_id-40960)
     while i < num_campioni_auto_ranging:
         #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
         #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
+        self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,destination_id )
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
-            
-        #print(status)
+
+        print(device_range.distance)
         if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_0_1[i] = device_range.distance;
             sum = sum + device_range.distance
@@ -91,12 +94,14 @@ def Anchor_calibration(self):
     remote_id = anchors_ids[0];
     destination_id = anchors_ids[2];
     sum = 0;
+    print(destination_id-40960)    
+    print(remote_id-40960)
     while i < num_campioni_auto_ranging:
-        #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
+        self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,remote_id )
         #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
         status = self.pozyx.doRanging(destination_id, device_range, remote_id)
             
-        #print(status)
+        print(device_range.distance)
         if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
             #range_0_2[i] = device_range.distance;
             sum = sum + device_range.distance
