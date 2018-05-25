@@ -8,31 +8,105 @@
 
 /*************************************************************/
 //
-//modulo che preposto alla ricezione e alla decodifica dei messaggi
-//ricevuti da PC  sulla seriale 2 (Xbee)
+//  Ricezione della posa da ekf
 //
 /************************************************************/
 
 
+void ekf_pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    //salvo la stima precedente arrivata
+    xt_ = xt;
+    yt_ = yt;
+    zt_ = zt;
+    //salvo la stima attuale
+    xt = msg->pose.position.x;
+    yt = msg->pose.position.y;
+    zt = msg->pose.position.z;
+
+    //devo prendere la stima arrivata in precedenza e calcolare il treno di delta
+    double delta_x = (xt - xt_)/num_campioni_delta;
+    double delta_y = (yt - yt_)/num_campioni_delta;
+    double delta_z = (zt - zt_)/num_campioni_delta;
+
+    double x = xt_;
+    double y = yt_;
+    double z = zt_;
+
+    for(int i = 0; i < num_campioni_delta-1; i++)
+    {
+        x = x + delta_x;
+        y = y + delta_y;
+        z = z + delta_z;
+
+        coda_position_x.push(x);
+        coda_position_y.push(y);
+        coda_position_z.push(z);
+    }
+   
+    //inserisco la misura vera
+    coda_position_x.push(xt);
+    coda_position_y.push(yt);
+    coda_position_z.push(zt);
 
 
+}
 
+
+/*****************************************************************/
+/*                                                               */
+/*                 INIT GLOBL VAR                                */
+/*****************************************************************/
+void init_global_var()
+{
+    xt_ = 0;
+    yt_ = 0;
+    zt_ = 0;
+    //salvo la stima attuale
+    xt = 0;
+    yt = 0;
+    zt = 0;
+
+}
 /*****************************************************************/
 /*                                                               */
 /*                 WRITE SERIALE                                 */
 /*****************************************************************/
 void write_to_serial(int* serial)
 {
+    if(!coda_position_x.empty())
+    {
 
-   // while( !coda_send_seriale.empty() )
-    //{
+        //devo convertire in double e poi inviare come stringa
+        int x = (int)(coda_position_x.front()*1000);
+        coda_position_x.pop();
+        int y = (int)(coda_position_y.front()*1000);
+        coda_position_y.pop();
+        int z = (int)(coda_position_z.front()*1000);
+        coda_position_z.pop();
+        double x1 = ((double)x)/1000.0;
+        double y1 = ((double)y)/1000.0;
+        double z1 = ((double)z)/1000.0;
+        std::stringstream ss;
+        ss << x1;
+        std::string str = ss.str();
+        unsigned char* uc = (unsigned char*)str.c_str();
+        int n_written = write( *serial, uc, sizeof(uc) -1 );
         //write(*serial,&coda_send_seriale.front(), 1);
         //coda_send_seriale.pop();
     //}
 
-//    std::cout << "sono qui" << std::endl;
-    unsigned char cmd[] = {'I', 'N', 'I', 'T', ' ', '\r', '\0'};
-    int n_written = write( *serial, cmd, sizeof(cmd) -1 );
+    //    std::cout << "sono qui" << std::endl;
+    }
+
+    
+    
+
+    
+   
+
+    //    std::cout << "sono qui" << std::endl;
+    
 
 }
 

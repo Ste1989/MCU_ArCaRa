@@ -32,16 +32,33 @@ int main(int argc, char **argv)
     //leggo i parametri specificati nel launch file
     std::string seriale_dev;
     n.param<std::string>("/BluetoothManager/dev", seriale_dev, "/dev/ttyUSB0");
-    n.param<int>("/SerialManager/freq_ros_node", freq_ros_node, 50);
-  
+    n.param<int>("/BluetoothManager/freq_ros_node", freq_ros_node, 50);
+    n.param<int>("/BluetoothManager/num_campioni_delta", num_campioni_delta, 1);
+
+    /*coda_position_x.push(1);
+    coda_position_x.push(2);
+    coda_position_x.push(3);
+    coda_position_x.push(4);
+
+    std::cout << coda_position_x.front() << std::endl;
+    coda_position_x.pop();
+    std::cout << coda_position_x.front() << std::endl;
+    coda_position_x.pop();
+    std::cout << coda_position_x.front() << std::endl;
+    coda_position_x.pop();
+    std::cout << coda_position_x.front() << std::endl;
+    coda_position_x.pop();*/
+    
 
     int serial;
     // init della seriale
     int result = serial_init(&serial, seriale_dev.c_str());
-
+    init_global_var();
+    //subscribe
+    pose_sub = n.subscribe<geometry_msgs::PoseStamped>("/ekf_pose", 1, ekf_pose_cb);
     ros::Rate loop_rate(freq_ros_node); 
-     //tempo 0
-    //per inizializzare secs_0 richiamo il client
+    
+
     
     
     while(ros::ok())
@@ -49,7 +66,7 @@ int main(int argc, char **argv)
 
          /*********LEGGO SU SERIALE***********************************************************/
          
-             int bytes = 0;
+          int bytes = 0;
          
           unsigned char buf[1024];
 
@@ -59,12 +76,18 @@ int main(int argc, char **argv)
           {
             for (int i = 0; i < bytes ;i++)
             {
-              std:: cout << (char)(buf[i]) << std::endl;
+              std:: cout <<"RICEVUTO: "<<  (char)(buf[i]) << std::endl;
+
+              if((char)(buf[i]) == 'd')
+              {
+                //ho una richiesta di inviare il valore che si trova in fondo alla coda
+                
+                write_to_serial(&serial);      
+              }
+              
             }
           }
-          /*********INVIO SU SERIALE***********************************************************/
-          //funzione per scrivere su seriale
-          write_to_serial(&serial);
+          
 
 
           loop_rate.sleep();

@@ -124,7 +124,7 @@ int main(int argc, char **argv)
         
     }
     
-    log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
+    log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
     FILE * fd = fopen(log_uwb_path.c_str(), "w");
     fclose(fd);
     //frequenza a cui far girare il nodo
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
                 VectorXd position_estimated(3);
                 EKF_solo_range(range_rs,  dt_filter, position_estimated);
                 cout << position_estimated(0) << " " << position_estimated(1) << " " << position_estimated(2) << endl;
-                log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
+                log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
                 FILE * fd = fopen(log_uwb_path.c_str(), "a");
                 fprintf(fd, "%f", position_estimated(0));
                 fprintf(fd, "%s", "  ");
@@ -204,12 +204,17 @@ int main(int argc, char **argv)
                 fprintf(fd, "%s", "  ");
                 fprintf(fd, "%f\n", position_estimated(2));
                 fclose(fd);
-               /* geometry_msgs::PoseStamped msg;
+                geometry_msgs::PoseStamped msg;
+                ros::Time frame_time = ros::Time::now();
+                msg.header.stamp = frame_time;
                 msg.pose.position.x = position_estimated(0);
                 msg.pose.position.y = position_estimated(1);
-                msg.pose.position.z = position_estimated(2);*/
-
-              //  pos_estimated_ekf.publish(msg);
+                msg.pose.position.z = position_estimated(2);
+                msg.pose.orientation.w = 0; 
+                msg.pose.orientation.x = 0; 
+                msg.pose.orientation.y = 0; 
+                msg.pose.orientation.z = 0; 
+                pos_estimated_ekf.publish(msg);
 
             }
            
