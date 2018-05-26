@@ -30,7 +30,7 @@ import time
 import math
 
 enable_auto_calibration= False;
-enable_auto_calibration_2 = False:
+enable_auto_calibration_2 = False;
 num_campioni_auto_ranging = 100;
 y2_positive = True; #Assumiamo y2 positiva o no
 

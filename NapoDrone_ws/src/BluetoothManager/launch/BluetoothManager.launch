@@ -8,7 +8,7 @@
 	
 		<param name="freq_ros_node" type="int" value="1" />
 		
-		<param name="num_campioni_delta" type="int" value="2" />
+		<param name="num_campioni_delta" type="int" value="3" />
     </node>
 
         

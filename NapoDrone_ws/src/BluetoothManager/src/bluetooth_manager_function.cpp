@@ -87,21 +87,60 @@ void write_to_serial(int* serial)
         double x1 = ((double)x)/1000.0;
         double y1 = ((double)y)/1000.0;
         double z1 = ((double)z)/1000.0;
-        std::stringstream ss;
-        ss << x1;
-        std::string str = ss.str();
-        unsigned char* uc = (unsigned char*)str.c_str();
-        int n_written = write( *serial, uc, sizeof(uc) -1 );
+        
+        std::stringstream ssx;
+        ssx << x1;
+        std::string strx = ssx.str();
+        std::cout << strx << std::endl;
+
+        std::stringstream ssy;
+        ssy << y1;
+        std::string stry = ssy.str();
+        std::cout << stry << std::endl;
+
+        std::stringstream ssz;
+        ssz << z1;
+        std::string strz = ssz.str();
+        std::cout << strz << std::endl;
+
+        unsigned char uc2[] = {'\r','\n'};
+        std::stringstream ss1;
+        ss1 << uc2;
+        std::string strss1 = ss1.str();        
+
+        
+        std:: string somma = strx + "," + stry +  "," + strz + "K";//+ strss1;
+        //std::cout << somma << std::endl;
+        /*for (int i =0; i < 20 ; i++)
+        {
+            std::cout << somma[i] << std::endl;
+            if(somma[i] == 'K')
+                std::cout << "OK" << std::endl;
+        }*/
+        int i = 0;
+        while(!(somma[i] == 'K'))
+        {
+            i++;
+        }
+
+        //std::cout << i << std::endl;
+        unsigned char* uc = (unsigned char*)somma.c_str();
+       // std:: cout << std::strlen(uc.c_str()) << std::endl;
+
+        
+        int n_written = write( *serial, uc, i);
+        n_written = write( *serial, uc2, sizeof(uc2) -1 );
+        
         //write(*serial,&coda_send_seriale.front(), 1);
         //coda_send_seriale.pop();
-    //}
+        //}
 
-    //    std::cout << "sono qui" << std::endl;
+           //std::cout << "sono qui" << std::endl;
     }
 
     
     
-
+        
     
    
 

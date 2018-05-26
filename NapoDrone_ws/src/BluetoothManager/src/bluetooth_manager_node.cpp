@@ -59,11 +59,46 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(freq_ros_node); 
     
 
-    
+
+
+
+    if(false)
+    {
+      xt = 1;
+      yt = 2;
+      zt = 3;
+      xt_ = 0;
+      yt_ = 0;
+      zt_ = 0;
+    //devo prendere la stima arrivata in precedenza e calcolare il treno di delta
+    double delta_x = (xt - xt_)/num_campioni_delta;
+    double delta_y = (yt - yt_)/num_campioni_delta;
+    double delta_z = (zt - zt_)/num_campioni_delta;
+
+    double x = xt_;
+    double y = yt_;
+    double z = zt_;
+
+    for(int i = 0; i < num_campioni_delta-1; i++)
+    {
+        x = x + delta_x;
+        y = y + delta_y;
+        z = z + delta_z;
+
+        coda_position_x.push(x);
+        coda_position_y.push(y);
+        coda_position_z.push(z);
+    }
+   
+    //inserisco la misura vera
+    coda_position_x.push(xt);
+    coda_position_y.push(yt);
+    coda_position_z.push(zt);
+    }
     
     while(ros::ok())
     {
-
+       // std:: cout <<"CIAO: "<< std::endl;
          /*********LEGGO SU SERIALE***********************************************************/
          
           int bytes = 0;
@@ -88,7 +123,7 @@ int main(int argc, char **argv)
             }
           }
           
-
+          //write_to_serial(&serial); 
 
           loop_rate.sleep();
         
