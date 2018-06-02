@@ -22,6 +22,7 @@
 #include <sstream>      // std::stringstream
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/Int16.h>
+#include <std_srvs/Trigger.h>
 
 using namespace std;
 
@@ -47,7 +48,7 @@ std::queue<unsigned char> coda_recv_seriale;
 int range_recv[4];
 int index_range;
 //client
-ros::ServiceClient get_time_sec0;
+ros::ServiceServer service_calib_srv;
 ros::Publisher range_pub;
 ros::Subscriber service_pub;
 int freq_ros_node;
@@ -65,6 +66,6 @@ void set_blocking (int fd, int should_block);
 int serial_init(int* fd,const char* seriale_dev);
 void service_cb(const std_msgs::Int16::ConstPtr& msg);
 void calibrazione();
-
+bool service_calib(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response);
 
 

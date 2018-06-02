@@ -73,12 +73,13 @@ void parser_mess(unsigned char buffer)
 }
 /*****************************************************************/
 /*                                                               */
-/*                 calibrzione start                              */
+/*                 service calib                             */
 /*****************************************************************/
-void calibrazione()
+bool service_calib(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
 {
-    //invio una richeista di calibrazione a rduino
-    cout << "ciao" << endl;
+  cout << "OK!" << endl;
+  //devo comunicare a arduino di fare autocalibrazione
+  return true;
 }
 /*****************************************************************/
 /*                                                               */

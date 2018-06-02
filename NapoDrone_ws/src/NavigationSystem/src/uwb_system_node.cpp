@@ -67,11 +67,14 @@ int main(int argc, char **argv)
         anchor_range_sub = nh.subscribe<geometry_msgs::Pose>("/anchor_range", 1, anchorRange_cb);
     //service client
     get_time_sec0 = nh.serviceClient<autopilot_manager::init_time>("/get_time_t0");
+    if(anchor_calib)
+        service_calib = nh.serviceClient<std_srvs::Trigger>("/service_calib");
+
     
     //pUBLISHER
     pos_estimated_ekf = nh.advertise<geometry_msgs::PoseStamped>("/ekf_pose", 1000);
-    if (anchor_calib)
-        service_pub = nh.advertise<std_msgs::Int16>("/service",1);
+    //if (anchor_calib)
+    //    service_pub = nh.advertise<std_msgs::Int16>("/service",1);
     //init variabili globali
     init_global_var();
     
@@ -89,13 +92,14 @@ int main(int argc, char **argv)
         //faccio una richiesta di autocalibrazione e mi  metto in attesa
         //...
         
-        std_msgs::Int16 msg;
-        msg.data = 1;
-        service_pub.publish(msg);
+        
+        std_srvs::Trigger srv_msg;
+        service_calib.call(srv_msg);
+      
         while(ros::ok() && anchor_calib == true)
         {
             ros::spinOnce();
-            service_pub.publish(msg);
+            cout << " sono qui" << endl;
         }
     }
 
