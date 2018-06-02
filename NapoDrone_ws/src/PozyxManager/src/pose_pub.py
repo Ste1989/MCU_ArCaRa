@@ -14,13 +14,13 @@ import rospy
 from geometry_msgs.msg import Point, PoseStamped, Quaternion
 from std_msgs.msg import Header, Float32
 from sensor_msgs.msg import FluidPressure, Imu,MagneticField 
-from pypozyx import (DeviceRange,POZYX_POS_ALG_UWB_ONLY, POZYX_3D,POZYX_POS_ALG_TRACKING,POZYX_FAILURE, POZYX_2D,Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,
+from pypozyx import (POZYX_RANGE_PROTOCOL_FAST,DeviceRange,POZYX_POS_ALG_UWB_ONLY, POZYX_3D,POZYX_POS_ALG_TRACKING,POZYX_FAILURE, POZYX_2D,Coordinates, POZYX_SUCCESS, POZYX_ANCHOR_SEL_AUTO,
                      DeviceCoordinates, POZYX_RANGE_PROTOCOL_PRECISION,PozyxSerial, get_first_pozyx_serial_port, SingleRegister, DeviceList,SensorData, SingleRegister)
 from pypozyx.definitions.bitmasks import POZYX_INT_MASK_IMU
 
 from pythonosc.udp_client import SimpleUDPClient
 
-
+import time
 
 remote_id = None
 
@@ -29,7 +29,7 @@ height_anchor = [1500,2000,2500,3000]; #mm
 import time
 import math
 
-enable_auto_calibration= False;
+enable_auto_calibration= True;
 enable_auto_calibration_2 = False;
 num_campioni_auto_ranging = 100;
 y2_positive = True; #Assumiamo y2 positiva o no
@@ -39,10 +39,11 @@ pos_log =False;
 range_log = True;
 
 
+
 anchors = [DeviceCoordinates(0xA000, 1, Coordinates(0, 0, height_anchor[0])),
-           DeviceCoordinates(0xA001, 1, Coordinates(9943, 0, height_anchor[1])),
-           DeviceCoordinates(0xA002, 1, Coordinates(670, 14550, height_anchor[2])),
-           DeviceCoordinates(0xA003, 1, Coordinates(10062, 13943, height_anchor[3]))];
+           DeviceCoordinates(0xA001, 1, Coordinates(9993, 0, height_anchor[1])),
+           DeviceCoordinates(0xA002, 1, Coordinates(360, 10123, height_anchor[2])),
+           DeviceCoordinates(0xA003, 1, Coordinates(9814, 9504, height_anchor[3]))];
 #########################################################################################################
 #
 #                               calibrazione Automatica STEFANO
@@ -75,12 +76,15 @@ def Anchor_calibration(self):
         sum = 0;
         print(destination_id-40960)    
         print(remote_id-40960)
+        tempo_init = time.time()
         while i < num_campioni_auto_ranging:
             #self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,self.remote_id )
             #status = self.pozyx.doRanging(self.id, device_range , 0xA001);
             self.pozyx.setRangingProtocol(POZYX_RANGE_PROTOCOL_PRECISION,destination_id )
             status = self.pozyx.doRanging(destination_id, device_range, remote_id)
-
+            #tempo_finale = time.time() - tempo_init
+            #print(1/tempo_finale)
+            #tempo_init = time.time()
             #print(device_range.distance)
             if status == POZYX_SUCCESS and abs(device_range.RSS) >= 79 and abs(device_range.RSS) <= 103 and device_range.distance < 20000:
                 #range_0_1[i] = device_range.distance;
@@ -488,13 +492,14 @@ class ReadyToLocalize(object):
             device_range_4 = DeviceRange()
             time_range_0 =time.time()
             destination_id = 0xA000 
-            status = self.pozyx.doRanging(destination_id, device_range_1, self.remote_id)
+            tag_id = 0xB000;
+            status = self.pozyx.doRanging(destination_id, device_range_1, tag_id)
             destination_id = 0xA001 
-            status = self.pozyx.doRanging(destination_id, device_range_2, self.remote_id)
+            status = self.pozyx.doRanging(destination_id, device_range_2, tag_id)
             destination_id = 0xA002
-            status = self.pozyx.doRanging(destination_id, device_range_3, self.remote_id)
+            status = self.pozyx.doRanging(destination_id, device_range_3, tag_id)
             destination_id = 0xA003 
-            status = self.pozyx.doRanging(destination_id, device_range_4, self.remote_id)
+            status = self.pozyx.doRanging(destination_id, device_range_4, tag_id)
             time_range =time.time()
             #print("tempo tra range 1 e 4")
             #print(time_range - time_range_0)

@@ -15,6 +15,7 @@ using namespace std;
 ros::Subscriber imu_sub;
 ros::Subscriber mag_sub;
 ros::Subscriber attitude_sub;
+ros::Subscriber anchor_range_sub;
 //client
 ros::ServiceClient get_time_sec0;
 

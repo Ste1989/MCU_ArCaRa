@@ -15,23 +15,24 @@ int main(int argc, char **argv)
     nh.param<bool>("/UWBSystem_Node/debug", debug, false);
     nh.param<bool>("/UWBSystem_Node/log_file", log_file, false);
     nh.param<int>("/UWBSystem_Node/freq_filter", freq_filter, 100);
+    nh.param<bool>("/UWBSystem_Node/anchor_calib", anchor_calib, false);
 
     //coordinate delle ancore
     //anchor0 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor0_X", anchor0(0), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor0_Y", anchor0(1), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor0_X", anchor0(0), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor0_Y", anchor0(1), 0.0);
     nh.param<double>("/UWBSystem_Node/anchor0_Z", anchor0(2), 0.0);
     //anchor1 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor1_X", anchor1(0), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor1_Y", anchor1(1), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor1_X", anchor1(0), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor1_Y", anchor1(1), 0.0);
     nh.param<double>("/UWBSystem_Node/anchor1_Z", anchor1(2), 0.0);
     //anchor2 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor2_X", anchor2(0), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor2_Y", anchor2(1), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor2_X", anchor2(0), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor2_Y", anchor2(1), 0.0);
     nh.param<double>("/UWBSystem_Node/anchor2_Z", anchor2(2), 0.0);
     //anchor3 X-Y-Z
-    nh.param<double>("/UWBSystem_Node/anchor3_X", anchor3(0), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor3_Y", anchor3(1), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor3_X", anchor3(0), 0.0);
+    //nh.param<double>("/UWBSystem_Node/anchor3_Y", anchor3(1), 0.0);
     nh.param<double>("/UWBSystem_Node/anchor3_Z", anchor3(2), 0.0);
 
     R = MatrixXd::Zero(4,4);
@@ -62,16 +63,41 @@ int main(int argc, char **argv)
     //sottoscrizione al topic dei range
     //rangeUWB_sub = nh.subscribe<uwb_manager::RangeUwb>("/uwb/range", 1, rangeUWB_cb);
     rangePOZ_sub = nh.subscribe<sensor_msgs::Imu>("/pozyx_range", 1, rangePOZ_cb);
-    
+    if(anchor_calib)
+        anchor_range_sub = nh.subscribe<geometry_msgs::Pose>("/anchor_range", 1, anchorRange_cb);
     //service client
     get_time_sec0 = nh.serviceClient<autopilot_manager::init_time>("/get_time_t0");
     
     //pUBLISHER
     pos_estimated_ekf = nh.advertise<geometry_msgs::PoseStamped>("/ekf_pose", 1000);
-
+    if (anchor_calib)
+        service_pub = nh.advertise<std_msgs::Int16>("/service",1);
     //init variabili globali
     init_global_var();
     
+    //devo vedere se faer autocalibration o no
+    if(anchor_calib == false)
+    {
+
+        //leggo le antenne da file
+        leggi_file_calibrazione();
+
+
+    }
+    else
+    {
+        //faccio una richiesta di autocalibrazione e mi  metto in attesa
+        //...
+        
+        std_msgs::Int16 msg;
+        msg.data = 1;
+        service_pub.publish(msg);
+        while(ros::ok() && anchor_calib == true)
+        {
+            ros::spinOnce();
+            service_pub.publish(msg);
+        }
+    }
 
     //se debug è uguale true leggo il file txt
     bool init_time0 = false;
@@ -124,28 +150,32 @@ int main(int argc, char **argv)
         
     }
     
+
+
+
+
     log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
     FILE * fd = fopen(log_uwb_path.c_str(), "w");
     fclose(fd);
+
+
     //frequenza a cui far girare il nodo
     ros::Rate loop_rate(100);
     //gettimeofday(&filter_time, NULL);
     filter_time = ros::Time::now();
     begin_time = ros::Time::now();
+   
+
     while(ros::ok() )
     {
-        //loop rate
+       
+
         loop_rate.sleep();
 
         //calcolo tempo di controllo
         ros::Duration elapsed_time = ros::Time::now() - filter_time;
         elapsed_time_filter  = elapsed_time.toSec();
-       
-        
-        
-
-        
-
+    
         //A)leggo i topic
         ros::spinOnce();
 
@@ -173,25 +203,12 @@ int main(int argc, char **argv)
             }
             else
             {
-             // in range_rs ho sempre il valore di prima   
+                // in range_rs ho sempre il valore di prima   
             }
 
             if (start_range_recv)
             {
-                 //per debug
-                /*ros::Duration elapsed_time_curr = ros::Time::now() - begin_time;
-                log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/range_rs.txt";
-                FILE * fd = fopen(log_uwb_path.c_str(), "a");
-                fprintf(fd, "%f", elapsed_time_curr.toSec());
-                fprintf(fd, "%s", "  ");
-                fprintf(fd, "%f", range_rs(0));
-                fprintf(fd, "%s", "  ");
-                fprintf(fd, "%f", range_rs(1));
-                fprintf(fd, "%s", "  ");
-                fprintf(fd, "%f", range_rs(2));
-                fprintf(fd, "%s", "  ");
-                fprintf(fd, "%f\n", range_rs(3));
-                fclose(fd);*/
+              
                 //update filtro
                 VectorXd position_estimated(3);
                 EKF_solo_range(range_rs,  dt_filter, position_estimated);

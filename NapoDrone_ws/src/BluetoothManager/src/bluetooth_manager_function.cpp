@@ -15,6 +15,8 @@
 
 void ekf_pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
+
+    std::cout << "ciao" << std::endl;
     //salvo la stima precedente arrivata
     xt_ = xt;
     yt_ = yt;
@@ -73,7 +75,8 @@ void init_global_var()
 /*                 WRITE SERIALE                                 */
 /*****************************************************************/
 void write_to_serial(int* serial)
-{
+{   
+
     if(!coda_position_x.empty())
     {
 
@@ -103,7 +106,7 @@ void write_to_serial(int* serial)
         std::string strz = ssz.str();
         std::cout << strz << std::endl;
 
-        unsigned char uc2[] = {'\r','\n'};
+        unsigned char uc2[] = {'\n','\r'};
         std::stringstream ss1;
         ss1 << uc2;
         std::string strss1 = ss1.str();        
@@ -129,7 +132,7 @@ void write_to_serial(int* serial)
 
         
         int n_written = write( *serial, uc, i);
-        n_written = write( *serial, uc2, sizeof(uc2) -1 );
+        n_written = write( *serial, uc2, sizeof(uc2) );
         
         //write(*serial,&coda_send_seriale.front(), 1);
         //coda_send_seriale.pop();

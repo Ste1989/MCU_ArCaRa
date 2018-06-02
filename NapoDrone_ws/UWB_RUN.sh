@@ -24,7 +24,7 @@ xterm -T "NAV" -n "NAV" -hold -e "roslaunch navigation_system UWBSystem.launch" 
 
 sleep 1
 
-xterm -T "BLUETOOTH" -n "BLUETOOTH" -hold -e "roslaunch bluetooth_manager BluetoothManager.launch" &
+
 
 
 

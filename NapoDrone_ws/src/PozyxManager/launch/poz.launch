@@ -1,0 +1,7 @@
+<launch>
+
+    <node pkg="pozyxmanager" type="pose_pub.py" name="Tag" output="screen" >
+    	
+    </node>
+
+</launch>

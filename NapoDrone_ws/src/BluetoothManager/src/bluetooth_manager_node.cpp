@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     int result = serial_init(&serial, seriale_dev.c_str());
     init_global_var();
     //subscribe
-    pose_sub = n.subscribe<geometry_msgs::PoseStamped>("/ekf_pose", 1, ekf_pose_cb);
+    pose_sub = n.subscribe<geometry_msgs::PoseStamped>("/ekf_pose", 1000, ekf_pose_cb);
     ros::Rate loop_rate(freq_ros_node); 
     
 
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     coda_position_y.push(yt);
     coda_position_z.push(zt);
     }
-    
+    ros::Time filter_time = ros::Time::now();
     while(ros::ok())
     {
        // std:: cout <<"CIAO: "<< std::endl;
@@ -111,7 +111,10 @@ int main(int argc, char **argv)
           {
             for (int i = 0; i < bytes ;i++)
             {
-              std:: cout <<"RICEVUTO: "<<  (char)(buf[i]) << std::endl;
+              //std:: cout <<"RICEVUTO: "<<  (char)(buf[i]) << std::endl;
+
+
+
 
               if((char)(buf[i]) == 'd')
               {
@@ -123,11 +126,23 @@ int main(int argc, char **argv)
             }
           }
           
-          //write_to_serial(&serial); 
+          int n_size = coda_position_x.size();
+          if(n_size > num_campioni_delta)
+          {
 
-          loop_rate.sleep();
+            for(int i=0; i< num_campioni_delta ; i++)
+            {
+              coda_position_x.pop();
+              coda_position_y.pop();
+              coda_position_z.pop();
+            }
+
+          }
+
+          
         
-
+          ros::spinOnce();
+          //loop_rate.sleep();
     }
 
 

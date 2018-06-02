@@ -219,8 +219,57 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
   position_estimated(1) = x_k(1);
   position_estimated(2) = x_k(2);
 
+  double min = 1000000;
+  int index = -1;
+  for(int i = 0; i < 4; i++)
+  {
+    if(range(i) < min)
+    {
+      min = range(i);
+      index = i;
+    }
+  }
 
- 
+
+  //calcolo Z a paretire dalle distanze dai range
+  double d0t = (range(0))*(range(0));
+  double d1t = (range(1))*(range(1));
+  double d2t = (range(2))*(range(2));
+  double d3t = (range(3))*(range(3));
+  double x0t = (x_k(0)-anchor_pos(0,0))*(x_k(0)-anchor_pos(0,0));
+  double x1t = (x_k(0)-anchor_pos(1,0))*(x_k(0)-anchor_pos(1,0));
+  double x2t = (x_k(0)-anchor_pos(2,0))*(x_k(0)-anchor_pos(2,0));
+  double x3t = (x_k(0)-anchor_pos(3,0))*(x_k(0)-anchor_pos(3,0));
+  double y0t = (x_k(1)-anchor_pos(0,1))*(x_k(1)-anchor_pos(0,1));
+  double y1t = (x_k(1)-anchor_pos(1,1))*(x_k(1)-anchor_pos(1,1));
+  double y2t = (x_k(1)-anchor_pos(2,1))*(x_k(1)-anchor_pos(2,1));
+  double y3t = (x_k(1)-anchor_pos(3,1))*(x_k(1)-anchor_pos(3,1));
+  double z_stima[4];
+   z_stima[0]=  anchor_pos(0,2) - sqrt(d0t - x0t -y0t);
+   z_stima[1] =  anchor_pos(1,2) - sqrt(d1t - x1t -y1t);
+   z_stima[2] =  anchor_pos(2,2) - sqrt(d2t - x2t -y2t);
+   z_stima[3] =  anchor_pos(3,2) - sqrt(d3t - x3t -y3t);
+
+  position_estimated(2) = z_stima[3];
+  //d = x + y + z
+ /* std::cout<< "**************" << std::endl;
+  std::cout<< "range 0 " << range(0) << std::endl;
+  std::cout<< "range 1 " << range(1) << std::endl;
+  std::cout<< "range 2 " << range(2) << std::endl;
+  std::cout<< "range 3 " << range(3) << std::endl;
+
+  std::cout<< "**************" << std::endl;
+  std::cout<< "X0 " << x_k(0) << std::endl;
+  std::cout<< "X1 " << x_k(1) << std::endl;
+
+
+  std::cout<< "**************" << std::endl;
+  std::cout<< "Z0 " << z0 << std::endl;
+  std::cout<< "Z1 " << z1 << std::endl;
+  std::cout<< "Z2 " << z2 << std::endl;
+  std::cout<< "Z3 " << z3 << std::endl;*/
+
+
   return;
 }
 
@@ -308,6 +357,123 @@ if( triang == 1)
 
 
   }
+
+}
+/******************************************************************************************/
+/*                                                                                        */
+/*                  anchorRange_cb                                                        */
+/*                                                                                        */
+/******************************************************************************************/
+void anchorRange_cb(const geometry_msgs::Pose::ConstPtr& msg)
+{
+  double d01 = msg->position.x;
+  double d02 = msg->position.y;
+  double d12 = msg->position.z;
+  double d03 = msg->orientation.x;
+  double d13 = msg->orientation.y;
+  double d23 = msg->orientation.z;
+  
+  //calcolo distanza sul piano X-Y
+  double r01 = sqrt(d01*d01 - ((anchor1(2)-anchor0(2))*(anchor1(2)-anchor0(2))));
+  double r02 = sqrt(d02*d02 - ((anchor2(2)-anchor0(2))*(anchor2(2)-anchor0(2))));
+  double r12 = sqrt(d12*d12 - ((anchor2(2)-anchor1(2))*(anchor2(2)-anchor1(2))));
+  double r03 = sqrt(d03*d03 - ((anchor3(2)-anchor0(2))*(anchor3(2)-anchor0(2))));
+  double r13 = sqrt(d13*d13 - ((anchor3(2)-anchor1(2))*(anchor3(2)-anchor1(2))));
+  double r23 = sqrt(d23*d23 - ((anchor3(2)-anchor2(2))*(anchor3(2)-anchor2(2))));
+
+  
+  double CARNOT = (r01*r01 + r02*r02 - r12*r12)/(2*r01*r02);
+  if (CARNOT > 1)
+  {
+    ROS_WARN("CALIBRATION ERROR");
+    return;
+  }
+
+  double alpha = acos(((r01*r01 + r02*r02 - r12*r12)/(2*r01*r02)));
+  //print("angolo " , alpha *180 /3.14);
+
+  anchor0(0) = 0;
+  anchor0(1) = 0;
+  
+        
+  anchor1(1) = 0;
+  anchor1(0) = r01;
+  
+
+  anchor2(1) = r02 * sin(alpha);
+  anchor2(0) = r02 * cos(alpha);
+  
+
+  double a11 = anchor1(0);
+  double a20 = anchor2(1);
+  double a21 = anchor2(0);
+
+  double y3 = (a11*a11 + r03*r03 - r13*r13)/(2*a11);
+  double x3 = (a20*a20 - r23*r23 + (y3 - a21)*(y3 - a21) + r03*r03 - y3*y3)/(2*a20);
+
+  anchor3(0) = y3;
+  anchor3(1) = x3;
+  
+
+  scrivi_file_calib();
+
+  anchor_calib = false;
+}
+/******************************************************************************************/
+/*                                                                                        */
+/*                  scrivi calibrizione                                                    */
+/*                                                                                        */
+/******************************************************************************************/
+void scrivi_file_calib()
+{
+  log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/anchor_calib.txt";
+  fd = fopen(log_uwb_path.c_str(), "a");
+  fprintf(fd, "%f", anchor0(0));
+  fprintf(fd, "%s", "  ");
+  fprintf(fd, "%f", anchor0(1));
+  fprintf(fd, "%s", "  ");
+  fprintf(fd, "%f", anchor1(0));
+  fprintf(fd, "%s", "  ");
+  fprintf(fd, "%f", anchor1(1));
+  fprintf(fd, "%s", "  ");
+  fprintf(fd, "%f", anchor2(0));
+  fprintf(fd, "%s", "  ");
+  fprintf(fd, "%f", anchor2(1));
+  fprintf(fd, "%s", "  ");
+  fprintf(fd, "%f", anchor3(0));
+  fprintf(fd, "%s", "  ");
+  fprintf(fd, "%f\n", anchor3(1));
+  fclose(fd);
+}
+/******************************************************************************************/
+/*                                                                                        */
+/*                  leggi calibrizione                                                    */
+/*                                                                                        */
+/******************************************************************************************/
+void leggi_file_calibrazione()
+{
+  ifstream OpenFile("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/anchor_calib.txt");
+  
+  double x0, x1, x2, x3, y0, y1, y2, y3;;
+  while(!OpenFile.eof())
+  {
+    OpenFile >> x0 >> y0 >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;
+    
+  }
+  OpenFile.close();
+
+  anchor0(0) = x0;
+  anchor0(1) = y0;
+
+  anchor1(0) = x1;
+  anchor1(1) = y1;
+  
+  anchor2(0) = x2;
+  anchor2(1) = y2;
+
+  anchor3(0) = x3;
+  anchor3(1) = y3;
+
 
 }
 /******************************************************************************************/

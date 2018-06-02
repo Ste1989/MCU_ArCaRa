@@ -11,6 +11,8 @@
 #include <fstream>
 #include <malloc.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Pose.h>
+#include <std_msgs/Int16.h>
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -21,8 +23,10 @@ using Eigen::ArrayXd;
 //subscriber ros
 ros::Subscriber rangeUWB_sub;
 ros::Subscriber rangePOZ_sub;
+ros::Subscriber anchor_range_sub;
 //publisher
 ros::Publisher pos_estimated_ekf;
+ros::Publisher service_pub;
 //client
 ros::ServiceClient get_time_sec0;
 
@@ -45,7 +49,8 @@ Vector3d anchor0;
 Vector3d anchor1;
 Vector3d anchor2;
 Vector3d anchor3;
-
+//
+bool anchor_calib = false;
 //vettore range resample
 VectorXd range_rs(4);
 
@@ -89,5 +94,7 @@ void triangolazione_range(VectorXd range,  Vector3d& pos_triangolata);
 void leggi_file_debug();
 void resample_data_range();
 void rangePOZ_cb(const sensor_msgs::Imu::ConstPtr& imu);
-
+void anchorRange_cb(const geometry_msgs::Pose::ConstPtr& msg);
+void leggi_file_calibrazione();
+void scrivi_file_calib();
 //#endif
