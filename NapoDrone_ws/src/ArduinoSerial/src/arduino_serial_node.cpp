@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     //pose_sub = n.subscribe<geometry_msgs::PoseStamped>("/ekf_pose", 1000, ekf_pose_cb);
     ros::Rate loop_rate(freq_ros_node); 
     range_pub = n.advertise<sensor_msgs::Imu>("/pozyx_range", 1000);
-
+    anchor_range_pub = n.advertise<geometry_msgs::Pose>("/anchor_range",1000);
     //service_pub = n.subscribe<std_msgs::Int16>("/service", 1, service_cb);
     service_calib_srv = n.advertiseService("service_calib", service_calib);
     ros::Time start_time = ros::Time::now();
@@ -58,6 +58,13 @@ int main(int argc, char **argv)
 
           // Read data from the COM-port
           read_from_serial(&serial);
+
+          //invio su seriale
+          if(servizio_richiesto > 0)
+          {
+            write_to_serial(&serial, servizio_richiesto);
+            servizio_richiesto = 0;
+          }
           
           loop_rate.sleep();
 

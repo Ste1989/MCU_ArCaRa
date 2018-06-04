@@ -13,7 +13,9 @@
 /*****************************************************************/
 //funzione che riceve e decodifica i pacchetti in arrivo da PC
 void parser_mess(unsigned char buffer)
-{    sensor_msgs::Imu msg;
+{    
+    sensor_msgs::Imu msg;
+    geometry_msgs::Pose msg_anchor;
      //implementazione della macchina a stati
     switch(state_msg){
         case HEADER_1:
@@ -21,10 +23,17 @@ void parser_mess(unsigned char buffer)
             if(buffer == HEADER_A)
             {
                 state_msg=PAYLOAD_1_1;
+                index_range = 0;
                 
-            }else
+            }
+            if(buffer == HEADER_CALIB)
             {
-                state_msg=HEADER_1;
+                state_msg=PAYLOAD_1_C;
+                index_range = 0;
+            }
+            if(buffer != HEADER_A && buffer != HEADER_CALIB)
+            {
+                state_msg= HEADER_1;
             }
             break;
 
@@ -68,6 +77,42 @@ void parser_mess(unsigned char buffer)
                     break;
             }
             break;
+        //////////////////////////////////////////CALIBRATION//////////////////////
+        case PAYLOAD_1_C:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    anchor_range[index_range] = decode_payload();
+                    cout << anchor_range[index_range] << endl;
+                    msg_anchor.position.x = anchor_range[0];
+                    msg_anchor.position.y = anchor_range[1];
+                    msg_anchor.position.z = anchor_range[2];
+                    msg_anchor.orientation.x = anchor_range[3];
+                    msg_anchor.orientation.y = anchor_range[4];
+                    msg_anchor.orientation.z = anchor_range[5];
+                    anchor_range_pub.publish(msg_anchor);
+
+                    //new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    anchor_range[index_range] = decode_payload();
+                    cout << anchor_range[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+
     }
       
 }
@@ -77,23 +122,11 @@ void parser_mess(unsigned char buffer)
 /*****************************************************************/
 bool service_calib(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
 {
-  cout << "OK!" << endl;
-  //devo comunicare a arduino di fare autocalibrazione
+  cout << "Autocalibration request" << endl;
+  servizio_richiesto = 1;
   return true;
 }
-/*****************************************************************/
-/*                                                               */
-/*                 service_cb                               */
-/*****************************************************************/
-void service_cb(const std_msgs::Int16::ConstPtr& msg)
-{
-    if(msg->data == 1 && start_calibration == false)
-    {
-        //faccio una richiesta a arduino di calibrazione
-        start_calibration = true;
-        calibrazione();
-    }
-}
+
 /*****************************************************************/
 /*                                                               */
 /*                 DECODE PAYLOAD                                */
@@ -157,14 +190,25 @@ void init_global_var()
     state_msg=HEADER_1;
     new_packet = 0;
     index_range = 0;
+    servizio_richiesto = 0;
 }
 /*****************************************************************/
 /*                                                               */
 /*                 WRITE SERIALE                                 */
 /*****************************************************************/
-void write_to_serial(int* serial)
+void write_to_serial(int* serial, int richiesta)
 {   
+    if(richiesta == 1)
+    {   
+        char data[] = {'C'};
+        int n_written = write( *serial, data, 1 );
+    }
+    if(richiesta == 2)
+    {
+        char data[] = {'S'};
+        int n_written = write( *serial, data, 1 );
 
+    }
 }
 
 

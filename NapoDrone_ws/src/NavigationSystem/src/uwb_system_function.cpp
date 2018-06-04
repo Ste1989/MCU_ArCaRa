@@ -366,12 +366,12 @@ if( triang == 1)
 /******************************************************************************************/
 void anchorRange_cb(const geometry_msgs::Pose::ConstPtr& msg)
 {
-  double d01 = msg->position.x;
-  double d02 = msg->position.y;
-  double d12 = msg->position.z;
-  double d03 = msg->orientation.x;
-  double d13 = msg->orientation.y;
-  double d23 = msg->orientation.z;
+  double d01 = (double)msg->position.x/1000.0;
+  double d02 = (double)msg->position.y/1000.0;
+  double d12 = (double)msg->position.z/1000.0;
+  double d03 = (double)msg->orientation.x/1000.0;
+  double d13 = (double)msg->orientation.y/1000.0;
+  double d23 = (double)msg->orientation.z/1000.0;
   
   //calcolo distanza sul piano X-Y
   double r01 = sqrt(d01*d01 - ((anchor1(2)-anchor0(2))*(anchor1(2)-anchor0(2))));
@@ -414,7 +414,7 @@ void anchorRange_cb(const geometry_msgs::Pose::ConstPtr& msg)
   anchor3(0) = y3;
   anchor3(1) = x3;
   
-
+  cout << "CIAO" << endl;
   scrivi_file_calib();
 
   anchor_calib = false;

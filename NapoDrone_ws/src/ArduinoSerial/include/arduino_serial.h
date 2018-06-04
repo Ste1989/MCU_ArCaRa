@@ -23,10 +23,12 @@
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/Int16.h>
 #include <std_srvs/Trigger.h>
+#include <geometry_msgs/Pose.h>
 
 using namespace std;
 
 #define HEADER_A  (char) 'A'
+#define HEADER_CALIB  (char) 'Z'
 #define END_PACKET  (char)'.'
 #define SEPARATORE (char)','
 /**************************************************************************************************/
@@ -35,6 +37,7 @@ using namespace std;
 typedef enum{
     HEADER_1,
     PAYLOAD_1_1,
+    PAYLOAD_1_C,
     
 } waiting_msg;
 
@@ -46,20 +49,22 @@ int new_packet = 0;
 //buffer di ricezione
 std::queue<unsigned char> coda_recv_seriale;
 int range_recv[4];
+int anchor_range[6];
 int index_range;
 //client
 ros::ServiceServer service_calib_srv;
 ros::Publisher range_pub;
+ros::Publisher anchor_range_pub;
 ros::Subscriber service_pub;
 int freq_ros_node;
 bool start_calibration = false;
-
+int servizio_richiesto = 0 ;
 
 /***************************FUNZIONI************************************************************************/
 void init_global_var();
 int decode_payload();
 void parser_mess(unsigned char buffer);
-void write_to_serial(int* serial);
+void write_to_serial(int* serial, int richiesta);
 void read_from_serial(int* serial);
 int set_interface_attribs (int fd, int speed, int parity);
 void set_blocking (int fd, int should_block);
