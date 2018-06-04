@@ -43,7 +43,7 @@ void parser_mess(unsigned char buffer)
                 case END_PACKET:
                     
                     range_recv[index_range] = decode_payload();
-                    cout << range_recv[index_range] << endl;
+                    //cout << range_recv[index_range] << endl;
                     msg.angular_velocity.x = range_recv[0];
                     msg.angular_velocity.y = range_recv[1];
                     msg.angular_velocity.z = range_recv[2];
@@ -67,7 +67,7 @@ void parser_mess(unsigned char buffer)
                     
                     //ho ricevuto un range, lo devo codificare
                     range_recv[index_range] = decode_payload();
-                    cout << range_recv[index_range] << endl;
+                    //cout << range_recv[index_range] << endl;
                     index_range ++;
                     break;
 
@@ -84,7 +84,8 @@ void parser_mess(unsigned char buffer)
                 case END_PACKET:
                     
                     anchor_range[index_range] = decode_payload();
-                    cout << anchor_range[index_range] << endl;
+                    //cout << anchor_range[index_range] << endl;
+                    cout << "Autocalibration response" << endl;
                     msg_anchor.position.x = anchor_range[0];
                     msg_anchor.position.y = anchor_range[1];
                     msg_anchor.position.z = anchor_range[2];
@@ -102,7 +103,7 @@ void parser_mess(unsigned char buffer)
                     
                     //ho ricevuto un range, lo devo codificare
                     anchor_range[index_range] = decode_payload();
-                    cout << anchor_range[index_range] << endl;
+                    //cout << anchor_range[index_range] << endl;
                     index_range ++;
                     break;
 
@@ -115,6 +116,16 @@ void parser_mess(unsigned char buffer)
 
     }
       
+}
+/*****************************************************************/
+/*                                                               */
+/*                 service start                                 */
+/*****************************************************************/
+bool service_start(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
+{
+  cout << "Start request" << endl;
+  servizio_richiesto = 2;
+  return true;
 }
 /*****************************************************************/
 /*                                                               */

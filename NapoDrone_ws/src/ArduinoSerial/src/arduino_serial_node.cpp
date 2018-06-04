@@ -48,6 +48,8 @@ int main(int argc, char **argv)
     anchor_range_pub = n.advertise<geometry_msgs::Pose>("/anchor_range",1000);
     //service_pub = n.subscribe<std_msgs::Int16>("/service", 1, service_cb);
     service_calib_srv = n.advertiseService("service_calib", service_calib);
+    service_start_srv = n.advertiseService("service_start", service_start);
+
     ros::Time start_time = ros::Time::now();
     
 

@@ -4,7 +4,7 @@
     	<param name="debug" type="bool" value="False" />
     	<param name="log_file" type="bool" value="False" />
 
-        <param name="anchor_calib" type="bool" value="True" />
+        <param name="anchor_calib" type="bool" value="False" />
 
 
 

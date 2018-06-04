@@ -53,6 +53,7 @@ int anchor_range[6];
 int index_range;
 //client
 ros::ServiceServer service_calib_srv;
+ros::ServiceServer service_start_srv;
 ros::Publisher range_pub;
 ros::Publisher anchor_range_pub;
 ros::Subscriber service_pub;
@@ -72,5 +73,6 @@ int serial_init(int* fd,const char* seriale_dev);
 void service_cb(const std_msgs::Int16::ConstPtr& msg);
 void calibrazione();
 bool service_calib(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response);
+bool service_start(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response);
 
 

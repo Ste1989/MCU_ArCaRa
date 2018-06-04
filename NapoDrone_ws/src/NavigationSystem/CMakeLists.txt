@@ -34,11 +34,11 @@ include_directories(
   ${Eigen_INCLUDE_DIRS}
 )
 #NAV SYSTEM
-add_library(NavigationSystemFunction  src/navigation_system_function.cpp)
-target_link_libraries(NavigationSystemFunction ${catkin_LIBRARIES})
+#add_library(NavigationSystemFunction  src/navigation_system_function.cpp)
+#target_link_libraries(NavigationSystemFunction ${catkin_LIBRARIES})
 
-add_executable(NavigationSystem_Node src/navigation_system_node.cpp)
-target_link_libraries(NavigationSystem_Node NavigationSystemFunction ${catkin_LIBRARIES})
+#add_executable(NavigationSystem_Node src/navigation_system_node.cpp)
+#target_link_libraries(NavigationSystem_Node NavigationSystemFunction ${catkin_LIBRARIES})
 
 
 #NAV SYSTEM SOLO DECAWAWE
@@ -49,8 +49,8 @@ add_executable(UWBSystem_Node src/uwb_system_node.cpp)
 target_link_libraries(UWBSystem_Node UWBSystemFunction ${catkin_LIBRARIES})
 
 #LISTENER PER DECAWAWE
-add_executable(Listener src/listener.cpp)
-target_link_libraries(Listener  ${catkin_LIBRARIES})
+#add_executable(Listener src/listener.cpp)
+#target_link_libraries(Listener  ${catkin_LIBRARIES})
 
 #LISTENER PER POZYX
 add_executable(Listener_POZ src/listener_poz.cpp)

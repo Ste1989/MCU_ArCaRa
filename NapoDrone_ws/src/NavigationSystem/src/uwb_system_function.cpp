@@ -57,14 +57,14 @@ void init_global_var()
   }
   else
   {   
-      ROS_WARN("ATTENZIONE TEMPO NON INIZIALIZZATO CORRETTAMENTE");
+      //ROS_WARN("ATTENZIONE TEMPO NON INIZIALIZZATO CORRETTAMENTE");
       secs_0 = ros::Time::now().toSec();    
   }
 
   //path log file
   if(log_file)
   { 
-    log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
+    log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
     fd = fopen(log_uwb_path.c_str(), "w");
     fclose(fd);
   }
@@ -414,7 +414,7 @@ void anchorRange_cb(const geometry_msgs::Pose::ConstPtr& msg)
   anchor3(0) = y3;
   anchor3(1) = x3;
   
-  cout << "CIAO" << endl;
+  
   scrivi_file_calib();
 
   anchor_calib = false;
@@ -426,8 +426,8 @@ void anchorRange_cb(const geometry_msgs::Pose::ConstPtr& msg)
 /******************************************************************************************/
 void scrivi_file_calib()
 {
-  log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/anchor_calib.txt";
-  fd = fopen(log_uwb_path.c_str(), "a");
+  log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/src/NavigationSystem/fileanchor_calib.txt";
+  fd = fopen(log_uwb_path.c_str(), "w");
   fprintf(fd, "%f", anchor0(0));
   fprintf(fd, "%s", "  ");
   fprintf(fd, "%f", anchor0(1));
@@ -452,7 +452,8 @@ void scrivi_file_calib()
 /******************************************************************************************/
 void leggi_file_calibrazione()
 {
-  ifstream OpenFile("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/anchor_calib.txt");
+  
+  ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/src/NavigationSystem/file/anchor_calib.txt");
   
   double x0, x1, x2, x3, y0, y1, y2, y3;;
   while(!OpenFile.eof())
@@ -461,6 +462,7 @@ void leggi_file_calibrazione()
     
   }
   OpenFile.close();
+  
 
   anchor0(0) = x0;
   anchor0(1) = y0;
@@ -474,7 +476,11 @@ void leggi_file_calibrazione()
   anchor3(0) = x3;
   anchor3(1) = y3;
 
-
+  cout << "FILE CALIBRAZIONE" << endl;
+  cout << "anchor0: " << endl << anchor0 << endl;
+  cout << "anchor1: " << endl << anchor1 << endl;
+  cout << "anchor2: " << endl << anchor2 << endl;
+  cout << "anchor3: " << endl << anchor3 << endl;
 }
 /******************************************************************************************/
 /*                                                                                        */
@@ -489,7 +495,7 @@ void leggi_file_debug()
   FILE *fp;
 
   
-  ifstream OpenFile("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
+  ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
   Num_measure =0 ;
   double temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11;
   while(!OpenFile.eof())
@@ -528,7 +534,7 @@ void leggi_file_debug()
   double *app_6 = (double *) malloc(sizeof(double) * Num_measure);
   double f1,f2,f3,f4,f5;
   int i =0 ;
-  ifstream OpenFile1("/home/robot/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
+  ifstream OpenFile1("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
   while(!OpenFile1.eof())
   {
     OpenFile1 >> time_log[i] >> app_1[i]   >> app_2[i]  >> app_3[i]  >> app_4[i]  >> range1_log[i] >> range2_log[i] >> range3_log[i] >> range4_log[i] >> app_5[i]  >> app_6[i];

@@ -69,6 +69,7 @@ int main(int argc, char **argv)
     get_time_sec0 = nh.serviceClient<autopilot_manager::init_time>("/get_time_t0");
     if(anchor_calib)
         service_calib = nh.serviceClient<std_srvs::Trigger>("/service_calib");
+    service_start = nh.serviceClient<std_srvs::Trigger>("/service_start");
 
     
     //pUBLISHER
@@ -99,7 +100,7 @@ int main(int argc, char **argv)
         while(ros::ok() && anchor_calib == true)
         {
             ros::spinOnce();
-            cout << " sono qui" << endl;
+            //cout << " sono qui" << endl;
         }
     }
 
@@ -140,7 +141,7 @@ int main(int argc, char **argv)
 
             if(log_file)
             { 
-                log_uwb_path  = "/home/robot/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
+                log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
                 fd = fopen(log_uwb_path.c_str(), "a");
                 fprintf(fd, "%f", position_estimated(0));
                 fprintf(fd, "%s", "  ");
@@ -168,7 +169,10 @@ int main(int argc, char **argv)
     //gettimeofday(&filter_time, NULL);
     filter_time = ros::Time::now();
     begin_time = ros::Time::now();
-   
+    
+    //faccio la richietsa di start ranging
+    std_srvs::Trigger srv_msg;
+    service_start.call(srv_msg);
 
     while(ros::ok() )
     {
