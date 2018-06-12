@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch> 
+  <!-- RVIZ -->
+ <!--  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find aruco_mapping)/launch/aruco_config.rviz" />-->
+
+
+
+  <!-- Image filtering for aruco -->
+  <!--<node pkg="aruco_mapping_filter" type="aruco_mapping_filter" name="aruco_mapping_filter" output="screen">
+    <remap from="/camera/image_raw" to="/camera/color/image_raw"/>
+    <param name="threshold" type="int" value="105"/>
+  </node>-->
+
+
+  <!-- ArUco mapping -->
+  <node pkg="aruco_mapping" type="aruco_mapping" name="aruco_mapping" output="screen">
+   <!--  <remap from="/image_raw" to="/camera/image_raw_filtered"/>-->
+    <remap from="/image_raw" to="/camera/color/image_raw"/>
+    <param name="calibration_file" type="string" value="$(find aruco_mapping)/data/R200_640x480.ini" /> 
+    <param name="scenario_file" type="string" value="$(find aruco_mapping)/data/scenario_SIMAC.map" /> 
+    <param name="board_config" type="string" value="$(find aruco_mapping)/data/board.yml" />
+    <param name="num_of_markers" type="int" value="108" />
+    <param name="marker_size" type="double" value="0.11"/>
+    <param name="space_type" type="string" value="plane" />
+    <param name="roi_allowed" type="bool" value="false" /> 
+    <param name="roi_x" type="int" value="0" /> 
+    <param name="roi_y" type="int" value="0" /> 
+    <param name="roi_width" type="int" value="640" /> 
+    <param name="roi_height" type="int" value="480" />  
+    <param name="save_data" type="bool" value="false" />  
+    <param name="file_path_save" type="string" value="/home/robot/MCU_ArCaRa/log/" /> 
+    <!-- X NEGATIVA --> 
+    <param name="Px_cam_body_cam" type="double" value="-0.190" />
+    <!-- Y NEGATIVA --> 
+    <param name="Py_cam_body_cam" type="double" value="-0.001" />
+    <!-- Z NEGATIVA --> 
+    <param name="Pz_cam_body_cam" type="double" value="-0.1119" />
+
+  </node> 
+  
+</launch>

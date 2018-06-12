@@ -9,55 +9,58 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "uwb_system_node");
     ros::NodeHandle nh;
-
+    
+    string name_node = argv[1]; 
+    
     
     //leggo i parametri dal lauch file
-    nh.param<bool>("/UWBSystem_Node/debug", debug, false);
-    nh.param<bool>("/UWBSystem_Node/log_file", log_file, false);
-    nh.param<int>("/UWBSystem_Node/freq_filter", freq_filter, 100);
-    nh.param<bool>("/UWBSystem_Node/anchor_calib", anchor_calib, false);
-
+    nh.param<bool>(name_node + "debug", debug, false);
+    nh.param<bool>(name_node + "log_file", log_file, false);
+    nh.param<string>(name_node +"log_file_path", log_file_path, "");
+    nh.param<int>(name_node +"freq_filter", freq_filter, 100);
+    nh.param<bool>(name_node +"anchor_calib", anchor_calib, false);
+    
     //coordinate delle ancore
     //anchor0 X-Y-Z
     //nh.param<double>("/UWBSystem_Node/anchor0_X", anchor0(0), 0.0);
     //nh.param<double>("/UWBSystem_Node/anchor0_Y", anchor0(1), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor0_Z", anchor0(2), 0.0);
+    nh.param<double>(name_node + "anchor0_Z", anchor0(2), 0.0);
     //anchor1 X-Y-Z
-    //nh.param<double>("/UWBSystem_Node/anchor1_X", anchor1(0), 0.0);
-    //nh.param<double>("/UWBSystem_Node/anchor1_Y", anchor1(1), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor1_Z", anchor1(2), 0.0);
+    //nh.param<double>(name_node + "anchor1_X", anchor1(0), 0.0);
+    //nh.param<double>(name_node + "anchor1_Y", anchor1(1), 0.0);
+    nh.param<double>(name_node + "anchor1_Z", anchor1(2), 0.0);
     //anchor2 X-Y-Z
-    //nh.param<double>("/UWBSystem_Node/anchor2_X", anchor2(0), 0.0);
-    //nh.param<double>("/UWBSystem_Node/anchor2_Y", anchor2(1), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor2_Z", anchor2(2), 0.0);
+    //nh.param<double>(name_node + "anchor2_X", anchor2(0), 0.0);
+    //nh.param<double>(name_node + "anchor2_Y", anchor2(1), 0.0);
+    nh.param<double>(name_node + "anchor2_Z", anchor2(2), 0.0);
     //anchor3 X-Y-Z
-    //nh.param<double>("/UWBSystem_Node/anchor3_X", anchor3(0), 0.0);
-    //nh.param<double>("/UWBSystem_Node/anchor3_Y", anchor3(1), 0.0);
-    nh.param<double>("/UWBSystem_Node/anchor3_Z", anchor3(2), 0.0);
+    //nh.param<double>(name_node + "anchor3_X", anchor3(0), 0.0);
+    //nh.param<double>(name_node + "anchor3_Y", anchor3(1), 0.0);
+    nh.param<double>(name_node + "anchor3_Z", anchor3(2), 0.0);
 
     R = MatrixXd::Zero(4,4);
     P = MatrixXd::Zero(6,6);
     Q = MatrixXd::Zero(6,6);
     K = MatrixXd::Zero(6,4);
     //R
-    nh.param<double>("/UWBSystem_Node/R1", R(0,0), 0.0);
-    nh.param<double>("/UWBSystem_Node/R2", R(1,1), 0.0);
-    nh.param<double>("/UWBSystem_Node/R3", R(2,2), 0.0);
-    nh.param<double>("/UWBSystem_Node/R4", R(3,3), 0.0);
+    nh.param<double>(name_node + "R1", R(0,0), 0.0);
+    nh.param<double>(name_node + "R2", R(1,1), 0.0);
+    nh.param<double>(name_node + "R3", R(2,2), 0.0);
+    nh.param<double>(name_node + "R4", R(3,3), 0.0);
     //P
-    nh.param<double>("/UWBSystem_Node/P1", P(0,0), 0.0);
-    nh.param<double>("/UWBSystem_Node/P2", P(1,1), 0.0);
-    nh.param<double>("/UWBSystem_Node/P3", P(2,2), 0.0);
-    nh.param<double>("/UWBSystem_Node/P4", P(3,3), 0.0);
-    nh.param<double>("/UWBSystem_Node/P5", P(4,4), 0.0);
-    nh.param<double>("/UWBSystem_Node/P6", P(5,5), 0.0);
+    nh.param<double>(name_node + "P1", P(0,0), 0.0);
+    nh.param<double>(name_node + "P2", P(1,1), 0.0);
+    nh.param<double>(name_node + "P3", P(2,2), 0.0);
+    nh.param<double>(name_node + "P4", P(3,3), 0.0);
+    nh.param<double>(name_node + "P5", P(4,4), 0.0);
+    nh.param<double>(name_node + "P6", P(5,5), 0.0);
     //Q
-    nh.param<double>("/UWBSystem_Node/Q1", Q(0,0), 0.0);
-    nh.param<double>("/UWBSystem_Node/Q2", Q(1,1), 0.0);
-    nh.param<double>("/UWBSystem_Node/Q3", Q(2,2), 0.0);
-    nh.param<double>("/UWBSystem_Node/Q4", Q(3,3), 0.0);
-    nh.param<double>("/UWBSystem_Node/Q5", Q(4,4), 0.0);
-    nh.param<double>("/UWBSystem_Node/Q6", Q(5,5), 0.0);
+    nh.param<double>(name_node + "Q1", Q(0,0), 0.0);
+    nh.param<double>(name_node + "Q2", Q(1,1), 0.0);
+    nh.param<double>(name_node + "Q3", Q(2,2), 0.0);
+    nh.param<double>(name_node + "Q4", Q(3,3), 0.0);
+    nh.param<double>(name_node + "Q5", Q(4,4), 0.0);
+    nh.param<double>(name_node + "Q6", Q(5,5), 0.0);
 
     
     //sottoscrizione al topic dei range
@@ -66,7 +69,7 @@ int main(int argc, char **argv)
     if(anchor_calib)
         anchor_range_sub = nh.subscribe<geometry_msgs::Pose>("/anchor_range", 1, anchorRange_cb);
     //service client
-    get_time_sec0 = nh.serviceClient<autopilot_manager::init_time>("/get_time_t0");
+
     if(anchor_calib)
         service_calib = nh.serviceClient<std_srvs::Trigger>("/service_calib");
     service_start = nh.serviceClient<std_srvs::Trigger>("/service_start");
@@ -76,9 +79,7 @@ int main(int argc, char **argv)
     pos_estimated_ekf = nh.advertise<geometry_msgs::PoseStamped>("/ekf_pose", 1000);
     //if (anchor_calib)
     //    service_pub = nh.advertise<std_msgs::Int16>("/service",1);
-    //init variabili globali
-    init_global_var();
-    
+
     //devo vedere se faer autocalibration o no
     if(anchor_calib == false)
     {
@@ -104,9 +105,17 @@ int main(int argc, char **argv)
         }
     }
 
+    //init variabili globali
+    init_global_var();
+    
     //se debug è uguale true leggo il file txt
     bool init_time0 = false;
     int index_debug = 0;
+    
+   
+
+
+
     if(debug)
     {
         leggi_file_debug();
@@ -141,7 +150,7 @@ int main(int argc, char **argv)
 
             if(log_file)
             { 
-                log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
+                log_uwb_path  = log_file_path;
                 fd = fopen(log_uwb_path.c_str(), "a");
                 fprintf(fd, "%f", position_estimated(0));
                 fprintf(fd, "%s", "  ");
@@ -158,10 +167,6 @@ int main(int argc, char **argv)
 
 
 
-
-    log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
-    FILE * fd = fopen(log_uwb_path.c_str(), "w");
-    fclose(fd);
 
 
     //frequenza a cui far girare il nodo
@@ -216,19 +221,23 @@ int main(int argc, char **argv)
 
             if (start_range_recv)
             {
-              
+              	//cout << range_rs(0) << " " << range_rs(1) << " "<< range_rs(2) << " "<< range_rs(3) << endl;
                 //update filtro
                 VectorXd position_estimated(3);
                 EKF_solo_range(range_rs,  dt_filter, position_estimated);
                 cout << position_estimated(0) << " " << position_estimated(1) << " " << position_estimated(2) << endl;
-                log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF.txt";
-                FILE * fd = fopen(log_uwb_path.c_str(), "a");
-                fprintf(fd, "%f", position_estimated(0));
-                fprintf(fd, "%s", "  ");
-                fprintf(fd, "%f", position_estimated(1));
-                fprintf(fd, "%s", "  ");
-                fprintf(fd, "%f\n", position_estimated(2));
-                fclose(fd);
+                if(log_file)
+                {
+                    log_uwb_path  = log_file_path;
+                    FILE * fd = fopen(log_uwb_path.c_str(), "a");
+                    fprintf(fd, "%f", position_estimated(0));
+                    fprintf(fd, "%s", "  ");
+                    fprintf(fd, "%f", position_estimated(1));
+                    fprintf(fd, "%s", "  ");
+                    fprintf(fd, "%f\n", position_estimated(2));
+                    fclose(fd);
+                }
+                
                 geometry_msgs::PoseStamped msg;
                 ros::Time frame_time = ros::Time::now();
                 msg.header.stamp = frame_time;

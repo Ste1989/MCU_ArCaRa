@@ -1,0 +1,15 @@
+<launch>
+ 
+
+
+    <node pkg="bluetooth_manager" type="BluetoothManager" name="BluetoothManager" output="screen" >
+	    
+		<param name="dev" type="string" value="/dev/ttyUSB0" />
+	
+		<param name="freq_ros_node" type="int" value="100" />
+		
+		<param name="num_campioni_delta" type="int" value="5" />
+    </node>
+
+        
+</launch>

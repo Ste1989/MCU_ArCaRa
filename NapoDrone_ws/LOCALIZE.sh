@@ -16,7 +16,7 @@ sleep 1
 xterm -T "R200" -n "R200" -hold -e "roslaunch realsense_camera r200_autec.launch" &
 
 sleep 1
-\
+
 
 sleep 5
 

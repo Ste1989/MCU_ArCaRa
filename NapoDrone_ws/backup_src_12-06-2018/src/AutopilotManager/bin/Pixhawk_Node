@@ -1,0 +1,452 @@
+#! /usr/bin/env python
+import rospy
+import time
+from std_msgs.msg import String
+from std_msgs.msg import Int32
+from geometry_msgs.msg import Point
+from serial_manager.msg import Param
+import dronekit_sitl
+# Import DroneKit-Python
+from dronekit import connect, VehicleMode
+
+def enum(**named_values):
+     return type('Enum', (), named_values)
+
+#dichiaro i possibili stati dell'autopilota
+status_px4 = enum(NONE=-1,CONNECTING=0,CONNECTED=1, ARMABLE=2, NOT_ARMABLE=3, ARMED=4, TAKEOFF=5, LANDED=6, DISCONNECTED=7, HOVER=8, LANDING=9, RTL=10, EMERGENCY_STOP=11)
+#possibili richieste
+cmd_request = enum(NO_REQ=0,ARM=1,DISARM=2,TAKEOFF=3,LAND=4,RTL=5, EMERGENCY_STOP=6)
+#possibili parametri da cambiare
+param_request = enum(NO_PARAM=0,ALT_TAKEOFF=1)
+#possibili modi di guida
+mode_request = enum(NO_MODE=0,STABILIZE=1,ALT_HOLD=2, LOITER=3,AUTO=4,ACRO=5,SPORT=6,DRIFT=7,GUIDED=8,CIRCLE=9,POS_HOLD=10,BRAKE=11,FOLLOW_ME=12,SIMPLE_SUPER=13)
+
+
+#variabili globali
+takeoff_altitudine = 0.5
+#######################################################
+#						     #
+#  callback param	 			     #
+#						     #
+#######################################################
+def callback_param(param_req):
+   print "ricevuto un nuovo parametro"
+   global takeoff_altitudine
+   if param_req.header == param_request.NO_PARAM:
+   	print "No request.\n"
+
+   elif param_req.header == param_request.ALT_TAKEOFF:
+	takeoff_altitudine = param_req.param
+	print takeoff_altitudine
+
+
+
+#######################################################
+#						     #
+#  callback richieste    			     #
+#						     #
+#######################################################
+def callback_cmd(cmd_req):
+   print "ricevuto una richiesta"
+   print cmd_req.data 
+   if cmd_req.data == cmd_request.NO_REQ:
+   	print "No request.\n"
+
+   elif cmd_req.data == cmd_request.ARM:
+	arm_the_vehicle()
+
+   elif cmd_req.data == cmd_request.DISARM:
+        print "disarma"
+	disarm_the_vehicle()
+
+   elif cmd_req.data == cmd_request.TAKEOFF:
+	arm_and_takeoff()
+
+   elif cmd_req.data == cmd_request.LAND:
+	land_the_vehicle()
+
+   elif cmd_req.data == cmd_request.RTL:
+	RTL_the_vehicle()
+
+   elif cmd_req.data == cmd_request.EMERGENCY_STOP:
+	emergency_stop()
+#######################################################
+#						     #
+#  callback mode	    			     #
+#						     #
+#######################################################
+def callback_mode(mode_req):
+
+   global current_status
+   global vehicle
+   print "ricevuto una richiesta di modo di guida"
+
+   if mode_req.data == mode_request.NO_MODE:
+   	print "No mode request.\n"
+
+   elif mode_req.data == mode_request.STABILIZE:
+        print "STAB.\n"
+        vehicle.mode = VehicleMode("STABILIZE")
+
+   elif mode_req.data == mode_request.ALT_HOLD:
+        print "ALT HOLD.\n"
+        vehicle.mode = VehicleMode("ALT_HOLD")
+
+   elif mode_req.data == mode_request.LOITER:
+        print "LOITER.\n"
+        vehicle.mode = VehicleMode("LOITER")
+
+   elif mode_req.data == mode_request.AUTO:
+        print "AUTO.\n"
+        vehicle.mode = VehicleMode("AUTO")
+
+   elif mode_req.data == mode_request.ACRO:
+        print "ACRO.\n"
+        vehicle.mode = VehicleMode("ACRO")
+
+   elif mode_req.data == mode_request.SPORT:
+        print "SPORT.\n"
+        vehicle.mode = VehicleMode("SPORT")
+
+   elif mode_req.data == mode_request.DRIFT:
+        print "DRIFT.\n"
+        vehicle.mode = VehicleMode("DRIFT")
+
+   elif mode_req.data == mode_request.GUIDED:
+        print "GUIDED.\n"
+        vehicle.mode = VehicleMode("GUIDED")
+
+   elif mode_req.data == mode_request.CIRCLE:
+        print "CIRCLE.\n"
+        vehicle.mode = VehicleMode("CIRLE")
+
+   elif mode_req.data == mode_request.POS_HOLD:
+        print "POS HOLD.\n"
+        vehicle.mode = VehicleMode("POS_HOLD")
+
+   elif mode_req.data == mode_request.BRAKE:
+ 	print "BRAKE.\n"
+        vehicle.mode = VehicleMode("BRAKE")
+
+   elif mode_req.data == mode_request.FOLLOW_ME:
+        print "FOLLOW ME.\n"
+        vehicle.mode = VehicleMode("FOLLOW_ME")
+
+   elif mode_req.data == mode_request.SIMPLE_SUPER:
+        print "SIMPLE.\n"
+        vehicle.mode = VehicleMode("SIMPLE_SUPER")
+
+#######################################################
+#						     #
+#  arm the vehicle        			     #
+#						     #
+#######################################################
+def arm_the_vehicle():
+   
+   #ruotine che controlla se il veicolo e armabile
+   #e nel caso lo sia lo arma
+
+   global current_status
+   global vehicle
+   if  vehicle.is_armable:
+    print "Arming motors"
+    # Copter should arm in GUIDED mode
+    #vehicle.mode = VehicleMode("STABILIZE")
+    vehicle.armed = True    
+
+    # Confirm vehicle armed before attempting to take off
+    while not vehicle.armed:      
+    	print " Waiting for arming..."
+	pub_status.publish(status_px4.NOT_ARMABLE)
+	current_status = status_px4.NOT_ARMABLE
+        time.sleep(1)
+
+    pub_status.publish(status_px4.ARMED)
+    current_status = status_px4.ARMED
+
+   else:
+    #informo che il veicolo non  armabile
+    pub_status.publish(status_px4.NOT_ARMABLE)
+    current_status = status_px4.NOT_ARMABLE
+#######################################################
+#						     #
+#  emergency stop        			     #
+#						     #
+#######################################################
+def emergency_stop():
+   
+   global current_status
+   global vehicle
+   vehicle.mode = VehicleMode("BRAKE")
+   #vehicle.armed = False
+   # Confirm vehicle not armed 
+   #while vehicle.armed:      
+   #	print " Waiting for disarming..."
+   #	time.sleep(1)
+
+   #informo che il veicolo disarmato
+   current_status == status_px4.EMERGENCY_STOP
+   pub_status.publish(current_status)
+	
+#######################################################
+#						     #
+#  disarm the vehicle        			     #
+#						     #
+#######################################################
+def disarm_the_vehicle():
+   
+
+   global current_status
+   global vehicle
+   vehicle.mode = VehicleMode("LOITER")
+   #possibile disarmalo solo se  ARMED
+   if current_status == status_px4.ARMED:
+   	vehicle.armed = False
+    	# Confirm vehicle not armed 
+    	while vehicle.armed:      
+    		print " Waiting for disarming..."
+        	time.sleep(1)
+
+	#informo che il veicolo disarmato
+	current_status == status_px4.ARMABLE
+        pub_status.publish(current_status)
+   else:
+   	print " Non posso disarmare"
+        print current_status
+	
+#######################################################
+#						     #
+#  takeoof the vehicle        			     #
+#						     #
+#######################################################
+def arm_and_takeoff():
+
+   global takeoff_altitudine
+   global current_status
+   global vehicle
+   #arma il veciolo
+   arm_the_vehicle()
+
+   if vehicle.armed:
+    #informo che il veicolo decolla
+    current_status = status_px4.TAKEOFF
+    pub_status.publish(status_px4.TAKEOFF)
+
+    print "Taking off!"
+    vehicle.simple_takeoff(takeoff_altitudine) # Take off to target altitude
+
+    # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command 
+    #  after Vehicle.simple_takeoff will execute immediately).
+    while True:
+      print " Altitude: ", vehicle.location.global_relative_frame.alt 
+      #Break and return from function just below target altitude.        
+      if vehicle.location.global_relative_frame.alt>=takeoff_altitudine*0.95: 
+        print "Reached target altitude"
+        break
+      time.sleep(1)
+
+    #informo che il veicolo decollato
+    current_status = status_px4.HOVER
+    pub_status.publish(status_px4.HOVER) 
+
+   else:
+    #informo che il veicolo non  armabile
+    current_status = status_px4.NOT_ARMABLE
+    pub_status.publish(status_px4.NOT_ARMABLE)
+
+#######################################################
+#						     #
+#  land the vehicle        			     #
+#						     #
+#######################################################
+def land_the_vehicle():  
+
+
+   global current_status
+   global vehicle
+   current_status = status_px4.LANDING
+   pub_status.publish(current_status)
+   print("Setting LAND mode...")
+   vehicle.mode = VehicleMode("LAND")
+
+   time.sleep(10)
+   print("LANDED ...")
+   current_status = status_px4.LANDED
+   pub_status.publish(current_status)
+
+#######################################################
+#						     #
+#  RTL the vehicle        			     #
+#						     #
+#######################################################
+def RTL_the_vehicle():  
+
+
+   global current_status
+   global vehicle
+   current_status = status_px4.RTL
+   pub_status.publish(current_status)
+   print("Setting RTL mode...")
+   vehicle.mode = VehicleMode("RTL")
+
+   time.sleep(10)
+   print("LANDED ...")
+   current_status = status_px4.LANDED
+   pub_status.publish(current_status)
+
+#######################################################
+#						     #
+#  leggi assetto veicolo			     #
+#						     #
+#######################################################
+def vehicle_read_attitude(vehicle):
+    #print ' Attitude: %s' % vehicle.attitude
+    #print ' Rool: %s' % (vehicle.attitude.roll*180/3.14)
+    #print ' Pitch: %s' % (vehicle.attitude.pitch*180/3.14)
+    #print ' Yaw: %s' % (vehicle.attitude.yaw*180/3.14)
+
+    attitude = Point()
+    attitude.x = vehicle.attitude.roll
+    attitude.y = vehicle.attitude.pitch
+    attitude.z = vehicle.attitude.yaw
+    pub_attitude.publish(attitude)
+#######################################################
+#						     #
+#  leggi lo stato del veciolo			     #
+#						     #
+#######################################################
+def vehicle_read_status(vehicle):
+    # Get all vehicle attributes (state)    
+    vehicle.wait_ready('autopilot_version')
+    print ' Get all vehicle attribute values:'
+    print ' Autopilot Firmware version: %s' % vehicle.version
+    print '   Major version number: %s' % vehicle.version.major
+    print '   Minor version number: %s' % vehicle.version.minor
+    print '   Patch version number: %s' % vehicle.version.patch
+    print '   Release type: %s' % vehicle.version.release_type()
+    print '   Release version: %s' % vehicle.version.release_version()
+    print '   Stable release?: %s' % vehicle.version.is_stable()
+    print ' Autopilot capabilities'
+    print '   Supports MISSION_FLOAT message type: %s' % vehicle.capabilities.mission_float
+    print '   Supports PARAM_FLOAT message type: %s' % vehicle.capabilities.param_float
+    print '   Supports MISSION_INT message type: %s' % vehicle.capabilities.mission_int
+    print '   Supports COMMAND_INT message type: %s' % vehicle.capabilities.command_int
+    print '   Supports PARAM_UNION message type: %s' % vehicle.capabilities.param_union
+    print '   Supports ftp for file transfers: %s' % vehicle.capabilities.ftp
+    print '   Supports commanding attitude offboard: %s' % vehicle.capabilities.set_attitude_target
+    print '   Supports commanding position and velocity targets in local NED frame: %s' % vehicle.capabilities.set_attitude_target_local_ned
+    print '   Supports set position + velocity targets in global scaled integers: %s' % vehicle.capabilities.set_altitude_target_global_int
+    print '   Supports terrain protocol / data handling: %s' % vehicle.capabilities.terrain
+    print '   Supports direct actuator control: %s' % vehicle.capabilities.set_actuator_target
+    print '   Supports the flight termination command: %s' % vehicle.capabilities.flight_termination
+    print '   Supports mission_float message type: %s' % vehicle.capabilities.mission_float
+    print '   Supports onboard compass calibration: %s' % vehicle.capabilities.compass_calibration
+    print ' Global Location: %s' % vehicle.location.global_frame
+    print ' Global Location (relative altitude): %s' % vehicle.location.global_relative_frame
+    print ' Local Location: %s' % vehicle.location.local_frame
+    print ' Attitude: %s' % vehicle.attitude
+    print ' Velocity: %s' % vehicle.velocity
+    print ' GPS: %s' % vehicle.gps_0
+    print ' Battery: %s' % vehicle.battery
+    print ' EKF OK?: %s' % vehicle.ekf_ok
+    print ' Last Heartbeat: %s' % vehicle.last_heartbeat
+    print ' Heading: %s' % vehicle.heading
+    print ' Is Armable?: %s' % vehicle.is_armable
+    print ' System status: %s' % vehicle.system_status.state
+    print ' Groundspeed: %s' % vehicle.groundspeed    # settable
+    print ' Airspeed: %s' % vehicle.airspeed    # settable
+    print ' Mode: %s' % vehicle.mode.name    # settable
+    print ' Armed: %s' % vehicle.armed    # settable
+
+#######################################################
+#						     #
+#  INIIT					     #
+#						     #
+#######################################################
+def init_vehicle():
+
+
+    global current_status
+    global vehicle
+    print "Basic pre-arm checks"
+    # Don't try to arm until autopilot is ready
+    while not vehicle.is_armable:
+    	print " Waiting for vehicle to initialise..."
+	pub_status.publish(status_px4.NOT_ARMABLE)
+	current_status = status_px4.NOT_ARMABLE
+        time.sleep(1)
+        
+    pub_status.publish(status_px4.ARMABLE)
+    current_status = status_px4.ARMABLE
+    
+    #di default scelgo che il Copter sia in LOITER MODE
+    vehicle.mode = VehicleMode("LOITER")
+#######################################################
+#						     #
+#  MAIN						     #
+#						     #
+#######################################################
+if __name__ == '__main__':
+
+    global current_status
+    global vehicle
+    #inizializzo il nodo
+    rospy.init_node('Pixhawk_Manager', anonymous=True)
+    
+    #dichiaro un publisher
+    pub_status = rospy.Publisher('/napodrone/px4_status', Int32, queue_size=10)
+    pub_attitude = rospy.Publisher('/napodrone/attitude', Point, queue_size=100)
+
+    #dichiaro un subscriber
+    rospy.Subscriber("/napodrone/cmd_request", Int32, callback_cmd)
+    rospy.Subscriber("/napodrone/mode_request", Int32, callback_mode)
+    rospy.Subscriber('napodrone/param_request', Param, callback_param)
+
+    #leggo i parametri dal launch file
+    device = rospy.get_param('/PixhawkManager/dev', '/dev/ttyUSB0')
+    real_vehicle = rospy.get_param('/PixhawkManager/real_vehicle', False)
+    loop_rate = rospy.get_param('/PixhawkManager/loop_rate_hz', 10)
+
+    rate = rospy.Rate(loop_rate)
+    time.sleep(5)
+    #informo che sto conettendo
+    pub_status.publish(status_px4.CONNECTING)
+    current_status = status_px4.CONNECTING
+    #effettuo la connessione
+    if real_vehicle == True:
+    	vehicle = connect(device, wait_ready=True, baud=57600)
+    else:
+        sitl = dronekit_sitl.start_default()
+    	connection_string = sitl.connection_string()
+        vehicle = connect(connection_string, wait_ready=True)
+
+    #informo che sono connesso al veicolo
+    pub_status.publish(status_px4.CONNECTED)
+    current_status = status_px4.CONNECTED
+
+
+    #leggo lo stato del veicolo
+    #vehicle_read_status(vehicle)
+    init_vehicle()
+
+   
+    while not rospy.is_shutdown():
+	#print 'current status : %s' % current_status   
+	vehicle_read_attitude(vehicle) 
+	rate.sleep()
+
+
+
+    # Close vehicle object before exiting script
+    vehicle.close()
+    if real_vehicle == False:
+    	# Shut down simulator
+    	sitl.stop()
+
+    #informo che sono disconnesso al veicolo
+    pub_status.publish(status_px4.DISCONNECTED)
+    current_status = status_px4.DISCONNECTED
+    print("Pixhawk Manager is down")
+
+
+

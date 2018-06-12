@@ -1,8 +1,10 @@
 <launch>
 
-    <node pkg="navigation_system" type="UWBSystem_Node" name="UWBSystem_Node" output="screen" >
-    	<param name="debug" type="bool" value="False" />
-    	<param name="log_file" type="bool" value="False" />
+    <node pkg="navigation_system" type="UWBSystem_Node" name="Tag7" output="screen" args="/Tag7/">
+        <remap from="pozyx_range" to="pozyx_range_7"/>
+    	<param name="log_file" type="bool" value="True" />
+        <param name="log_file_path" type="string" value="/home/sistema/GruppoDSE_ws/log/Tag7.txt" />
+        <param name="debug" type="bool" value="False" />
 
         <param name="anchor_calib" type="bool" value="False" />
 
@@ -10,25 +12,21 @@
 
 
     	<!-- anchor 0 -->
-    	<param name="anchor0_X" type="double" value="0.0001" />
-    	<param name="anchor0_Y" type="double" value="0.0" />
+
     	<param name="anchor0_Z" type="double" value="1.5" />
     	<!-- anchor 1 -->
-    	<param name="anchor1_X" type="double" value="9.993" />
-    	<param name="anchor1_Y" type="double" value="0" />
+    
     	<param name="anchor1_Z" type="double" value="2.0" />
     	<!-- anchor 2 -->
-    	<param name="anchor2_X" type="double" value="0.360" />
-    	<param name="anchor2_Y" type="double" value="10.123" />
+  
     	<param name="anchor2_Z" type="double" value="2.5" />
     	<!-- anchor 3 -->
-    	<param name="anchor3_X" type="double" value="9.814" />
-    	<param name="anchor3_Y" type="double" value="9.504" />
+
     	<param name="anchor3_Z" type="double" value="3.0" />
 
 
     	<!-- EKF PARAM-->
-    	<param name="freq_filter" type="int" value="10" />
+    	<param name="freq_filter" type="int" value="2" />
 		<!--R-->
     	<param name="R1" type="double" value="0.00045796" />
     	<param name="R2" type="double" value="0.00045796" />

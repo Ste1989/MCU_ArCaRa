@@ -7,6 +7,16 @@
 		<param name="dev" type="string" value="/dev/ttyACM0" />
 	
 		<param name="freq_ros_node" type="int" value="200" />
+
+		<param name="tag1" type="bool" value="false" />
+		<param name="tag2" type="bool" value="false" />
+		<param name="tag3" type="bool" value="false" />
+		<param name="tag4" type="bool" value="false" />
+		<param name="tag5" type="bool" value="false" />
+		<param name="tag6" type="bool" value="false" />
+		<param name="tag7" type="bool" value="false" />
+		<param name="tag8" type="bool" value="false" />
+
 		
 		
     </node>

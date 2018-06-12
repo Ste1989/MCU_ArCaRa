@@ -26,17 +26,56 @@ void parser_mess(unsigned char buffer)
                 index_range = 0;
                 
             }
+            if(buffer == HEADER_B)
+            {
+                state_msg=PAYLOAD_1_2;
+                index_range = 0;
+                
+            }
+            if(buffer == HEADER_C)
+            {
+                state_msg=PAYLOAD_1_3;
+                index_range = 0;
+                
+            }
+            if(buffer == HEADER_D)
+            {
+                state_msg=PAYLOAD_1_4;
+                index_range = 0;
+                
+            }
+            if(buffer == HEADER_E)
+            {
+                state_msg=PAYLOAD_1_5;
+                index_range = 0;
+                
+            }
+            if(buffer == HEADER_F)
+            {
+                state_msg=PAYLOAD_1_6;
+                index_range = 0;
+                
+            }
+            if(buffer == HEADER_G)
+            {
+                state_msg=PAYLOAD_1_7;
+                index_range = 0;
+                
+            }
+            if(buffer == HEADER_H)
+            {
+                state_msg=PAYLOAD_1_8;
+                index_range = 0;
+                
+            }
+            //calibrazione
             if(buffer == HEADER_CALIB)
             {
                 state_msg=PAYLOAD_1_C;
                 index_range = 0;
             }
-            if(buffer != HEADER_A && buffer != HEADER_CALIB)
-            {
-                state_msg= HEADER_1;
-            }
             break;
-
+//////////////////////////////////////////////////////////////////////////////////////////////////
         case PAYLOAD_1_1:
             switch(buffer)
             {
@@ -48,7 +87,7 @@ void parser_mess(unsigned char buffer)
                     msg.angular_velocity.y = range_recv[1];
                     msg.angular_velocity.z = range_recv[2];
                     msg.linear_acceleration.x = range_recv[3];
-                    range_pub.publish(msg);
+                    range1_pub.publish(msg);
 
                     new_packet ++;
                     state_msg=HEADER_1;
@@ -77,7 +116,295 @@ void parser_mess(unsigned char buffer)
                     break;
             }
             break;
-        //////////////////////////////////////////CALIBRATION//////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_1_2:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    msg.angular_velocity.x = range_recv[0];
+                    msg.angular_velocity.y = range_recv[1];
+                    msg.angular_velocity.z = range_recv[2];
+                    msg.linear_acceleration.x = range_recv[3];
+                    range2_pub.publish(msg);
+
+                    new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case HEADER_B:
+                
+                    for(int i = 0; i< coda_recv_seriale.size(); i++)
+                        coda_recv_seriale.pop();
+                    index_range = 0;
+
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_1_3:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    msg.angular_velocity.x = range_recv[0];
+                    msg.angular_velocity.y = range_recv[1];
+                    msg.angular_velocity.z = range_recv[2];
+                    msg.linear_acceleration.x = range_recv[3];
+                    range3_pub.publish(msg);
+
+                    new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case HEADER_C:
+                
+                    for(int i = 0; i< coda_recv_seriale.size(); i++)
+                        coda_recv_seriale.pop();
+                    index_range = 0;
+
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_1_4:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    msg.angular_velocity.x = range_recv[0];
+                    msg.angular_velocity.y = range_recv[1];
+                    msg.angular_velocity.z = range_recv[2];
+                    msg.linear_acceleration.x = range_recv[3];
+                    range4_pub.publish(msg);
+
+                    new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case HEADER_D:
+                
+                    for(int i = 0; i< coda_recv_seriale.size(); i++)
+                        coda_recv_seriale.pop();
+                    index_range = 0;
+
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_1_5:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    msg.angular_velocity.x = range_recv[0];
+                    msg.angular_velocity.y = range_recv[1];
+                    msg.angular_velocity.z = range_recv[2];
+                    msg.linear_acceleration.x = range_recv[3];
+                    range5_pub.publish(msg);
+
+                    new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case HEADER_E:
+                
+                    for(int i = 0; i< coda_recv_seriale.size(); i++)
+                        coda_recv_seriale.pop();
+                    index_range = 0;
+
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_1_6:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    msg.angular_velocity.x = range_recv[0];
+                    msg.angular_velocity.y = range_recv[1];
+                    msg.angular_velocity.z = range_recv[2];
+                    msg.linear_acceleration.x = range_recv[3];
+                    range6_pub.publish(msg);
+
+                    new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case HEADER_F:
+                
+                    for(int i = 0; i< coda_recv_seriale.size(); i++)
+                        coda_recv_seriale.pop();
+                    index_range = 0;
+
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_1_7:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    msg.angular_velocity.x = range_recv[0];
+                    msg.angular_velocity.y = range_recv[1];
+                    msg.angular_velocity.z = range_recv[2];
+                    msg.linear_acceleration.x = range_recv[3];
+                    range7_pub.publish(msg);
+
+                    new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case HEADER_G:
+                
+                    for(int i = 0; i< coda_recv_seriale.size(); i++)
+                        coda_recv_seriale.pop();
+                    index_range = 0;
+
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+//////////////////////////////////////////////////////////////////////////////////////////////////
+        case PAYLOAD_1_8:
+            switch(buffer)
+            {
+                case END_PACKET:
+                    
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    msg.angular_velocity.x = range_recv[0];
+                    msg.angular_velocity.y = range_recv[1];
+                    msg.angular_velocity.z = range_recv[2];
+                    msg.linear_acceleration.x = range_recv[3];
+                    range8_pub.publish(msg);
+
+                    new_packet ++;
+                    state_msg=HEADER_1;
+                    index_range = 0;
+                    break;
+
+                case HEADER_H:
+                
+                    for(int i = 0; i< coda_recv_seriale.size(); i++)
+                        coda_recv_seriale.pop();
+                    index_range = 0;
+
+                    break;
+
+                case SEPARATORE:
+                    
+                    //ho ricevuto un range, lo devo codificare
+                    range_recv[index_range] = decode_payload();
+                    //cout << range_recv[index_range] << endl;
+                    index_range ++;
+                    break;
+
+                default:
+                
+                    coda_recv_seriale.push(buffer);
+                    break;
+            }
+            break;
+            
+//////////////////////////////////////////CALIBRATION//////////////////////
         case PAYLOAD_1_C:
             switch(buffer)
             {
@@ -211,13 +538,126 @@ void write_to_serial(int* serial, int richiesta)
 {   
     if(richiesta == 1)
     {   
-        char data[] = {'C'};
-        int n_written = write( *serial, data, 1 );
+        char data[] = {'C','.'};
+        int n_written = write( *serial, data, 2 );
     }
     if(richiesta == 2)
     {
-        char data[] = {'S'};
-        int n_written = write( *serial, data, 1 );
+        char data[] = {'S','.'};
+        int n_written = write( *serial, data, 2 );
+
+    }
+    //legenda
+    //richiesta = 5 T1ON
+    //richiesta = 6 T1OFF
+    //richiesta = 7 T2ON
+    //richiesta = 8 T2OFF
+    //richiesta = 9 T3ON
+    //richiesta = 10 T3OFF
+    //richiesta = 11 T4ON
+    //richiesta = 12 T4OFF
+    //richiesta = 13 T5ON
+    //richiesta = 14 T5OFF
+    //richiesta = 15 T6ON
+    //richiesta = 16 T6OFF
+    //richiesta = 17 T7ON
+    //richiesta = 18 T7OFF
+    //richiesta = 19 T8ON
+    //richiesta = 20 T8OFF
+    if(richiesta == 5)
+    {
+        char data[] = "T1ON.";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 6)
+    {
+        char data[] = "T1OFF";
+        int n_written = write( *serial, data, 6 );
+
+    }
+    if(richiesta == 7)
+    {
+        char data[] = "T2ON";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 8)
+    {
+        char data[] = "T2OFF";
+        int n_written = write( *serial, data, 6 );
+
+    }
+    if(richiesta == 9)
+    {
+        char data[] = "T3ON";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 10)
+    {
+        char data[] = "T3OFF";
+        int n_written = write( *serial, data, 6 );
+
+    }
+    if(richiesta == 11)
+    {
+        char data[] = "T4ON";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 12)
+    {
+        char data[] = "T4OFF";
+        int n_written = write( *serial, data, 6 );
+
+    }
+    if(richiesta == 13)
+    {
+        char data[] = "T5ON";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 14)
+    {
+        char data[] = "T5OFF";
+        int n_written = write( *serial, data, 6 );
+
+    }
+    if(richiesta == 15)
+    {
+        char data[] = "T6ON";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 16)
+    {
+        char data[] = "T6OFF";
+        int n_written = write( *serial, data, 6 );
+
+    }
+    if(richiesta == 17)
+    {
+        char data[] = "T7ON";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 18)
+    {
+        char data[] = "T7OFF";
+        int n_written = write( *serial, data, 6 );
+
+    }
+    if(richiesta == 19)
+    {
+        char data[] = "T8ON";
+        int n_written = write( *serial, data, 5 );
+
+    }
+    if(richiesta == 20)
+    {
+        char data[] = "T8OFF";
+        int n_written = write( *serial, data, 6 );
 
     }
 }

@@ -28,6 +28,13 @@
 using namespace std;
 
 #define HEADER_A  (char) 'A'
+#define HEADER_B  (char) 'B'
+#define HEADER_C  (char) 'C'
+#define HEADER_D  (char) 'D'
+#define HEADER_E  (char) 'E'
+#define HEADER_F  (char) 'F'
+#define HEADER_G  (char) 'G'
+#define HEADER_H  (char) 'H'
 #define HEADER_CALIB  (char) 'Z'
 #define END_PACKET  (char)'.'
 #define SEPARATORE (char)','
@@ -37,6 +44,13 @@ using namespace std;
 typedef enum{
     HEADER_1,
     PAYLOAD_1_1,
+    PAYLOAD_1_2,
+    PAYLOAD_1_3,
+    PAYLOAD_1_4,
+    PAYLOAD_1_5,
+    PAYLOAD_1_6,
+    PAYLOAD_1_7,
+    PAYLOAD_1_8,
     PAYLOAD_1_C,
     
 } waiting_msg;
@@ -54,7 +68,16 @@ int index_range;
 //client
 ros::ServiceServer service_calib_srv;
 ros::ServiceServer service_start_srv;
-ros::Publisher range_pub;
+
+ros::Publisher range1_pub;
+ros::Publisher range2_pub;
+ros::Publisher range3_pub;
+ros::Publisher range4_pub;
+ros::Publisher range5_pub;
+ros::Publisher range6_pub;
+ros::Publisher range7_pub;
+ros::Publisher range8_pub;
+
 ros::Publisher anchor_range_pub;
 ros::Subscriber service_pub;
 int freq_ros_node;

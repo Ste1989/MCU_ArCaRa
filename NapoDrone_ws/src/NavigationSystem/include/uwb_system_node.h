@@ -4,9 +4,8 @@
 #include <ros/ros.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include "uwb_manager/RangeUwb.h"
+
 #include "sensor_msgs/Imu.h"
-#include "autopilot_manager/init_time.h"
 #include <Eigen/Dense>
 #include <fstream>
 #include <malloc.h>
@@ -33,7 +32,8 @@ ros::ServiceClient get_time_sec0;
 ros::ServiceClient service_calib;
 ros::ServiceClient service_start;
 
-uwb_manager::RangeUwb range_uwb;
+string log_file_path;
+//uwb_manager::RangeUwb range_uwb;
 int new_range_packet;
 
 char start_range_recv;
@@ -58,7 +58,14 @@ bool anchor_calib = false;
 VectorXd range_rs(4);
 
 //somma nell'intervallo dei range
-uwb_manager::RangeUwb sum_range_dt;
+
+struct anchor_range{
+ 	float anchor0;
+	float anchor1;
+	float anchor2;
+	float anchor3;
+}sum_range_dt;
+
 
 //per debug
 int index_range ;
@@ -89,7 +96,7 @@ int freq_ros_node;
 FILE* fd;
 std::string log_uwb_path;
 //dichiarazione delle callback
-void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg);
+//void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg);
 void init_global_var();
 void EKF_solo_range_init(VectorXd range);
 void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated);

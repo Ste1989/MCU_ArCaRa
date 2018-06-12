@@ -1,0 +1,51 @@
+<launch>
+
+    <node pkg="navigation_system" type="UWBSystem_Node" name="Tag4" output="screen" args="/Tag4/">
+        <remap from="pozyx_range" to="pozyx_range_4"/>
+    	<param name="log_file" type="bool" value="True" />
+        <param name="log_file_path" type="string" value="/home/sistema/GruppoDSE_ws/log/Tag4.txt" />
+        <param name="debug" type="bool" value="False" />
+
+        <param name="anchor_calib" type="bool" value="False" />
+
+
+
+
+    	<!-- anchor 0 -->
+
+    	<param name="anchor0_Z" type="double" value="1.5" />
+    	<!-- anchor 1 -->
+    
+    	<param name="anchor1_Z" type="double" value="2.0" />
+    	<!-- anchor 2 -->
+  
+    	<param name="anchor2_Z" type="double" value="2.5" />
+    	<!-- anchor 3 -->
+
+    	<param name="anchor3_Z" type="double" value="3.0" />
+
+
+    	<!-- EKF PARAM-->
+    	<param name="freq_filter" type="int" value="2" />
+		<!--R-->
+    	<param name="R1" type="double" value="0.00045796" />
+    	<param name="R2" type="double" value="0.00045796" />
+    	<param name="R3" type="double" value="0.00045796" />
+    	<param name="R4" type="double" value="0.00045796" />
+    	<!--P-->
+    	<param name="P1" type="double" value="0.001" />
+    	<param name="P2" type="double" value="0.001" />
+    	<param name="P3" type="double" value="0.001" />
+    	<param name="P4" type="double" value="0.05" />
+    	<param name="P5" type="double" value="0.05" />
+    	<param name="P6" type="double" value="0.05" />
+    	<!--Q-->
+    	<param name="Q1" type="double" value="0.0001" />
+    	<param name="Q2" type="double" value="0.0001" />
+    	<param name="Q3" type="double" value="0.0001" />
+    	<param name="Q4" type="double" value="0.00001" />
+    	<param name="Q5" type="double" value="0.00001" />
+    	<param name="Q6" type="double" value="0.00001" />
+    </node>
+
+</launch>

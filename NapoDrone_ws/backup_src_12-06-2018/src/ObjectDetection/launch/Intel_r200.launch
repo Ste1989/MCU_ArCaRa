@@ -1,0 +1,15 @@
+<launch>
+ 
+
+
+   <node pkg="obj_detection" type="VisionNodeIntel" name="VisionNode" output="screen" >
+
+
+	<param name="real_time" type="bool" value="true"/>
+	<param name="img_path_save" type="string" value="/home/odroid/"/>
+	<param name="save_img" type="bool" value="false"/>
+    </node>
+
+
+        
+</launch>

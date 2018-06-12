@@ -47,26 +47,17 @@ void init_global_var()
   index_range = 0;
 
   //tempo 0
-  //per inizializzare secs_0 richiamo il client
-  autopilot_manager::init_time srv_msg;
-  bool res = get_time_sec0.call(srv_msg);
 
-  if(res)
-  {
-      secs_0 = srv_msg.response.sec0;
-  }
-  else
-  {   
-      //ROS_WARN("ATTENZIONE TEMPO NON INIZIALIZZATO CORRETTAMENTE");
-      secs_0 = ros::Time::now().toSec();    
-  }
+  secs_0 = ros::Time::now().toSec();    
+  
 
   //path log file
   if(log_file)
   { 
-    log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/EKF_soloRange.txt";
+    log_uwb_path  = log_file_path;
     fd = fopen(log_uwb_path.c_str(), "w");
     fclose(fd);
+    cout << "salvo dati su: "<<log_uwb_path<<endl;
   }
 
 }
@@ -75,7 +66,7 @@ void init_global_var()
 /*                  RANGE CALLBACK                                                        */
 /*                                                                                        */
 /******************************************************************************************/
-void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg)
+/*void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg)
 {
   uwb_manager::RangeUwb app = *msg;
   //rimozione eventuali outlier
@@ -98,7 +89,7 @@ void rangeUWB_cb(const uwb_manager::RangeUwb::ConstPtr& msg)
 
   //cout << "***********************************"<< endl;
   
-}
+}*/
 /********************************************************************************************/
 /*                                                                                         */
 /*    CALBACK STIMA DI PIMU                                                            */
@@ -113,14 +104,15 @@ void rangePOZ_cb(const sensor_msgs::Imu::ConstPtr& imu)
     double r2 = imu->angular_velocity.z/1000.0; //anchor 3 -9
     double r3 = imu->linear_acceleration.x/1000.0; //anchor 4 -10
     
-
-    if(abs(r0) > 0.05 && abs(r1) > 0.05 && abs(r2) > 0.05 && abs(r3) > 0.05  )
+	//cout << r0 << " " << r1 << " " << r2  << " " << r3 << endl;
+    if(abs(r0) > 0.05 && abs(r1) > 0.05 && abs(r2) > 0.05 && abs(r3) > 0.05  && abs(r0) < 50 && abs(r1) < 50 && abs(r2) < 50 && abs(r3) < 50)
     { 
       sum_range_dt.anchor0 = sum_range_dt.anchor0 + r0;
       sum_range_dt.anchor1 = sum_range_dt.anchor1 + r1;
       sum_range_dt.anchor2 = sum_range_dt.anchor2 + r2;
       sum_range_dt.anchor3 = sum_range_dt.anchor3 + r3;
       //incremento il numero di pacchetti arrivati nell'intervlo di tempo
+//cout << sum_range_dt.anchor0 << " " << sum_range_dt.anchor1 << " " << sum_range_dt.anchor0  << " " << sum_range_dt.anchor3 << endl;
       new_range_packet ++;
       start_range_recv = 1;
     }
@@ -168,7 +160,7 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
   
 
 
-
+	
   //da tirare fuori dall EKF l init
   //costrusico la matrice delle distanze
   d_hat(0) = ((x_k(0)-anchor_pos(0,0))*(x_k(0)-anchor_pos(0,0)) + (x_k(1)-anchor_pos(0,1))*(x_k(1)-anchor_pos(0,1)) +(x_k(2)-anchor_pos(0,2))*(x_k(2)-anchor_pos(0,2)));
@@ -178,6 +170,7 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
   d_hat = d_hat.abs().sqrt();
 
   
+
   for(int i=0;i<4;i++)
   {
     for(int j=0;j<3;j++)
@@ -195,7 +188,7 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
   //Calcolo il guadagno di Kalman
   K = P*H.transpose()*(H*P*H.transpose() + R).inverse(); //6x4
 
-  
+
 
   VectorXd resid(4);
   //calcolo residuo
@@ -207,7 +200,6 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
   //aggiorno lo stato e la covarianza della stima
   x_k = x_k + K*resid;
 
-  
 
   P = (MatrixXd::Identity(6,6)-K*H)*P*(MatrixXd::Identity(6,6)-K*H).transpose() +K*R*K.transpose();
 
@@ -218,8 +210,7 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
   position_estimated(0) = x_k(0);
   position_estimated(1) = x_k(1);
   position_estimated(2) = x_k(2);
-
-  double min = 1000000;
+/*  double min = 1000000;
   int index = -1;
   for(int i = 0; i < 4; i++)
   {
@@ -250,7 +241,7 @@ void EKF_solo_range(VectorXd range,  double dt, VectorXd& position_estimated)
    z_stima[2] =  anchor_pos(2,2) - sqrt(d2t - x2t -y2t);
    z_stima[3] =  anchor_pos(3,2) - sqrt(d3t - x3t -y3t);
 
-  position_estimated(2) = z_stima[3];
+  position_estimated(2) = z_stima[3];*/
   //d = x + y + z
  /* std::cout<< "**************" << std::endl;
   std::cout<< "range 0 " << range(0) << std::endl;
@@ -426,7 +417,7 @@ void anchorRange_cb(const geometry_msgs::Pose::ConstPtr& msg)
 /******************************************************************************************/
 void scrivi_file_calib()
 {
-  log_uwb_path  = "/home/sistema/MCU_ArCaRa/NapoDrone_ws/src/NavigationSystem/fileanchor_calib.txt";
+  log_uwb_path  = "/home/sistema/GruppoDSE_ws/src/NavigationSystem/file/anchor_calib.txt";
   fd = fopen(log_uwb_path.c_str(), "w");
   fprintf(fd, "%f", anchor0(0));
   fprintf(fd, "%s", "  ");
@@ -444,6 +435,12 @@ void scrivi_file_calib()
   fprintf(fd, "%s", "  ");
   fprintf(fd, "%f\n", anchor3(1));
   fclose(fd);
+
+  cout << "FILE CALIBRAZIONE" << endl;
+  cout << "anchor0: " << endl << anchor0 << endl;
+  cout << "anchor1: " << endl << anchor1 << endl;
+  cout << "anchor2: " << endl << anchor2 << endl;
+  cout << "anchor3: " << endl << anchor3 << endl;
 }
 /******************************************************************************************/
 /*                                                                                        */
@@ -453,7 +450,7 @@ void scrivi_file_calib()
 void leggi_file_calibrazione()
 {
   
-  ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/src/NavigationSystem/file/anchor_calib.txt");
+  ifstream OpenFile("/home/sistema/GruppoDSE_ws/src/NavigationSystem/file/anchor_calib.txt");
   
   double x0, x1, x2, x3, y0, y1, y2, y3;;
   while(!OpenFile.eof())
@@ -495,7 +492,7 @@ void leggi_file_debug()
   FILE *fp;
 
   
-  ifstream OpenFile("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
+  ifstream OpenFile("/home/sistema/GruppoDSE_ws/log/pozyx_range.txt");
   Num_measure =0 ;
   double temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11;
   while(!OpenFile.eof())
@@ -534,7 +531,7 @@ void leggi_file_debug()
   double *app_6 = (double *) malloc(sizeof(double) * Num_measure);
   double f1,f2,f3,f4,f5;
   int i =0 ;
-  ifstream OpenFile1("/home/sistema/MCU_ArCaRa/NapoDrone_ws/log/pozyx_range.txt");
+  ifstream OpenFile1("/home/sistema/GruppoDSE_ws/log/pozyx_range.txt");
   while(!OpenFile1.eof())
   {
     OpenFile1 >> time_log[i] >> app_1[i]   >> app_2[i]  >> app_3[i]  >> app_4[i]  >> range1_log[i] >> range2_log[i] >> range3_log[i] >> range4_log[i] >> app_5[i]  >> app_6[i];

@@ -1,0 +1,15 @@
+<launch>
+ 
+
+
+    <node pkg="arduino_serial" type="ArduinoSerial" name="ArduinoSerial" output="screen" >
+	    
+		<param name="dev" type="string" value="/dev/ttyACM0" />
+	
+		<param name="freq_ros_node" type="int" value="200" />
+		
+		
+    </node>
+
+        
+</launch>
